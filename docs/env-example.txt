@@ -1,0 +1,23 @@
+# Pizzeria Pinocchio Nordkirchen – Umgebungsvariablen
+MONGODB_URI=mongodb+srv://USER:PASS@cluster0.xxxxx.mongodb.net/pinocchio-nordkirchen
+STRIPE_SECRET_KEY=sk_live_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+STRIPE_CONNECT_ACCOUNT=acct_...   # Stripe Connect ID des Restaurants (optional)
+# PayPal (REST API v2)
+PAYPAL_CLIENT_ID=AxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxL
+PAYPAL_CLIENT_SECRET=ExxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxA
+PAYPAL_WEBHOOK_ID=xxxxxxxxxxxxxxxxxxxx   # Webhook-ID aus PayPal Developer Dashboard
+PAYPAL_ENV=live                          # 'sandbox' zum Testen, 'live' für Produktion
+RESEND_API_KEY=re_...
+EMAIL_FROM=bestellungen@pinnochionordkirchen.de
+RESTAURANT_EMAIL=info@pinnochionordkirchen.de
+OWNER_EMAIL=dein@email.de
+PRINTNODE_API_KEY=
+PRINTNODE_PRINTER_ID=
+ADMIN_PASSWORD=PinocchioNK2026Admin!
+ADMIN_TOKEN_SECRET=PinocchioNordkirchenGeheimToken2026xyzABCDEFG
+JWT_SECRET=dein-geheimer-jwt-schluessel-mindestens-32-zeichen
+WHATSAPP_NUMBER=491718285884
+STEUERNUMMER=                            # TODO: Steuernummer der Pizzeria eintragen
+FRONTEND_URL=https://pinnochionordkirchen.de
+PORT=3001

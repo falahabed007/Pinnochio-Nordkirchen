@@ -1,0 +1,1473 @@
+{
+  "_quelle": "Gedruckte Speisekarte Pizzeria Pinocchio Nordkirchen, Ausgabe 2026 (PDF-Scan)",
+  "_groessen": {
+    "mini": "20 cm",
+    "normal": "28 cm",
+    "maxi": "32 cm"
+  },
+  "_extras": {
+    "mini": 0.5,
+    "normal": 0.5,
+    "maxi": 1.5
+  },
+  "kategorien": [
+    {
+      "id": "antipasta",
+      "titel": "Antipasta / Vorspeisen",
+      "typ": "simple",
+      "items": [
+        {
+          "num": "",
+          "name": "Gefüllte Pizza überbacken",
+          "desc": "Pesto, frische Tomaten, Knoblauch, Parmesankäse",
+          "preis": 5.0
+        },
+        {
+          "num": "",
+          "name": "5 Bruschetta",
+          "desc": "",
+          "preis": 7.0
+        },
+        {
+          "num": "",
+          "name": "Krabbenpfännchen",
+          "desc": "",
+          "preis": 7.5
+        }
+      ]
+    },
+    {
+      "id": "pizza-kaese",
+      "titel": "Pizza mit versch. Käsesorten",
+      "typ": "pizza",
+      "items": [
+        {
+          "num": "1",
+          "name": "Margherita",
+          "desc": "Tomaten, Käse",
+          "mini": 4.0,
+          "normal": 6.0,
+          "maxi": 8.0
+        },
+        {
+          "num": "2",
+          "name": "Mozzarella",
+          "desc": "Tomaten, Mozzarella",
+          "mini": 5.0,
+          "normal": 7.5,
+          "maxi": 9.0
+        },
+        {
+          "num": "3",
+          "name": "Schafskäse",
+          "desc": "Tomaten, Weisskäse",
+          "mini": 5.0,
+          "normal": 7.5,
+          "maxi": 9.0
+        },
+        {
+          "num": "4",
+          "name": "Gorgonzola",
+          "desc": "Tomaten, Gorgonzola",
+          "mini": 5.0,
+          "normal": 7.5,
+          "maxi": 9.0
+        },
+        {
+          "num": "5",
+          "name": "Quadro Formaggi",
+          "desc": "Tomaten, 4 Sorten Käse",
+          "mini": 5.0,
+          "normal": 7.5,
+          "maxi": 9.0
+        }
+      ]
+    },
+    {
+      "id": "pizza-vegetarisch",
+      "titel": "Vegetarische Pizza",
+      "typ": "pizza",
+      "items": [
+        {
+          "num": "6",
+          "name": "Paprika",
+          "desc": "Tomaten, Käse, Paprika",
+          "mini": 5.0,
+          "normal": 7.5,
+          "maxi": 9.0
+        },
+        {
+          "num": "7",
+          "name": "Funghi",
+          "desc": "Tomaten, Käse, Pilze",
+          "mini": 5.0,
+          "normal": 7.5,
+          "maxi": 9.0
+        },
+        {
+          "num": "8",
+          "name": "Cipolla",
+          "desc": "Tomaten, Käse, Zwiebeln",
+          "mini": 5.0,
+          "normal": 7.5,
+          "maxi": 9.0
+        },
+        {
+          "num": "9",
+          "name": "Mais",
+          "desc": "Tomaten, Käse, Mais",
+          "mini": 5.0,
+          "normal": 7.5,
+          "maxi": 9.0
+        },
+        {
+          "num": "10",
+          "name": "Broccoli",
+          "desc": "Tomaten, Käse, Broccoli",
+          "mini": 5.0,
+          "normal": 7.5,
+          "maxi": 9.0
+        },
+        {
+          "num": "11",
+          "name": "Spinaci",
+          "desc": "Tomaten, Käse, Spinat, Knoblauch",
+          "mini": 5.0,
+          "normal": 7.5,
+          "maxi": 9.0
+        },
+        {
+          "num": "12",
+          "name": "Artischocken",
+          "desc": "Tomaten, Käse, Artischocken",
+          "mini": 5.0,
+          "normal": 7.5,
+          "maxi": 9.0
+        },
+        {
+          "num": "12a",
+          "name": "Spargelpizza",
+          "desc": "Tomaten, Käse, Spargel, Broccoli, Sauce Hollandaise",
+          "mini": 5.5,
+          "normal": 9.0,
+          "maxi": 10.5
+        },
+        {
+          "num": "13",
+          "name": "Vegetarisch Spezial",
+          "desc": "Tomaten, Käse, Spinat, Broccoli, Pilze, Spargel, Mais",
+          "mini": 5.5,
+          "normal": 9.0,
+          "maxi": 11.0
+        }
+      ]
+    },
+    {
+      "id": "pizza-mozzarella",
+      "titel": "Pizza mit frischen Tomaten und Mozzarella",
+      "typ": "pizza",
+      "items": [
+        {
+          "num": "14",
+          "name": "Roma",
+          "desc": "Tomatenscheiben, Mozzarella, Thunfisch, Schinken, Oliven",
+          "mini": 5.5,
+          "normal": 9.0,
+          "maxi": 10.5
+        },
+        {
+          "num": "15",
+          "name": "Toscana",
+          "desc": "Tomatenscheiben, Oliven, Salami, Schinken, Sardellen",
+          "mini": 5.5,
+          "normal": 9.0,
+          "maxi": 10.5
+        },
+        {
+          "num": "16",
+          "name": "Napoli",
+          "desc": "Tomatenscheiben, Mozzarella, Salami, Spinat, Broccoli",
+          "mini": 5.5,
+          "normal": 9.0,
+          "maxi": 10.5
+        },
+        {
+          "num": "17",
+          "name": "Rucola",
+          "desc": "Tomatenscheiben, Oliven, Mozzarella, Schinken, Knoblauch, Rucolasalat",
+          "mini": 5.5,
+          "normal": 9.0,
+          "maxi": 10.5
+        }
+      ]
+    },
+    {
+      "id": "pizza-fisch",
+      "titel": "Pizza mit Fisch",
+      "typ": "pizza",
+      "items": [
+        {
+          "num": "18",
+          "name": "Sardellen",
+          "desc": "Tomaten, Käse, Sardellen",
+          "mini": 4.5,
+          "normal": 7.0,
+          "maxi": 8.0
+        },
+        {
+          "num": "19",
+          "name": "Tonno",
+          "desc": "Tomaten, Käse, Thunfisch",
+          "mini": 5.0,
+          "normal": 9.0,
+          "maxi": 10.5
+        },
+        {
+          "num": "20",
+          "name": "Tonno e Cipolla",
+          "desc": "Tomaten, Käse, Thunfisch, Zwiebeln",
+          "mini": 5.5,
+          "normal": 9.0,
+          "maxi": 11.0
+        },
+        {
+          "num": "21",
+          "name": "Tonno e Prosciutto",
+          "desc": "Tomaten, Käse, Thunfisch, Schinken",
+          "mini": 5.5,
+          "normal": 9.0,
+          "maxi": 11.0
+        },
+        {
+          "num": "22",
+          "name": "Tonno e Ananas",
+          "desc": "Tomaten, Käse, Thunfisch, Ananas",
+          "mini": 5.5,
+          "normal": 9.0,
+          "maxi": 11.0
+        },
+        {
+          "num": "23",
+          "name": "Scampi",
+          "desc": "Tomaten, Käse, Scampi",
+          "mini": 5.5,
+          "normal": 9.0,
+          "maxi": 11.0
+        },
+        {
+          "num": "24",
+          "name": "Gambas",
+          "desc": "2 Gambas, Meeresfrüchte, Knoblauch",
+          "normal": 10.0,
+          "maxi": 12.0
+        },
+        {
+          "num": "25",
+          "name": "Gamberetti",
+          "desc": "Tomaten, Käse, Krabben, Muscheln, Knoblauch",
+          "mini": 5.5,
+          "normal": 9.5,
+          "maxi": 11.0
+        },
+        {
+          "num": "26",
+          "name": "Frutti di Mare",
+          "desc": "Tomaten, Käse, Thunfisch, Meeresfrüchte, Knoblauch",
+          "mini": 5.5,
+          "normal": 9.5,
+          "maxi": 11.0
+        },
+        {
+          "num": "27",
+          "name": "Krebsfleisch",
+          "desc": "Tomaten, Käse, Krebsfleisch",
+          "mini": 5.5,
+          "normal": 8.5,
+          "maxi": 10.0
+        },
+        {
+          "num": "28",
+          "name": "Pieche",
+          "desc": "Tomaten, Käse, Krebsfleisch, Krabben, Muscheln, Knoblauch",
+          "mini": 5.5,
+          "normal": 9.0,
+          "maxi": 11.0
+        },
+        {
+          "num": "29",
+          "name": "Salamone",
+          "desc": "Tomaten, Käse, Lachs, Spinat, Knoblauch",
+          "mini": 6.0,
+          "normal": 9.5,
+          "maxi": 11.0
+        }
+      ]
+    },
+    {
+      "id": "pizza-fleischsauce",
+      "titel": "Pizza mit Fleischsauce",
+      "typ": "pizza",
+      "items": [
+        {
+          "num": "30",
+          "name": "Bolognese",
+          "desc": "Käse, Fleischsauce",
+          "mini": 5.0,
+          "normal": 8.5,
+          "maxi": 9.5
+        },
+        {
+          "num": "31",
+          "name": "Spaghetti",
+          "desc": "Käse, Fleischsauce, Spaghetti",
+          "mini": 5.5,
+          "normal": 9.0,
+          "maxi": 10.0
+        },
+        {
+          "num": "32",
+          "name": "Pasta",
+          "desc": "Käse, Fleischsauce, Spaghetti, Maccaroni",
+          "mini": 5.5,
+          "normal": 9.0,
+          "maxi": 10.5
+        }
+      ]
+    },
+    {
+      "id": "pizza-belaege",
+      "titel": "Pizza mit verschiedenen Belägen",
+      "typ": "pizza",
+      "items": [
+        {
+          "num": "33",
+          "name": "Salami",
+          "desc": "Tomaten, Käse, Salami",
+          "mini": 5.0,
+          "normal": 7.5,
+          "maxi": 9.0
+        },
+        {
+          "num": "34",
+          "name": "Prosciutto",
+          "desc": "Tomaten, Käse, Schinken (Soyaeiweiss)",
+          "mini": 5.0,
+          "normal": 7.5,
+          "maxi": 9.0
+        },
+        {
+          "num": "35",
+          "name": "Vito",
+          "desc": "Tomaten, Käse, Salami, Schinken",
+          "mini": 5.0,
+          "normal": 8.0,
+          "maxi": 10.0
+        },
+        {
+          "num": "36",
+          "name": "Hawaii",
+          "desc": "Tomaten, Käse, Schinken, Ananas",
+          "mini": 5.5,
+          "normal": 8.5,
+          "maxi": 10.0
+        },
+        {
+          "num": "37",
+          "name": "Kentucky",
+          "desc": "Tomaten, Käse, Hähnchenbrustfilet, Ananas",
+          "mini": 5.5,
+          "normal": 9.5,
+          "maxi": 11.0
+        },
+        {
+          "num": "38",
+          "name": "Primavera",
+          "desc": "Tomaten, Käse, Salami, Pilze",
+          "mini": 5.5,
+          "normal": 8.0,
+          "maxi": 10.0
+        },
+        {
+          "num": "39",
+          "name": "Parma",
+          "desc": "Tomaten, Käse, Schinken, Pilze",
+          "mini": 5.5,
+          "normal": 8.0,
+          "maxi": 10.0
+        },
+        {
+          "num": "40",
+          "name": "Genova",
+          "desc": "Tomaten, Käse, Salami, Schinken, Thunfisch",
+          "mini": 5.5,
+          "normal": 9.0,
+          "maxi": 11.0
+        },
+        {
+          "num": "41",
+          "name": "Mista",
+          "desc": "Tomaten, Käse, Salami, Schinken, Pilze",
+          "mini": 5.5,
+          "normal": 9.0,
+          "maxi": 11.0
+        },
+        {
+          "num": "42",
+          "name": "Tonorella",
+          "desc": "Tomaten, Käse, gek. Eier, Thunfisch, Peperoni, Zwiebeln",
+          "mini": 5.5,
+          "normal": 9.5,
+          "maxi": 11.0
+        },
+        {
+          "num": "43",
+          "name": "della Chef",
+          "desc": "Tomaten, Käse, Salami, Schinken, Thunfisch, Pilze",
+          "mini": 5.5,
+          "normal": 9.5,
+          "maxi": 11.0
+        },
+        {
+          "num": "44",
+          "name": "Diavollo",
+          "desc": "extra scharf – Tomaten, Käse, Schinken, Pilze, Artischocken, Peperoni, Tabasco",
+          "mini": 5.5,
+          "normal": 9.5,
+          "maxi": 11.0
+        },
+        {
+          "num": "45",
+          "name": "Phoenix",
+          "desc": "Tomaten, Käse, Schinken, Salami, Paprika, Spargel",
+          "mini": 5.0,
+          "normal": 9.0,
+          "maxi": 11.0
+        },
+        {
+          "num": "46",
+          "name": "Pinocchio",
+          "desc": "Tomaten, Käse, Schinken, Salami, Spinat, Broccoli, Scampi, Knoblauch",
+          "mini": 5.5,
+          "normal": 9.5,
+          "maxi": 11.0
+        },
+        {
+          "num": "47",
+          "name": "Atlantico",
+          "desc": "Tomaten, Käse, Schinken, Salami, Paprika, Pilze",
+          "mini": 5.5,
+          "normal": 9.5,
+          "maxi": 11.0
+        },
+        {
+          "num": "48",
+          "name": "Rustica",
+          "desc": "Tomaten, Käse, Thunfisch, Paprika, Eier",
+          "mini": 5.5,
+          "normal": 9.5,
+          "maxi": 11.0
+        },
+        {
+          "num": "49",
+          "name": "Milano",
+          "desc": "Tomaten, Käse, Schinken, Paprika, Mais",
+          "mini": 5.5,
+          "normal": 9.0,
+          "maxi": 11.0
+        },
+        {
+          "num": "50",
+          "name": "Rio",
+          "desc": "Tomaten, Käse, Schinken, Zwiebeln, Eier",
+          "mini": 5.5,
+          "normal": 9.0,
+          "maxi": 11.0
+        },
+        {
+          "num": "51",
+          "name": "Romana",
+          "desc": "Tomaten, Käse, Salami, Sardellen, Oliven",
+          "mini": 5.5,
+          "normal": 9.0,
+          "maxi": 11.0
+        },
+        {
+          "num": "52",
+          "name": "Pescatore",
+          "desc": "Tomaten, Käse, Spinat, Krabben, Knoblauch",
+          "mini": 5.5,
+          "normal": 9.5,
+          "maxi": 11.0
+        },
+        {
+          "num": "53",
+          "name": "Dallas",
+          "desc": "Tomaten, Käse, Spinat, Krabben, Sardellen, Oliven, Knoblauch",
+          "mini": 5.5,
+          "normal": 9.5,
+          "maxi": 11.0
+        },
+        {
+          "num": "54",
+          "name": "Amore",
+          "desc": "Tomaten, Käse, Schinken, Salami, Pilze, Paprika, Broccoli, Zwiebeln, Eier",
+          "mini": 5.5,
+          "normal": 9.5,
+          "maxi": 11.0
+        },
+        {
+          "num": "55",
+          "name": "Italia",
+          "desc": "Tomaten, Käse, Thunfisch, Salami, Paprika, Oliven, Knoblauch",
+          "mini": 5.5,
+          "normal": 9.5,
+          "maxi": 11.0
+        },
+        {
+          "num": "56",
+          "name": "Siziliana",
+          "desc": "Tomaten, Käse, Paprika, Zwiebeln, Knoblauch, Peperoni",
+          "mini": 5.5,
+          "normal": 9.0,
+          "maxi": 11.0
+        },
+        {
+          "num": "57",
+          "name": "Picante",
+          "desc": "Tomaten, Käse, Schinken, Artischocken, Peperoni, Oliven",
+          "mini": 5.5,
+          "normal": 9.0,
+          "maxi": 11.0
+        },
+        {
+          "num": "58",
+          "name": "Quattro Stagioni",
+          "desc": "Tomaten, Käse, Schinken, Paprika, Artischocken, Pilze",
+          "mini": 5.5,
+          "normal": 9.0,
+          "maxi": 11.0
+        },
+        {
+          "num": "59",
+          "name": "Gyros",
+          "desc": "Tomaten, Käse, Gyrosfleisch",
+          "mini": 5.5,
+          "normal": 9.0,
+          "maxi": 11.0
+        },
+        {
+          "num": "60",
+          "name": "Gyros Spezial",
+          "desc": "Tomaten, Käse, Broccoli, Zwiebeln, Gyrosfleisch",
+          "mini": 5.5,
+          "normal": 9.5,
+          "maxi": 11.0
+        },
+        {
+          "num": "61",
+          "name": "Gyros Hollandaise",
+          "desc": "Tomaten, Käse, Broccoli, Zwiebeln, Gyrosfleisch, Sauce Hollandaise",
+          "mini": 5.5,
+          "normal": 9.5,
+          "maxi": 11.0
+        },
+        {
+          "num": "61a",
+          "name": "Gyros",
+          "desc": "frische Tomaten, frische Paprika, Zwiebeln, Feta-Käse",
+          "mini": 5.5,
+          "normal": 9.5,
+          "maxi": 11.0
+        }
+      ]
+    },
+    {
+      "id": "calzone",
+      "titel": "Calzone – gefüllte Pizza",
+      "typ": "pizza",
+      "items": [
+        {
+          "num": "62",
+          "name": "Calzone",
+          "desc": "Tomaten, Käse, Schinken, Salami, Pilze",
+          "mini": 5.5,
+          "normal": 9.0,
+          "maxi": 10.0
+        },
+        {
+          "num": "63",
+          "name": "Calzone Mafioso",
+          "desc": "Tomaten, Käse, Schinken, Thunfisch, Artischocken, Mais",
+          "mini": 5.5,
+          "normal": 9.0,
+          "maxi": 10.0
+        },
+        {
+          "num": "64",
+          "name": "Calzone Pinocchio",
+          "desc": "Tomaten, Käse, Thunfisch, Mais, Knoblauch",
+          "mini": 5.5,
+          "normal": 9.0,
+          "maxi": 10.0
+        },
+        {
+          "num": "65",
+          "name": "Calzone Spezial",
+          "desc": "Tomaten, Käse, Schinken, Paprika, Pilze, Ananas",
+          "mini": 5.5,
+          "normal": 9.0,
+          "maxi": 10.0
+        }
+      ]
+    },
+    {
+      "id": "familienpizza",
+      "titel": "Familienpizza & Pizzabrötchen",
+      "typ": "familie",
+      "items": [
+        {
+          "num": "66",
+          "name": "Familienpizza XL",
+          "desc": "40 cm · belegen wir nach Ihrem Wunsch",
+          "preis": 15.0,
+          "belegbar": true
+        },
+        {
+          "num": "67",
+          "name": "Familienpizza XXL",
+          "desc": "50 cm · belegen wir nach Ihrem Wunsch",
+          "preis": 25.0,
+          "belegbar": true
+        },
+        {
+          "num": "68",
+          "name": "Pizzabrötchen",
+          "desc": "mit Knoblauchsauce und Kräuterbutter",
+          "preis": 3.0
+        },
+        {
+          "num": "68a",
+          "name": "Gefüllte Pizzabrötchen",
+          "desc": "mit Käse und Schinken, mit Knoblauchsauce und Kräuterbutter",
+          "preis": 6.0
+        }
+      ]
+    },
+    {
+      "id": "spaghetti",
+      "titel": "Spaghetti",
+      "typ": "simple",
+      "note": "Alle Nudelgerichte mit Pizzabrötchen, Kräuterbutter und Knoblauchsauce.",
+      "items": [
+        {
+          "num": "69",
+          "name": "Spaghetti alla Napolitana",
+          "desc": "Tomatensauce",
+          "preis": 8.5
+        },
+        {
+          "num": "70",
+          "name": "Spaghetti Bolognese",
+          "desc": "Fleischsauce",
+          "preis": 9.0
+        },
+        {
+          "num": "71",
+          "name": "Spaghetti alla Panna",
+          "desc": "Schinken, Sahnesauce",
+          "preis": 9.0
+        },
+        {
+          "num": "72",
+          "name": "Spaghetti Carbonara",
+          "desc": "Schinken, Eier, Sahnesauce",
+          "preis": 9.0
+        },
+        {
+          "num": "73",
+          "name": "Spaghetti della Casa",
+          "desc": "Schinken, Champignons, Erbsen, Tomatensauce",
+          "preis": 9.0
+        },
+        {
+          "num": "74",
+          "name": "Spaghetti Frutti di Mare",
+          "desc": "Tomatensauce, Meeresfrüchte, Knoblauch",
+          "preis": 9.5
+        },
+        {
+          "num": "75",
+          "name": "Spaghetti Gambaretti",
+          "desc": "Tomatensauce, Krabben, Knoblauch",
+          "preis": 9.5
+        },
+        {
+          "num": "76",
+          "name": "Spaghetti al Tonno",
+          "desc": "Tomatensauce, Thunfisch, Knoblauch",
+          "preis": 9.5
+        },
+        {
+          "num": "77",
+          "name": "Spaghetti della Chef",
+          "desc": "Sahnesauce, Spinat, Gorgonzola",
+          "preis": 9.5
+        },
+        {
+          "num": "78",
+          "name": "Spaghetti Vegetaria",
+          "desc": "Sahnesauce, Erbsen, Broccoli, frische Champignons",
+          "preis": 9.5
+        },
+        {
+          "num": "79",
+          "name": "Spaghetti Aglio e Olio",
+          "desc": "gebratene Spaghetti, Tomatensauce, Peperoni, Knoblauch (extra scharf)",
+          "preis": 9.5
+        },
+        {
+          "num": "80",
+          "name": "Spaghetti Gambas",
+          "desc": "frische Tomaten, frischer Knoblauch, 4 Gambas",
+          "preis": 12.0,
+          "kein_mittagsmenue": true
+        },
+        {
+          "num": "80a",
+          "name": "Spaghetti mit Spieß",
+          "desc": "mit Pesto und 2 Garnelenspießen",
+          "preis": 12.0,
+          "kein_mittagsmenue": true
+        }
+      ]
+    },
+    {
+      "id": "tagliatelle",
+      "titel": "Tagliatelle",
+      "typ": "simple",
+      "items": [
+        {
+          "num": "81",
+          "name": "Tagliatelle alla Napolitana",
+          "desc": "Tomatensauce",
+          "preis": 9.0
+        },
+        {
+          "num": "82",
+          "name": "Tagliatelle Bolognese",
+          "desc": "Fleischsauce",
+          "preis": 9.0
+        },
+        {
+          "num": "83",
+          "name": "Tagliatelle vegetarisch",
+          "desc": "Sahnesauce, frische Tomaten, Broccoli, Champignons",
+          "preis": 9.5
+        },
+        {
+          "num": "84",
+          "name": "Tagliatelle al Salmone",
+          "desc": "Lachs, Sahnesauce",
+          "preis": 9.5
+        }
+      ]
+    },
+    {
+      "id": "rigatoni",
+      "titel": "Rigatoni",
+      "typ": "simple",
+      "items": [
+        {
+          "num": "85",
+          "name": "Rigatoni alla Napolitana",
+          "desc": "Tomatensauce",
+          "preis": 8.5
+        },
+        {
+          "num": "86",
+          "name": "Rigatoni Bolognese",
+          "desc": "Fleischsauce",
+          "preis": 9.0
+        },
+        {
+          "num": "87",
+          "name": "Rigatoni alla Panna",
+          "desc": "Schinken, Sahnesauce",
+          "preis": 9.0
+        },
+        {
+          "num": "88",
+          "name": "Rigatoni Carbonara",
+          "desc": "Schinken, Eier, Sahnesauce",
+          "preis": 9.0
+        },
+        {
+          "num": "89",
+          "name": "Rigatoni della Casa",
+          "desc": "Schinken, Champignons, Erbsen, Tomatensauce",
+          "preis": 9.0
+        },
+        {
+          "num": "90",
+          "name": "Rigatoni al Tonno",
+          "desc": "Tomatensauce, Thunfisch, Knoblauch",
+          "preis": 9.5
+        },
+        {
+          "num": "91",
+          "name": "Rigatoni della Chef",
+          "desc": "Sahnesauce, Spinat, Gorgonzola",
+          "preis": 9.5
+        },
+        {
+          "num": "92",
+          "name": "Rigatoni Vegetaria",
+          "desc": "Sahnesauce, Erbsen, Broccoli, frische Champignons",
+          "preis": 9.5
+        },
+        {
+          "num": "93",
+          "name": "Rigatoni Quattro Formaggi",
+          "desc": "4 Sorten Käse",
+          "preis": 9.5
+        },
+        {
+          "num": "94",
+          "name": "Rigatoni Lachs",
+          "desc": "Sahnesauce, Lachs, frischer Parmesankäse",
+          "preis": 9.5
+        },
+        {
+          "num": "95",
+          "name": "Rigatoni Italia",
+          "desc": "Sahnesauce, fr. Tomaten, fr. Pilze, Krabben, fr. Parmesankäse",
+          "preis": 9.5
+        }
+      ]
+    },
+    {
+      "id": "tortellini",
+      "titel": "Tortellini",
+      "typ": "simple",
+      "items": [
+        {
+          "num": "96",
+          "name": "Tortellini alla Napolitana",
+          "desc": "Tomatensauce",
+          "preis": 8.5
+        },
+        {
+          "num": "97",
+          "name": "Tortellini Bolognese",
+          "desc": "Fleischsauce",
+          "preis": 9.0
+        },
+        {
+          "num": "98",
+          "name": "Tortellini alla Panna",
+          "desc": "Schinken, Sahnesauce",
+          "preis": 9.0
+        },
+        {
+          "num": "99",
+          "name": "Tortellini Carbonara",
+          "desc": "Schinken, Eier, Sahnesauce",
+          "preis": 9.5
+        },
+        {
+          "num": "100",
+          "name": "Tortellini della Casa",
+          "desc": "Schinken, Champignons, Erbsen, Tomatensauce",
+          "preis": 9.0
+        },
+        {
+          "num": "101",
+          "name": "Tortellini Gorgonzola",
+          "desc": "Erbsen, Broccoli, Sahnesauce, Gorgonzola",
+          "preis": 9.5
+        }
+      ]
+    },
+    {
+      "id": "backofen",
+      "titel": "Nudelgerichte aus dem Backofen",
+      "typ": "simple",
+      "note": "Lasagne, Canneloni, Spaghetti, Rigatoni und Tortellini – mit Käse überbacken.",
+      "items": [
+        {
+          "num": "102",
+          "name": "Lasagne",
+          "desc": "Fleischsauce, Schinken mit Käse überbacken",
+          "preis": 9.5
+        },
+        {
+          "num": "103",
+          "name": "Lasagne Vegetaria",
+          "desc": "Sahnesauce, Erbsen, Broccoli, Spinat mit Käse überbacken",
+          "preis": 9.5
+        },
+        {
+          "num": "104",
+          "name": "Dui Pasti",
+          "desc": "Fleischsauce, Canneloni und Lasagne mit Käse überbacken",
+          "preis": 9.5
+        },
+        {
+          "num": "105",
+          "name": "Tris Pasti",
+          "desc": "Fleischsauce, Lasagne, Rigatoni und Tortellini mit Käse überbacken",
+          "preis": 9.5
+        },
+        {
+          "num": "105a",
+          "name": "Tris Phantasia",
+          "desc": "mit 3 verschiedenen Nudelsorten und 3 verschiedenen Saucen mit Käse überbacken",
+          "preis": 9.5
+        },
+        {
+          "num": "106",
+          "name": "Canneloni alla Napolitana",
+          "desc": "Tomatensauce, Broccoli, Erbsen mit Käse überbacken",
+          "preis": 9.5
+        },
+        {
+          "num": "107",
+          "name": "Canneloni Bolognese",
+          "desc": "Bolognesesauce, Broccoli, Erbsen mit Käse überbacken",
+          "preis": 9.5
+        },
+        {
+          "num": "108",
+          "name": "Canneloni al Forno",
+          "desc": "Sahnesauce, Broccoli, Erbsen mit Käse überbacken",
+          "preis": 9.5
+        },
+        {
+          "num": "109",
+          "name": "Spaghetti alla Napolitana",
+          "desc": "Tomatensauce mit Käse überbacken",
+          "preis": 9.0
+        },
+        {
+          "num": "110",
+          "name": "Spaghetti al Forno",
+          "desc": "Fleischsauce mit Käse überbacken",
+          "preis": 9.5
+        },
+        {
+          "num": "111",
+          "name": "Spaghetti alla Panna",
+          "desc": "Schinken, Sahnesauce mit Käse überbacken",
+          "preis": 9.5
+        },
+        {
+          "num": "112",
+          "name": "Spaghetti Carbonara",
+          "desc": "Schinken, Eier, Sahnesauce mit Käse überbacken",
+          "preis": 9.5
+        },
+        {
+          "num": "113",
+          "name": "Spaghetti della Casa",
+          "desc": "Schinken, Champignons, Erbsen, Tomatensauce mit Käse überbacken",
+          "preis": 9.5
+        },
+        {
+          "num": "114",
+          "name": "Spaghetti al Tonno",
+          "desc": "Tomatensauce, Thunfisch, Knoblauch mit Käse überbacken",
+          "preis": 9.5
+        },
+        {
+          "num": "115",
+          "name": "Spaghetti Vegetaria",
+          "desc": "Sahnesauce, Erbsen, Broccoli, frischen Champignons mit Käse überbacken",
+          "preis": 9.5
+        },
+        {
+          "num": "116",
+          "name": "Rigatoni alla Napolitana",
+          "desc": "Tomatensauce mit Käse überbacken",
+          "preis": 9.0
+        },
+        {
+          "num": "117",
+          "name": "Rigatoni al Forno",
+          "desc": "Fleischsauce mit Käse überbacken",
+          "preis": 9.5,
+          "preis_unsicher": "Preis im Scan angeschnitten – aus Umgebung (116=9,00 · 118=9,50) abgeleitet"
+        },
+        {
+          "num": "118",
+          "name": "Rigatoni alla Panna",
+          "desc": "Schinken, Sahnesauce mit Käse überbacken",
+          "preis": 9.5
+        },
+        {
+          "num": "119",
+          "name": "Rigatoni Carbonara",
+          "desc": "Schinken, Eier, Sahnesauce mit Käse überbacken",
+          "preis": 9.5
+        },
+        {
+          "num": "120",
+          "name": "Rigatoni della Casa",
+          "desc": "Schinken, Champignons, Erbsen, Tomatensauce mit Käse überbacken",
+          "preis": 9.5
+        },
+        {
+          "num": "121",
+          "name": "Rigatoni al Tonno",
+          "desc": "Tomatensauce, Thunfisch, Knoblauch mit Käse überbacken",
+          "preis": 9.5
+        },
+        {
+          "num": "122",
+          "name": "Rigatoni Vegetaria",
+          "desc": "Sahnesauce, Broccoli, frische Champignons, Erbsen mit Käse überbacken",
+          "preis": 9.5
+        },
+        {
+          "num": "123",
+          "name": "Tortellini alla Napolitana",
+          "desc": "Tomatensauce mit Käse überbacken",
+          "preis": 9.5
+        },
+        {
+          "num": "124",
+          "name": "Tortellini al Forno",
+          "desc": "Fleischsauce mit Käse überbacken",
+          "preis": 9.5
+        },
+        {
+          "num": "125",
+          "name": "Tortellini alla Panna",
+          "desc": "Schinken, Sahnesauce mit Käse überbacken",
+          "preis": 9.5
+        },
+        {
+          "num": "126",
+          "name": "Tortellini Carbonara",
+          "desc": "Schinken, Eier, Sahnesauce mit Käse überbacken",
+          "preis": 9.5
+        },
+        {
+          "num": "127",
+          "name": "Tortellini della Casa",
+          "desc": "Schinken, Champignons, Erbsen, Tomatensauce mit Käse überbacken",
+          "preis": 9.5
+        },
+        {
+          "num": "128",
+          "name": "Tortellini Gorgonzola",
+          "desc": "Erbsen, Broccoli, Sahnesauce, Gorgonzola mit Käse überbacken",
+          "preis": 9.5
+        },
+        {
+          "num": "129",
+          "name": "Tortellini Italia",
+          "desc": "Erbsen, Broccoli, Champignons, Sahnesauce mit Käse überbacken",
+          "preis": 9.5
+        },
+        {
+          "num": "130",
+          "name": "Tortellini Amore",
+          "desc": "Schinken, Rigatoni, Spaghetti, Sahnesauce mit Käse überbacken",
+          "preis": 9.5
+        }
+      ]
+    },
+    {
+      "id": "auflaeufe",
+      "titel": "Gemüseaufläufe (überbacken)",
+      "typ": "simple",
+      "items": [
+        {
+          "num": "131",
+          "name": "Broccoli-Auflauf",
+          "desc": "Broccoli, Schinken, Nudeln, Sahnesauce mit Käse überbacken",
+          "preis": 9.5
+        },
+        {
+          "num": "132",
+          "name": "Broccoli-Spargel-Auflauf",
+          "desc": "Broccoli, Spargel, Sahnesauce mit Käse überbacken",
+          "preis": 9.5
+        },
+        {
+          "num": "133",
+          "name": "Pinocchio-Auflauf",
+          "desc": "frische Tomaten, frische Paprika, Broccoli, Zwiebeln, Nudeln, Sahnesauce mit Käse überbacken",
+          "preis": 9.5
+        },
+        {
+          "num": "134",
+          "name": "Champignon-Auflauf",
+          "desc": "frische Champignons, Zwiebeln, Nudeln, Sahnesauce mit Käse überbacken",
+          "preis": 9.5
+        },
+        {
+          "num": "135",
+          "name": "Broccoli alla Napolitana",
+          "desc": "Broccoli, Spargel, Tomatensauce mit Käse überbacken",
+          "preis": 9.5
+        }
+      ]
+    },
+    {
+      "id": "gnocchi",
+      "titel": "Gnocchi – Kartoffelgerichte",
+      "typ": "simple",
+      "items": [
+        {
+          "num": "136",
+          "name": "Gnocchi quattro Formaggi",
+          "desc": "mit 4 Sorten Käse",
+          "preis": 9.5
+        },
+        {
+          "num": "137",
+          "name": "Gnocchi alla Panna",
+          "desc": "Schinken, Sahnesauce",
+          "preis": 9.5
+        },
+        {
+          "num": "138",
+          "name": "Gnocchi Vegetaria",
+          "desc": "Spinat, Broccoli, Sahnesauce",
+          "preis": 9.5
+        },
+        {
+          "num": "139",
+          "name": "Gnocchi Siziliana",
+          "desc": "Schinken, Erbsen, Champignons, Tomaten, Spezialsauce",
+          "preis": 9.5
+        },
+        {
+          "num": "140",
+          "name": "Gnocchi Tonno",
+          "desc": "Thunfisch, Knoblauch, Tomatensauce",
+          "preis": 9.5
+        }
+      ]
+    },
+    {
+      "id": "puten",
+      "titel": "Nudeln mit Putengeschnetzeltem",
+      "typ": "simple",
+      "items": [
+        {
+          "num": "141",
+          "name": "Putengeschnetzeltes",
+          "desc": "mit Rigatoni und frischen Champignons",
+          "preis": 9.5
+        },
+        {
+          "num": "142",
+          "name": "Putengeschnetzeltes mit Curry",
+          "desc": "mit Rigatoni und Currysauce",
+          "preis": 9.5
+        },
+        {
+          "num": "143",
+          "name": "Putengeschnetzeltes",
+          "desc": "mit Rigatoni, frischen Pilzen, frischen Tomaten und Sahnesauce",
+          "preis": 9.5
+        }
+      ]
+    },
+    {
+      "id": "schnitzel",
+      "titel": "Puten- und Hähnchenschnitzel",
+      "typ": "simple",
+      "note": "Beilage nach Wahl: Pommes frites, Kroketten oder Salat.",
+      "items": [
+        {
+          "num": "144",
+          "name": "Schlemmerschnitzel",
+          "desc": "mit Pilzen und Sauce Hollandaise",
+          "preis": 9.0
+        },
+        {
+          "num": "145",
+          "name": "Jägerschnitzel",
+          "desc": "Schnitzel paniert mit Jägersauce",
+          "preis": 9.0
+        },
+        {
+          "num": "146",
+          "name": "Zigeunerschnitzel",
+          "desc": "Schnitzel paniert mit Zigeunersauce",
+          "preis": 9.0
+        },
+        {
+          "num": "147",
+          "name": "Schnitzel Hawai",
+          "desc": "Schnitzel mit Ananas, Käse und Sahnecurry-Sauce überbacken",
+          "preis": 9.0
+        },
+        {
+          "num": "148",
+          "name": "Putenschnitzel",
+          "desc": "Schnitzel mit Broccoli, Erbsen, Tomaten und Käse überbacken",
+          "preis": 9.0
+        },
+        {
+          "num": "148a",
+          "name": "Chicken Wings",
+          "desc": "7 Stück mit Barbecuesauce",
+          "preis": 9.0
+        },
+        {
+          "num": "",
+          "name": "Pommes frites klein",
+          "desc": "mit Mayonnaise oder Ketchup",
+          "preis": 2.5
+        },
+        {
+          "num": "",
+          "name": "Pommes frites groß",
+          "desc": "mit Mayonnaise oder Ketchup",
+          "preis": 3.5
+        }
+      ]
+    },
+    {
+      "id": "salate",
+      "titel": "Salatspezialitäten",
+      "typ": "simple",
+      "note": "Alle großen Salatgerichte mit Pizzabrötchen, Kräuterbutter und Knoblauchsauce. Salate wahlweise mit Joghurt-, Cocktail- oder Balsamicoessig-, Öl-Dressing.",
+      "items": [
+        {
+          "num": "149",
+          "name": "Insalata Verde",
+          "desc": "mit grünem Salat",
+          "preis": 3.5
+        },
+        {
+          "num": "150",
+          "name": "Insalata di Cipolla",
+          "desc": "Gurken, Salat, rote Zwiebeln",
+          "preis": 4.5
+        },
+        {
+          "num": "151",
+          "name": "Insalata Mista",
+          "desc": "Tomaten, Gurken, Salat",
+          "preis": 4.5
+        },
+        {
+          "num": "152",
+          "name": "Insalata Pomodoro Cipolla",
+          "desc": "Tomaten mit Zwiebeln",
+          "preis": 4.5
+        },
+        {
+          "num": "153",
+          "name": "Insalata Thunfisch",
+          "desc": "Thunfisch, Bohnen, Röstzwiebeln, Olivenöl, Weinessig",
+          "preis": 4.5
+        },
+        {
+          "num": "154",
+          "name": "Insalata Raviera",
+          "desc": "Salat, frische Tomaten, Gurken, Mais, Röstzwiebeln, 3 Scampis, Lachs mit Balsamicoessig",
+          "preis": 11.0,
+          "kein_mittagsmenue": true
+        },
+        {
+          "num": "154a",
+          "name": "Insalata Garnelenspieß",
+          "desc": "2 Scampis, Paprika, Mais, Zwiebeln, Gurken, Tomaten, Möhren mit Balsamicoessig",
+          "preis": 11.0,
+          "kein_mittagsmenue": true
+        },
+        {
+          "num": "155",
+          "name": "Insalata della Casa",
+          "desc": "Tomaten, Gurken, Salat, Käse, rote Zwiebeln, Thunfisch, Ei, Spezialsauce",
+          "preis": 9.5
+        },
+        {
+          "num": "156",
+          "name": "Insalata Rustica",
+          "desc": "Tomaten, Gurken, Salat, Käse, Paprika, rote Zwiebeln, Artischocken, Mais, Möhren, Spezialsauce",
+          "preis": 9.5
+        },
+        {
+          "num": "157",
+          "name": "Insalata Melisa",
+          "desc": "Tomaten, Salat, Gurken, Schafskäse, rote Zwiebeln, Ei, Artischocken, Möhren, Spargel",
+          "preis": 9.5
+        },
+        {
+          "num": "158",
+          "name": "Insalata Roma",
+          "desc": "Tomaten, Salat, Gurken, Thunfisch, Schinken, Artischocken, Käse",
+          "preis": 9.5
+        },
+        {
+          "num": "159",
+          "name": "Insalata Milano",
+          "desc": "Tomaten, Salat, Gurken, Thunfisch, Schinken, Salami, Käse",
+          "preis": 9.5
+        },
+        {
+          "num": "160",
+          "name": "Insalata Hawai",
+          "desc": "Tomaten, Salat, Gurken, Thunfisch, Schinken, Ananas, Schafskäse",
+          "preis": 9.5
+        },
+        {
+          "num": "161",
+          "name": "Insalata Pinocchio",
+          "desc": "Tomaten, Gurken, Salat, Käse, Paprika, rote Zwiebeln, Artischocken, Erbsen, Mais, Möhren, Spezialsauce",
+          "preis": 9.5
+        },
+        {
+          "num": "162",
+          "name": "Insalata Inferno",
+          "desc": "extra scharf – Tomaten, Salat, Gurken, Thunfisch, rote Zwiebeln, Peperoni, Oliven, Käse",
+          "preis": 9.5
+        },
+        {
+          "num": "163",
+          "name": "Insalata Fruti di Mare",
+          "desc": "Tomaten, Salat, Gurken, Käse, Thunfisch, Paprika, rote Zwiebeln, Krabben, Muscheln, Spezialsauce",
+          "preis": 9.5
+        },
+        {
+          "num": "164",
+          "name": "Putensalat",
+          "desc": "Tomaten, Salat, Gurken, Putenfleisch, in Joghurt-Curry-Sauce",
+          "preis": 9.5
+        },
+        {
+          "num": "165",
+          "name": "Kentuckysalat",
+          "desc": "Hähnchenstreifen, Gurken, Tomaten, Mais, Möhren, rote Zwiebeln und Balsamicoessig",
+          "preis": 9.5
+        },
+        {
+          "num": "166",
+          "name": "Sopresa",
+          "desc": "Überraschungssalat",
+          "preis": 9.0
+        },
+        {
+          "num": "167",
+          "name": "Insalata Bella-Italia",
+          "desc": "Tomaten, Salat, Mozzarella, Basilikum mit Essig und Öl",
+          "preis": 9.0
+        },
+        {
+          "num": "168",
+          "name": "Insalata Lachs",
+          "desc": "Tomaten, Salat, Gurken, rote Zwiebeln, Oliven, Peperoni, Lachs, Mais, Spezialsauce, Essig und Öl",
+          "preis": 9.5
+        },
+        {
+          "num": "169",
+          "name": "Insalata Rucola",
+          "desc": "fr. Tomaten, Parmesankäse, Essig u. Öl",
+          "preis": 9.0
+        },
+        {
+          "num": "170",
+          "name": "Döner Salat",
+          "desc": "Eisbergsalat, Zwiebeln, Möhren, Mais, Gurken, Tomaten · Dressing nach Wunsch (Joghurt mit oder ohne Knoblauch)",
+          "preis": 9.0
+        }
+      ]
+    },
+    {
+      "id": "mittagsmenue",
+      "titel": "Mittagsmenü",
+      "typ": "simple",
+      "note": "Montag bis Freitag von 11.30–15.00 Uhr – außer Gerichte Nr. 80, 80a, 154 und 154a.",
+      "nur_mittags": true,
+      "items": [
+        {
+          "num": "M1",
+          "name": "Menü Nr. 1",
+          "desc": "1 normale Pizza 28 cm, 1 kleiner Salat, 1 Getränk",
+          "preis": 10.0
+        },
+        {
+          "num": "M2",
+          "name": "Menü Nr. 2",
+          "desc": "1 Nudelgericht, 1 Pizzabrötchen, 1 Getränk",
+          "preis": 10.0
+        },
+        {
+          "num": "M3",
+          "name": "Menü Nr. 3",
+          "desc": "1 großer Salat, 1 Pizzabrötchen, 1 Getränk",
+          "preis": 10.0
+        },
+        {
+          "num": "M4",
+          "name": "Menü Nr. 4",
+          "desc": "1 Putengeschnetzeltes, 1 kl. Salat, 1 Pizzabrötchen, 1 Getränk",
+          "preis": 10.5
+        },
+        {
+          "num": "M5",
+          "name": "Menü Nr. 5",
+          "desc": "1 kleine Pizza, 1 kleiner gemischter Salat, 1 Getränk",
+          "preis": 9.0
+        },
+        {
+          "num": "M6",
+          "name": "Menü Nr. 6",
+          "desc": "1 Schnitzel nach Wahl, 1 Beilage nach Wahl, 1 Getränk",
+          "preis": 10.0
+        }
+      ]
+    },
+    {
+      "id": "getraenke",
+      "titel": "Getränke",
+      "typ": "simple",
+      "note": "Auf alle Getränkedosen 0,25 € Pfand. Getränke auch zum Mitnehmen!",
+      "items": [
+        {
+          "num": "",
+          "name": "Coca Cola",
+          "desc": "1 Liter Flasche",
+          "preis": 3.0
+        },
+        {
+          "num": "",
+          "name": "Fanta",
+          "desc": "1 Liter Flasche",
+          "preis": 3.0
+        },
+        {
+          "num": "",
+          "name": "Sprite",
+          "desc": "1 Liter Flasche",
+          "preis": 3.0
+        },
+        {
+          "num": "",
+          "name": "Coca Cola",
+          "desc": "0,33 Liter Dose · zzgl. 0,25 € Pfand",
+          "preis": 2.0
+        },
+        {
+          "num": "",
+          "name": "Fanta",
+          "desc": "0,33 Liter Dose · zzgl. 0,25 € Pfand",
+          "preis": 2.0
+        },
+        {
+          "num": "",
+          "name": "Sprite",
+          "desc": "0,33 Liter Dose · zzgl. 0,25 € Pfand",
+          "preis": 2.0
+        }
+      ]
+    }
+  ]
+}
