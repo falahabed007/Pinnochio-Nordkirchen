@@ -289,6 +289,8 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);colo
 @media(max-width:900px){.main-area{grid-template-columns:1fr;}.sidebar-col{display:none;}.stats-bar{grid-template-columns:repeat(3,1fr);}}
 @media(max-width:600px){.stats-bar{grid-template-columns:1fr 1fr;}.topbar-clock{display:none;}}
 </style>
+  <!-- Zentrale Backend-Adresse, muss vor allen anderen Skripten stehen -->
+  <script src="config.js"></script>
 </head>
 <body>
 
@@ -300,7 +302,7 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);colo
     <input type="password" id="loginPw" placeholder="Passwort" onkeydown="if(event.key==='Enter')doLogin()">
     <label style="display:flex;align-items:center;gap:8px;color:var(--muted);font-size:.82rem;margin-bottom:12px;cursor:pointer;user-select:none;">
       <input type="checkbox" id="rememberPw" style="width:auto;margin:0;accent-color:var(--red);">
-      Passwort auf diesem Gerät merken
+      Auf diesem Gerät angemeldet bleiben
     </label>
     <button class="login-btn" onclick="doLogin()">Einloggen</button>
     <div class="login-err" id="loginErr">❌ Falsches Passwort</div>
@@ -821,13 +823,32 @@ function closeFamPopup(){document.getElementById('famPizzaPopup').style.display=
 // ═══════════════════════════════════════════════════════════════
 // CONFIG
 // ═══════════════════════════════════════════════════════════════
-const API_BASE        = 'https://pinnochio-nordkirchen.onrender.com/api';
-const DASHBOARD_PW    = 'Pinocchio2025Admin!';
-const ADMIN_TOKEN_SEC = 'PinocchioGeheimToken2025xyzABCDEFGHIJKLMN';
+const API_BASE        = window.PINOCCHIO_BACKEND + '/api';   // siehe config.js
+// Faellt config.js aus (nicht mitdeployt, lokal per file:// geblockt), waere
+// die Backend-Adresse undefined und jeder Aufruf ginge ins Leere – mit einer
+// Fehlermeldung, die niemand deuten kann. Lieber sofort deutlich sagen.
+if (!window.PINOCCHIO_BACKEND) {
+  console.error('config.js wurde nicht geladen – window.PINOCCHIO_BACKEND fehlt.');
+  document.addEventListener('DOMContentLoaded', function() {
+    var b = document.createElement('div');
+    b.textContent = 'Konfigurationsfehler: config.js konnte nicht geladen werden. '
+                  + 'Bestellungen und Anmeldung funktionieren gerade nicht.';
+    b.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:#b00020;'
+                    + 'color:#fff;padding:10px 14px;font:600 14px/1.4 sans-serif;text-align:center;';
+    document.body.appendChild(b);
+  });
+}
+// Kein Passwort und kein Token im Frontend: diese Datei wird oeffentlich
+// ausgeliefert, jeder koennte sie im Quelltext mitlesen. Geprueft wird
+// ausschliesslich serverseitig ueber POST /api/admin/login.
 const SERVICE_FEE     = 0.99;
 const DELIVERY_FEES   = { 'Nordkirchen':1.50, 'Südkirchen / Capelle':2.00, 'Andere Orte':4.00 };
 
-let token       = localStorage.getItem('pinocchioToken') || '';
+let token       = localStorage.getItem('pinocchioToken')
+               || sessionStorage.getItem('pinocchioToken') || '';
+// Altlast: fruehere Versionen legten das Admin-Passwort im Klartext ab.
+// Auf jedem Geraet, das diese Seite laedt, einmal aufraeumen.
+localStorage.removeItem('pinocchioSavedPw');
 let orders      = [];
 let allOrders   = [];
 let stripeOrders = [];
@@ -862,226 +883,504 @@ let showCancelReason = false;
 
 // Beschreibungen für Popup-Anzeige (1:1 von Website)
 const ITEM_DESC = {
-  '80':'mit Fleischsauce','81':'mit Schinken und Sahnesauce','82':'mit Tomatensauce',
-  '83':'mit Schinken, Ei und Sahnesauce','84':'mit Schinken, frischen Champignons, Erbsen, Broccoli, Sahnesauce',
-  '85':'Meeresfrüchte, Knoblauch, Tomatensauce','86':'mit Erbsen, Spinat, frischen Champignons, Spezial-Sahnesauce',
-  '87':'mit Scampi, Knoblauch, Tomatensauce','88':'mit Thunfisch, Knoblauch und Tomatensauce',
-  '89':'mit Schinken, Spinat, Gorgonzola, Sahnesauce',
-  '90':'mit frischen Champignons, gebratenen Hähnchenstreifen, in Rahmsauce',
-  '91':'Olivenöl, Knoblauch, scharfe Peperoni','92':'hausgemachte Pestosauce, Knoblauch',
-  '93':'frische Tomaten, Knoblauch, Pesto, Mozzarella',
-  '94':'mit Fleischsauce','95':'mit Schinken und Sahnesauce','96':'mit Tomatensauce',
-  '97':'mit Schinken, Ei und Sahnesauce',
-  '98':'mit frischen Champignons, gebratenen Hähnchenstreifen, in Rahmsauce',
-  '99':'überbacken mit vier Käsesorten',
-  '100':'mit Schinken, frischen Champignons, Erbsen, Broccoli, Sahnesauce',
-  '101':'mit Erbsen, Spinat, frische Champignons, Spezial-Sahnesauce',
-  '102':'mit Lachsfilet, Broccoli, Knoblauch, Sahnesauce',
-  '103':'mit Lachsfilet, Spinat, Sahnesauce',
-  '104':'mit Lachsfilet, frische Tomaten, Krabben, Sahnesauce',
-  '106':'mit Fleischsauce','107':'mit Schinken und Sahnesauce','108':'mit Tomatensauce',
-  '109':'mit Schinken, Ei und Sahnesauce','110':'Broccoli, Erbsen, Gorgonzola, Sahnesauce',
-  '111':'mit Schinken, frischen Champignons, Erbsen, Broccoli und Sahnesauce',
-  '112':'mit Spezial Tomatensauce, frische Champignons, Zwiebeln, Schinken',
-  '115':'Schinken, Fleischsauce, Käse','116':'mit Tomaten, Broccoli, Erbsen, Sahnesauce',
-  '117':'mit Lasagne, Rigatoni, Tortellini, Fleischsauce, Käse',
-  '118':'mit drei verschiedene Nudel- und Käsesorten',
-  '119':'gefüllte Nudel mit Fleischsauce, Käse überbacken',
-  '120':'überbackene gefüllte Nudeln mit Spinat, Käse und Sahnesauce',
-  '123':'mit Fleischsauce','124':'mit Schinken und Sahnesauce','125':'mit Tomatensauce',
-  '126':'mit Spinat, Broccoli, frische Pilze, Sahnesauce und Käse',
-  '127':'mit vier verschiedene Käsesorten',
-  '128':'mit Makkaroni, Ananas, in Currysauce',
-  '129':'mit Makkaroni, frischen Pilzen in Sahnesauce',
-  '130':'mit Makkaroni, frischer Paprika, Pilzen, Broccoli, in Spezial Sahnesauce',
-  '131':'mit Makkaroni, frischen Tomaten und frischen Pilzen',
-  '132':'mit Makkaroni, Erbsen, Broccoli, Knoblauch, Tomatensauce',
-  '135':'Nudeln, Broccoli, Schinken, Sahnesauce mit Käse überbacken',
-  '136':'Nudeln, frische Tomaten, Paprika, Broccoli, Zwiebeln, mit Käse überbacken',
-  '137':'Nudeln, frische Champignons, Paprika, Spinat, Erbsen, Artischocken, Sahnesauce mit Käse überbacken',
-  '138':'Nudeln, Blumenkohl, Schinken, Sahnesauce, mit Käse überbacken',
-  '139':'Nudeln, frische Champignons, Zwiebeln, Sahnesauce, mit Käse überbacken',
-  '140':'Kartoffeln, Pute, Spinat, frische Champignons, Sahnesauce mit Käse überbacken',
-  '141':'Kartoffeln, Gyros, frische Pilze, Zwiebeln, frische Paprika und Sahnesauce',
-  '142':'mit Gyros, frischen Champignons, Paprika, Zwiebeln, Sahnesauce',
-  '143':'Gyros, frische Tomaten, Paprika, Mozzarella, Sahnesauce',
-  '144':'Gyros, Broccoli, Erbsen, Sahnesauce',
-  '150':'mit Tomaten, Gurken und Salat','151':'mit Tomaten und Zwiebeln',
-  '152':'mit Gurken, Salat, Zwiebeln',
-  '153':'Tomaten, Gurken, Salat, Käse, Schinken, Salami, Thunfisch',
-  '154':'Tomaten, Gurken, Salat, Käse, Zwiebeln, Thunfisch und Ei',
-  '155':'Tomaten, Gurken, Salat, Käse, Artischocken, Schinken, Thunfisch',
-  '156':'Tomaten, Gurken, Salat, Käse, Artischocken, Oliven, Thunfisch, Zwiebeln, Paprika',
-  '157':'Tomaten, Gurken, Salat, Käse, Thunfisch, Zwiebeln, Paprika, Meeresfrüchte',
-  '158':'Tomaten, Gurken, Salat, Käse, Paprika, Zwiebeln, Artischocken, Erbsen, Mais, Möhren',
-  '159':'Tomaten, Gurken, Salat, Ananas, Spargel, Mais, Käse, Schinken',
-  '160':'gemischter Salat, Weichkäse, Mozzarella und Gauda',
-  '161':'gemischter Salat, Weichkäse, Ananas, Mais, Paprika',
-  '162':'Tomaten, Gurken, Salat, Weichkäse, Hähnchenbrustfilet, Joghurt-Currysauce',
-  '163':'Salat, Tomaten, Gurken, Möhren, Mais, Hähnchenbrust, Weichkäse, Zwiebeln, Käse, Paprika',
-  '164':'Salat, Tomaten, Gurken, gebratenes Lachsfilet, Krabben',
-  '165':'mit Salat, Tomaten, Gurken, Gyros, Zwiebeln, gebratene Pilze',
-  '166':'Tomaten, Gurken, Gyros, Zwiebeln, Weichkäse, milde Peperoni',
-  '167':'mit Rucola, Tomaten, Gurken, Hähnchenbrust, Zwiebeln, Oliven, Weichkäse',
-  '168':'Rucola, Tomaten, Mozzarella, Basilikum, Parmesankäse',
-  '169':'Rucola, Tomaten, Gurken, Lachs, Krabben, Parmesankäse',
-  '170':'Rucola, Tomaten, Gurken, Thunfisch, Oliven, Ei, Mozzarella, Sardellen, Parmesankäse',
-  '201':'mit Knoblauchsauce und Kräuterdiep','202':'mit Käse gefüllt',
-  '203':'nach Ihrem Wunsch belegt mit maximal 2 Zutaten','204':'frisch gebacken',
-  'F1':'Belegen wir nach Wunsch mit max. 3 Zutaten.',
-  'F2':'Belegen wir nach Wunsch mit max. 3 Zutaten.',
-  'F3':'Belegen wir nach Wunsch mit max. 3 Zutaten.',
+  '1':'Tomaten, Käse',
+  '2':'Tomaten, Mozzarella',
+  '3':'Tomaten, Weisskäse',
+  '4':'Tomaten, Gorgonzola',
+  '5':'Tomaten, 4 Sorten Käse',
+  '6':'Tomaten, Käse, Paprika',
+  '7':'Tomaten, Käse, Pilze',
+  '8':'Tomaten, Käse, Zwiebeln',
+  '9':'Tomaten, Käse, Mais',
+  '10':'Tomaten, Käse, Broccoli',
+  '11':'Tomaten, Käse, Spinat, Knoblauch',
+  '12':'Tomaten, Käse, Artischocken',
+  '12a':'Tomaten, Käse, Spargel, Broccoli, Sauce Hollandaise',
+  '13':'Tomaten, Käse, Spinat, Broccoli, Pilze, Spargel, Mais',
+  '14':'Tomatenscheiben, Mozzarella, Thunfisch, Schinken, Oliven',
+  '15':'Tomatenscheiben, Oliven, Salami, Schinken, Sardellen',
+  '16':'Tomatenscheiben, Mozzarella, Salami, Spinat, Broccoli',
+  '17':'Tomatenscheiben, Oliven, Mozzarella, Schinken, Knoblauch, Rucolasalat',
+  '18':'Tomaten, Käse, Sardellen',
+  '19':'Tomaten, Käse, Thunfisch',
+  '20':'Tomaten, Käse, Thunfisch, Zwiebeln',
+  '21':'Tomaten, Käse, Thunfisch, Schinken',
+  '22':'Tomaten, Käse, Thunfisch, Ananas',
+  '23':'Tomaten, Käse, Scampi',
+  '24':'2 Gambas, Meeresfrüchte, Knoblauch',
+  '25':'Tomaten, Käse, Krabben, Muscheln, Knoblauch',
+  '26':'Tomaten, Käse, Thunfisch, Meeresfrüchte, Knoblauch',
+  '27':'Tomaten, Käse, Krebsfleisch',
+  '28':'Tomaten, Käse, Krebsfleisch, Krabben, Muscheln, Knoblauch',
+  '29':'Tomaten, Käse, Lachs, Spinat, Knoblauch',
+  '30':'Käse, Fleischsauce',
+  '31':'Käse, Fleischsauce, Spaghetti',
+  '32':'Käse, Fleischsauce, Spaghetti, Maccaroni',
+  '33':'Tomaten, Käse, Salami',
+  '34':'Tomaten, Käse, Schinken (Soyaeiweiss)',
+  '35':'Tomaten, Käse, Salami, Schinken',
+  '36':'Tomaten, Käse, Schinken, Ananas',
+  '37':'Tomaten, Käse, Hähnchenbrustfilet, Ananas',
+  '38':'Tomaten, Käse, Salami, Pilze',
+  '39':'Tomaten, Käse, Schinken, Pilze',
+  '40':'Tomaten, Käse, Salami, Schinken, Thunfisch',
+  '41':'Tomaten, Käse, Salami, Schinken, Pilze',
+  '42':'Tomaten, Käse, gek. Eier, Thunfisch, Peperoni, Zwiebeln',
+  '43':'Tomaten, Käse, Salami, Schinken, Thunfisch, Pilze',
+  '44':'extra scharf – Tomaten, Käse, Schinken, Pilze, Artischocken, Peperoni, Tabasco',
+  '45':'Tomaten, Käse, Schinken, Salami, Paprika, Spargel',
+  '46':'Tomaten, Käse, Schinken, Salami, Spinat, Broccoli, Scampi, Knoblauch',
+  '47':'Tomaten, Käse, Schinken, Salami, Paprika, Pilze',
+  '48':'Tomaten, Käse, Thunfisch, Paprika, Eier',
+  '49':'Tomaten, Käse, Schinken, Paprika, Mais',
+  '50':'Tomaten, Käse, Schinken, Zwiebeln, Eier',
+  '51':'Tomaten, Käse, Salami, Sardellen, Oliven',
+  '52':'Tomaten, Käse, Spinat, Krabben, Knoblauch',
+  '53':'Tomaten, Käse, Spinat, Krabben, Sardellen, Oliven, Knoblauch',
+  '54':'Tomaten, Käse, Schinken, Salami, Pilze, Paprika, Broccoli, Zwiebeln, Eier',
+  '55':'Tomaten, Käse, Thunfisch, Salami, Paprika, Oliven, Knoblauch',
+  '56':'Tomaten, Käse, Paprika, Zwiebeln, Knoblauch, Peperoni',
+  '57':'Tomaten, Käse, Schinken, Artischocken, Peperoni, Oliven',
+  '58':'Tomaten, Käse, Schinken, Paprika, Artischocken, Pilze',
+  '59':'Tomaten, Käse, Gyrosfleisch',
+  '60':'Tomaten, Käse, Broccoli, Zwiebeln, Gyrosfleisch',
+  '61':'Tomaten, Käse, Broccoli, Zwiebeln, Gyrosfleisch, Sauce Hollandaise',
+  '61a':'frische Tomaten, frische Paprika, Zwiebeln, Feta-Käse',
+  '62':'Tomaten, Käse, Schinken, Salami, Pilze',
+  '63':'Tomaten, Käse, Schinken, Thunfisch, Artischocken, Mais',
+  '64':'Tomaten, Käse, Thunfisch, Mais, Knoblauch',
+  '65':'Tomaten, Käse, Schinken, Paprika, Pilze, Ananas',
+  '66':'40 cm · belegen wir nach Ihrem Wunsch',
+  '67':'50 cm · belegen wir nach Ihrem Wunsch',
+  '68':'mit Knoblauchsauce und Kräuterbutter',
+  '68a':'mit Käse und Schinken, mit Knoblauchsauce und Kräuterbutter',
+  '69':'Tomatensauce',
+  '70':'Fleischsauce',
+  '71':'Schinken, Sahnesauce',
+  '72':'Schinken, Eier, Sahnesauce',
+  '73':'Schinken, Champignons, Erbsen, Tomatensauce',
+  '74':'Tomatensauce, Meeresfrüchte, Knoblauch',
+  '75':'Tomatensauce, Krabben, Knoblauch',
+  '76':'Tomatensauce, Thunfisch, Knoblauch',
+  '77':'Sahnesauce, Spinat, Gorgonzola',
+  '78':'Sahnesauce, Erbsen, Broccoli, frische Champignons',
+  '79':'gebratene Spaghetti, Tomatensauce, Peperoni, Knoblauch (extra scharf)',
+  '80':'frische Tomaten, frischer Knoblauch, 4 Gambas',
+  '80a':'mit Pesto und 2 Garnelenspießen',
+  '81':'Tomatensauce',
+  '82':'Fleischsauce',
+  '83':'Sahnesauce, frische Tomaten, Broccoli, Champignons',
+  '84':'Lachs, Sahnesauce',
+  '85':'Tomatensauce',
+  '86':'Fleischsauce',
+  '87':'Schinken, Sahnesauce',
+  '88':'Schinken, Eier, Sahnesauce',
+  '89':'Schinken, Champignons, Erbsen, Tomatensauce',
+  '90':'Tomatensauce, Thunfisch, Knoblauch',
+  '91':'Sahnesauce, Spinat, Gorgonzola',
+  '92':'Sahnesauce, Erbsen, Broccoli, frische Champignons',
+  '93':'4 Sorten Käse',
+  '94':'Sahnesauce, Lachs, frischer Parmesankäse',
+  '95':'Sahnesauce, fr. Tomaten, fr. Pilze, Krabben, fr. Parmesankäse',
+  '96':'Tomatensauce',
+  '97':'Fleischsauce',
+  '98':'Schinken, Sahnesauce',
+  '99':'Schinken, Eier, Sahnesauce',
+  '100':'Schinken, Champignons, Erbsen, Tomatensauce',
+  '101':'Erbsen, Broccoli, Sahnesauce, Gorgonzola',
+  '102':'Fleischsauce, Schinken mit Käse überbacken',
+  '103':'Sahnesauce, Erbsen, Broccoli, Spinat mit Käse überbacken',
+  '104':'Fleischsauce, Canneloni und Lasagne mit Käse überbacken',
+  '105':'Fleischsauce, Lasagne, Rigatoni und Tortellini mit Käse überbacken',
+  '105a':'mit 3 verschiedenen Nudelsorten und 3 verschiedenen Saucen mit Käse überbacken',
+  '106':'Tomatensauce, Broccoli, Erbsen mit Käse überbacken',
+  '107':'Bolognesesauce, Broccoli, Erbsen mit Käse überbacken',
+  '108':'Sahnesauce, Broccoli, Erbsen mit Käse überbacken',
+  '109':'Tomatensauce mit Käse überbacken',
+  '110':'Fleischsauce mit Käse überbacken',
+  '111':'Schinken, Sahnesauce mit Käse überbacken',
+  '112':'Schinken, Eier, Sahnesauce mit Käse überbacken',
+  '113':'Schinken, Champignons, Erbsen, Tomatensauce mit Käse überbacken',
+  '114':'Tomatensauce, Thunfisch, Knoblauch mit Käse überbacken',
+  '115':'Sahnesauce, Erbsen, Broccoli, frischen Champignons mit Käse überbacken',
+  '116':'Tomatensauce mit Käse überbacken',
+  '117':'Fleischsauce mit Käse überbacken',
+  '118':'Schinken, Sahnesauce mit Käse überbacken',
+  '119':'Schinken, Eier, Sahnesauce mit Käse überbacken',
+  '120':'Schinken, Champignons, Erbsen, Tomatensauce mit Käse überbacken',
+  '121':'Tomatensauce, Thunfisch, Knoblauch mit Käse überbacken',
+  '122':'Sahnesauce, Broccoli, frische Champignons, Erbsen mit Käse überbacken',
+  '123':'Tomatensauce mit Käse überbacken',
+  '124':'Fleischsauce mit Käse überbacken',
+  '125':'Schinken, Sahnesauce mit Käse überbacken',
+  '126':'Schinken, Eier, Sahnesauce mit Käse überbacken',
+  '127':'Schinken, Champignons, Erbsen, Tomatensauce mit Käse überbacken',
+  '128':'Erbsen, Broccoli, Sahnesauce, Gorgonzola mit Käse überbacken',
+  '129':'Erbsen, Broccoli, Champignons, Sahnesauce mit Käse überbacken',
+  '130':'Schinken, Rigatoni, Spaghetti, Sahnesauce mit Käse überbacken',
+  '131':'Broccoli, Schinken, Nudeln, Sahnesauce mit Käse überbacken',
+  '132':'Broccoli, Spargel, Sahnesauce mit Käse überbacken',
+  '133':'frische Tomaten, frische Paprika, Broccoli, Zwiebeln, Nudeln, Sahnesauce mit Käse überbacken',
+  '134':'frische Champignons, Zwiebeln, Nudeln, Sahnesauce mit Käse überbacken',
+  '135':'Broccoli, Spargel, Tomatensauce mit Käse überbacken',
+  '136':'mit 4 Sorten Käse',
+  '137':'Schinken, Sahnesauce',
+  '138':'Spinat, Broccoli, Sahnesauce',
+  '139':'Schinken, Erbsen, Champignons, Tomaten, Spezialsauce',
+  '140':'Thunfisch, Knoblauch, Tomatensauce',
+  '141':'mit Rigatoni und frischen Champignons',
+  '142':'mit Rigatoni und Currysauce',
+  '143':'mit Rigatoni, frischen Pilzen, frischen Tomaten und Sahnesauce',
+  '144':'mit Pilzen und Sauce Hollandaise',
+  '145':'Schnitzel paniert mit Jägersauce',
+  '146':'Schnitzel paniert mit Zigeunersauce',
+  '147':'Schnitzel mit Ananas, Käse und Sahnecurry-Sauce überbacken',
+  '148':'Schnitzel mit Broccoli, Erbsen, Tomaten und Käse überbacken',
+  '148a':'7 Stück mit Barbecuesauce',
+  '149':'mit grünem Salat',
+  '150':'Gurken, Salat, rote Zwiebeln',
+  '151':'Tomaten, Gurken, Salat',
+  '152':'Tomaten mit Zwiebeln',
+  '153':'Thunfisch, Bohnen, Röstzwiebeln, Olivenöl, Weinessig',
+  '154':'Salat, frische Tomaten, Gurken, Mais, Röstzwiebeln, 3 Scampis, Lachs mit Balsamicoessig',
+  '154a':'2 Scampis, Paprika, Mais, Zwiebeln, Gurken, Tomaten, Möhren mit Balsamicoessig',
+  '155':'Tomaten, Gurken, Salat, Käse, rote Zwiebeln, Thunfisch, Ei, Spezialsauce',
+  '156':'Tomaten, Gurken, Salat, Käse, Paprika, rote Zwiebeln, Artischocken, Mais, Möhren, Spezialsauce',
+  '157':'Tomaten, Salat, Gurken, Schafskäse, rote Zwiebeln, Ei, Artischocken, Möhren, Spargel',
+  '158':'Tomaten, Salat, Gurken, Thunfisch, Schinken, Artischocken, Käse',
+  '159':'Tomaten, Salat, Gurken, Thunfisch, Schinken, Salami, Käse',
+  '160':'Tomaten, Salat, Gurken, Thunfisch, Schinken, Ananas, Schafskäse',
+  '161':'Tomaten, Gurken, Salat, Käse, Paprika, rote Zwiebeln, Artischocken, Erbsen, Mais, Möhren, Spezialsauce',
+  '162':'extra scharf – Tomaten, Salat, Gurken, Thunfisch, rote Zwiebeln, Peperoni, Oliven, Käse',
+  '163':'Tomaten, Salat, Gurken, Käse, Thunfisch, Paprika, rote Zwiebeln, Krabben, Muscheln, Spezialsauce',
+  '164':'Tomaten, Salat, Gurken, Putenfleisch, in Joghurt-Curry-Sauce',
+  '165':'Hähnchenstreifen, Gurken, Tomaten, Mais, Möhren, rote Zwiebeln und Balsamicoessig',
+  '166':'Überraschungssalat',
+  '167':'Tomaten, Salat, Mozzarella, Basilikum mit Essig und Öl',
+  '168':'Tomaten, Salat, Gurken, rote Zwiebeln, Oliven, Peperoni, Lachs, Mais, Spezialsauce, Essig und Öl',
+  '169':'fr. Tomaten, Parmesankäse, Essig u. Öl',
+  '170':'Eisbergsalat, Zwiebeln, Möhren, Mais, Gurken, Tomaten · Dressing nach Wunsch (Joghurt mit oder ohne Knoblauch)',
+  'M1':'1 normale Pizza 28 cm, 1 kleiner Salat, 1 Getränk',
+  'M2':'1 Nudelgericht, 1 Pizzabrötchen, 1 Getränk',
+  'M3':'1 großer Salat, 1 Pizzabrötchen, 1 Getränk',
+  'M4':'1 Putengeschnetzeltes, 1 kl. Salat, 1 Pizzabrötchen, 1 Getränk',
+  'M5':'1 kleine Pizza, 1 kleiner gemischter Salat, 1 Getränk',
+  'M6':'1 Schnitzel nach Wahl, 1 Beilage nach Wahl, 1 Getränk',
 };
 
 // Speisekarte für POS – Namen 1:1 identisch mit Website (wichtig für Ausverkauft-Sync)
 const POS_MENU = {
-  familienpizza: [
-    {num:'F1',name:'Familienpizza 40 cm',price:20.00},
-    {num:'F2',name:'Familienpizza 50 cm',price:28.00},
-    {num:'F3',name:'Pizzablech 60x40 cm',price:30.00},
+  antipasta: [
+    {num:'',name:'Gefüllte Pizza überbacken',price:5.00},
+    {num:'',name:'5 Bruschetta',price:7.00},
+    {num:'',name:'Krabbenpfännchen',price:7.50},
   ],
-  pizza: [
-    {num:'1', name:'1 Pizza Margherita',price:5.00},  {num:'2', name:'2 Pizza Mozzarella',price:6.00},
-    {num:'3', name:'3 Pizza Gorgonzola',price:6.00},  {num:'4', name:'4 Pizza Weichkäse',price:6.00},
-    {num:'5', name:'5 Pizza Prosciutto',price:6.00},  {num:'6', name:'6 Pizza Salami',price:6.00},
-    {num:'7', name:'7 Pizza Tonno',price:6.00},       {num:'8', name:'8 Pizza Funghi',price:6.00},
-    {num:'9', name:'9 Pizza Paprika',price:6.00},     {num:'10',name:'10 Pizza Cipolla',price:6.00},
-    {num:'11',name:'11 Pizza Primavera',price:6.50},  {num:'12',name:'12 Pizza Hawaii',price:6.50},
-    {num:'13',name:'13 Pizza Romana',price:6.50},     {num:'14',name:'14 Pizza Tonno Cipolla',price:6.50},
-    {num:'15',name:'15 Pizza Vito',price:6.50},       {num:'16',name:'16 Pizza Texas',price:7.00},
-    {num:'17',name:'17 Pizza Rustica',price:7.00},    {num:'18',name:'18 Nach Art des Hauses',price:7.00},
-    {num:'19',name:'19 Pizza Vegetaria',price:7.00},  {num:'20',name:'20 Pizza Mista',price:7.00},
-    {num:'21',name:'21 Pizza Italia',price:7.00},     {num:'22',name:'22 Pizza Quattro Stagioni',price:7.00},
-    {num:'23',name:'23 Pizza Dallas',price:7.00},     {num:'24',name:'24 Pizza Amira',price:6.50},
-    {num:'25',name:'25 Quattro Formmaggi',price:7.00},{num:'26',name:'26 Pizza Frutti Di Mare',price:7.00},
-    {num:'27',name:'27 Pizza Spaghetti',price:7.00},  {num:'28',name:'28 Pizza Spezial',price:7.50},
-    {num:'29',name:'29 Pizza Scampi',price:7.00},     {num:'30',name:'30 Pizza Capricciosa',price:7.00},
-    {num:'31',name:'31 Pizza Popey',price:6.50},      {num:'32',name:'32 Pizza Inferno',price:7.00},
-    {num:'33',name:'33 Pizza Siciliana',price:7.00},  {num:'34',name:'34 Pizza Picante',price:7.00},
-    {num:'35',name:'35 Pizza Broccoli',price:6.50},   {num:'36',name:'36 Pizza Sucuk',price:7.00},
-    {num:'37',name:'37 Pizza Tonnarella',price:7.00}, {num:'38',name:'38 Pizza Vulcano',price:7.50},
-    {num:'39',name:'39 Pizza Mexico',price:7.50},     {num:'40',name:'40 Pizza Lachs',price:7.50},
-    {num:'41',name:'41 Pizza Chicken',price:7.50},     {num:'42',name:'42 Pizza Bolognese',price:6.00},
-    {num:'43',name:'43 Pizza Rucola',price:7.50},     {num:'44',name:'44 Pizza Margherita Spezial',price:6.00},
-    {num:'45',name:'45 Pizza Rotterdam',price:7.50},  {num:'46',name:'46 Döner Pizza Hollandaise',price:7.00},
-    {num:'47',name:'47 Döner Pizza alla Layel',price:7.00},{num:'48',name:'48 Döner-Pizza Bari',price:7.50},
-    {num:'49',name:'49 Pizza Pinocchio',price:7.50},     {num:'50',name:'50 Pizza Bombastico',price:7.50},
-    {num:'51',name:'51 Pizza Florida',price:7.50},    {num:'52',name:'52 Pizza Hawaii Classic',price:7.50},
-    {num:'53',name:'53 Pizza Amore',price:7.00},      {num:'54',name:'54 Pizza Ramacca',price:7.00},
-    {num:'55',name:'55 Pizza Jungfrau',price:7.00},   {num:'56',name:'56 Pizza Widder',price:7.00},
-    {num:'57',name:'57 Pizza Calzone Spezial',price:7.50},{num:'58',name:'58 Pizza Calzone',price:7.50},
-    {num:'59',name:'59 Pizza Calzone Italia',price:7.50},{num:'60',name:'60 Pizza Calzone Bruno Spezial',price:7.00},
-    {num:'61',name:'61 Salat Pizza',price:7.50},      {num:'62',name:'62 Pizza Gyros',price:7.50},
-    {num:'63',name:'63 Gyros Pizza Hollandaise',price:7.50},{num:'64',name:'64 Pizza Regina',price:7.50},
-    {num:'65',name:'65 Pizza Nathalie',price:7.50},   {num:'66',name:'66 Pizza Contadina',price:7.50},
+  pizza_kaese: [
+    {num:'1',name:'Margherita',price:6.00},
+    {num:'2',name:'Mozzarella',price:7.50},
+    {num:'3',name:'Schafskäse',price:7.50},
+    {num:'4',name:'Gorgonzola',price:7.50},
+    {num:'5',name:'Quadro Formaggi',price:7.50},
+  ],
+  pizza_vegetarisch: [
+    {num:'6',name:'Paprika',price:7.50},
+    {num:'7',name:'Funghi',price:7.50},
+    {num:'8',name:'Cipolla',price:7.50},
+    {num:'9',name:'Mais',price:7.50},
+    {num:'10',name:'Broccoli',price:7.50},
+    {num:'11',name:'Spinaci',price:7.50},
+    {num:'12',name:'Artischocken',price:7.50},
+    {num:'12a',name:'Spargelpizza',price:9.00},
+    {num:'13',name:'Vegetarisch Spezial',price:9.00},
+  ],
+  pizza_mozzarella: [
+    {num:'14',name:'Roma',price:9.00},
+    {num:'15',name:'Toscana',price:9.00},
+    {num:'16',name:'Napoli',price:9.00},
+    {num:'17',name:'Rucola',price:9.00},
+  ],
+  pizza_fisch: [
+    {num:'18',name:'Sardellen',price:7.00},
+    {num:'19',name:'Tonno',price:9.00},
+    {num:'20',name:'Tonno e Cipolla',price:9.00},
+    {num:'21',name:'Tonno e Prosciutto',price:9.00},
+    {num:'22',name:'Tonno e Ananas',price:9.00},
+    {num:'23',name:'Scampi',price:9.00},
+    {num:'24',name:'Gambas',price:10.00},
+    {num:'25',name:'Gamberetti',price:9.50},
+    {num:'26',name:'Frutti di Mare',price:9.50},
+    {num:'27',name:'Krebsfleisch',price:8.50},
+    {num:'28',name:'Pieche',price:9.00},
+    {num:'29',name:'Salamone',price:9.50},
+  ],
+  pizza_fleischsauce: [
+    {num:'30',name:'Bolognese',price:8.50},
+    {num:'31',name:'Spaghetti',price:9.00},
+    {num:'32',name:'Pasta',price:9.00},
+  ],
+  pizza_belaege: [
+    {num:'33',name:'Salami',price:7.50},
+    {num:'34',name:'Prosciutto',price:7.50},
+    {num:'35',name:'Vito',price:8.00},
+    {num:'36',name:'Hawaii',price:8.50},
+    {num:'37',name:'Kentucky',price:9.50},
+    {num:'38',name:'Primavera',price:8.00},
+    {num:'39',name:'Parma',price:8.00},
+    {num:'40',name:'Genova',price:9.00},
+    {num:'41',name:'Mista',price:9.00},
+    {num:'42',name:'Tonorella',price:9.50},
+    {num:'43',name:'della Chef',price:9.50},
+    {num:'44',name:'Diavollo',price:9.50},
+    {num:'45',name:'Phoenix',price:9.00},
+    {num:'46',name:'Pinocchio',price:9.50},
+    {num:'47',name:'Atlantico',price:9.50},
+    {num:'48',name:'Rustica',price:9.50},
+    {num:'49',name:'Milano',price:9.00},
+    {num:'50',name:'Rio',price:9.00},
+    {num:'51',name:'Romana',price:9.00},
+    {num:'52',name:'Pescatore',price:9.50},
+    {num:'53',name:'Dallas',price:9.50},
+    {num:'54',name:'Amore',price:9.50},
+    {num:'55',name:'Italia',price:9.50},
+    {num:'56',name:'Siziliana',price:9.00},
+    {num:'57',name:'Picante',price:9.00},
+    {num:'58',name:'Quattro Stagioni',price:9.00},
+    {num:'59',name:'Gyros',price:9.00},
+    {num:'60',name:'Gyros Spezial',price:9.50},
+    {num:'61',name:'Gyros Hollandaise',price:9.50},
+    {num:'61a',name:'Gyros',price:9.50},
+  ],
+  calzone: [
+    {num:'62',name:'Calzone',price:9.00},
+    {num:'63',name:'Calzone Mafioso',price:9.00},
+    {num:'64',name:'Calzone Pinocchio',price:9.00},
+    {num:'65',name:'Calzone Spezial',price:9.00},
+  ],
+  familienpizza: [
+    {num:'66',name:'Familienpizza XL',price:15.00},
+    {num:'67',name:'Familienpizza XXL',price:25.00},
+    {num:'68',name:'Pizzabrötchen',price:3.00},
+    {num:'68a',name:'Gefüllte Pizzabrötchen',price:6.00},
   ],
   spaghetti: [
-    {num:'80',name:'80 Bolognese',price:9.00},  {num:'81',name:'81 Alla Panna',price:9.00},
-    {num:'82',name:'82 Napolitana',price:9.00}, {num:'83',name:'83 Carbonara',price:9.00},
-    {num:'84',name:'84 Della Casa',price:10.00},{num:'85',name:'85 Frutti di Mare',price:10.00},
-    {num:'86',name:'86 Vegetaria',price:10.00}, {num:'87',name:'87 Gamberetti',price:10.00},
-    {num:'88',name:'88 Tonno',price:10.00},     {num:'89',name:'89 Gorgonzola',price:10.00},
-    {num:'90',name:'90 Italia',price:10.00},    {num:'91',name:'91 Aglio e Olio',price:10.00},
-    {num:'92',name:'92 Pesto',price:10.00},     {num:'93',name:'93 Caprese',price:10.00},
+    {num:'69',name:'Spaghetti alla Napolitana',price:8.50},
+    {num:'70',name:'Spaghetti Bolognese',price:9.00},
+    {num:'71',name:'Spaghetti alla Panna',price:9.00},
+    {num:'72',name:'Spaghetti Carbonara',price:9.00},
+    {num:'73',name:'Spaghetti della Casa',price:9.00},
+    {num:'74',name:'Spaghetti Frutti di Mare',price:9.50},
+    {num:'75',name:'Spaghetti Gambaretti',price:9.50},
+    {num:'76',name:'Spaghetti al Tonno',price:9.50},
+    {num:'77',name:'Spaghetti della Chef',price:9.50},
+    {num:'78',name:'Spaghetti Vegetaria',price:9.50},
+    {num:'79',name:'Spaghetti Aglio e Olio',price:9.50},
+    {num:'80',name:'Spaghetti Gambas',price:12.00},
+    {num:'80a',name:'Spaghetti mit Spieß',price:12.00},
+  ],
+  tagliatelle: [
+    {num:'81',name:'Tagliatelle alla Napolitana',price:9.00},
+    {num:'82',name:'Tagliatelle Bolognese',price:9.00},
+    {num:'83',name:'Tagliatelle vegetarisch',price:9.50},
+    {num:'84',name:'Tagliatelle al Salmone',price:9.50},
   ],
   rigatoni: [
-    {num:'94',name:'94 Bolognese',price:9.00},  {num:'95',name:'95 Alla Panna',price:9.00},
-    {num:'96',name:'96 Napolitana',price:9.00}, {num:'97',name:'97 Carbonara',price:9.00},
-    {num:'98',name:'98 Italia',price:10.00},    {num:'99',name:'99 Quattro Formaggi',price:10.00},
-    {num:'100',name:'100 Della Casa',price:10.00},{num:'101',name:'101 Vegetaria',price:10.00},
-    {num:'102',name:'102 Arabella',price:11.00},  {num:'103',name:'103 Capperi',price:11.00},
-    {num:'104',name:'104 Amore',price:11.00},
+    {num:'85',name:'Rigatoni alla Napolitana',price:8.50},
+    {num:'86',name:'Rigatoni Bolognese',price:9.00},
+    {num:'87',name:'Rigatoni alla Panna',price:9.00},
+    {num:'88',name:'Rigatoni Carbonara',price:9.00},
+    {num:'89',name:'Rigatoni della Casa',price:9.00},
+    {num:'90',name:'Rigatoni al Tonno',price:9.50},
+    {num:'91',name:'Rigatoni della Chef',price:9.50},
+    {num:'92',name:'Rigatoni Vegetaria',price:9.50},
+    {num:'93',name:'Rigatoni Quattro Formaggi',price:9.50},
+    {num:'94',name:'Rigatoni Lachs',price:9.50},
+    {num:'95',name:'Rigatoni Italia',price:9.50},
   ],
   tortellini: [
-    {num:'106',name:'106 Bolognese',price:9.00},  {num:'107',name:'107 Alla Panna',price:9.00},
-    {num:'108',name:'108 Napolitana',price:9.00}, {num:'109',name:'109 Carbonara',price:10.00},
-    {num:'110',name:'110 Gorgonzola',price:10.00},{num:'111',name:'111 Della Casa',price:10.00},
-    {num:'112',name:'112 Nach Art des Hauses',price:10.00},
+    {num:'96',name:'Tortellini alla Napolitana',price:8.50},
+    {num:'97',name:'Tortellini Bolognese',price:9.00},
+    {num:'98',name:'Tortellini alla Panna',price:9.00},
+    {num:'99',name:'Tortellini Carbonara',price:9.50},
+    {num:'100',name:'Tortellini della Casa',price:9.00},
+    {num:'101',name:'Tortellini Gorgonzola',price:9.50},
   ],
   backofen: [
-    {num:'115',name:'115 Lasagne',price:10.00},         {num:'116',name:'116 Lasagne Vegetaria',price:10.00},
-    {num:'117',name:'117 Tris',price:10.00},           {num:'118',name:'118 Tris Formaggi',price:10.00},
-    {num:'119',name:'119 Cannelloni al Forno',price:10.00},{num:'120',name:'120 Cannelloni alla Panna',price:10.00},
-  ],
-  gnocchi: [
-    {num:'123',name:'123 Bolognese',price:9.00},       {num:'124',name:'124 Alla Panna',price:9.00},
-    {num:'125',name:'125 Napolitana',price:9.00},      {num:'126',name:'126 Vegetaria überbacken',price:10.00},
-    {num:'127',name:'127 Formaggi überbacken',price:10.00},
-  ],
-  haehnchen: [
-    {num:'128',name:'128 Curry-Huhn',price:10.00},     {num:'129',name:'129 Pilz-Huhn',price:10.00},
-    {num:'130',name:'130 Spezial-Huhn',price:10.00},   {num:'131',name:'131 Tomaten-Huhn',price:10.00},
-    {num:'132',name:'132 Makkaroni-Huhn',price:10.00},
+    {num:'102',name:'Lasagne',price:9.50},
+    {num:'103',name:'Lasagne Vegetaria',price:9.50},
+    {num:'104',name:'Dui Pasti',price:9.50},
+    {num:'105',name:'Tris Pasti',price:9.50},
+    {num:'105a',name:'Tris Phantasia',price:9.50},
+    {num:'106',name:'Canneloni alla Napolitana',price:9.50},
+    {num:'107',name:'Canneloni Bolognese',price:9.50},
+    {num:'108',name:'Canneloni al Forno',price:9.50},
+    {num:'109',name:'Spaghetti alla Napolitana',price:9.00},
+    {num:'110',name:'Spaghetti al Forno',price:9.50},
+    {num:'111',name:'Spaghetti alla Panna',price:9.50},
+    {num:'112',name:'Spaghetti Carbonara',price:9.50},
+    {num:'113',name:'Spaghetti della Casa',price:9.50},
+    {num:'114',name:'Spaghetti al Tonno',price:9.50},
+    {num:'115',name:'Spaghetti Vegetaria',price:9.50},
+    {num:'116',name:'Rigatoni alla Napolitana',price:9.00},
+    {num:'117',name:'Rigatoni al Forno',price:9.50},
+    {num:'118',name:'Rigatoni alla Panna',price:9.50},
+    {num:'119',name:'Rigatoni Carbonara',price:9.50},
+    {num:'120',name:'Rigatoni della Casa',price:9.50},
+    {num:'121',name:'Rigatoni al Tonno',price:9.50},
+    {num:'122',name:'Rigatoni Vegetaria',price:9.50},
+    {num:'123',name:'Tortellini alla Napolitana',price:9.50},
+    {num:'124',name:'Tortellini al Forno',price:9.50},
+    {num:'125',name:'Tortellini alla Panna',price:9.50},
+    {num:'126',name:'Tortellini Carbonara',price:9.50},
+    {num:'127',name:'Tortellini della Casa',price:9.50},
+    {num:'128',name:'Tortellini Gorgonzola',price:9.50},
+    {num:'129',name:'Tortellini Italia',price:9.50},
+    {num:'130',name:'Tortellini Amore',price:9.50},
   ],
   auflaeufe: [
-    {num:'135',name:'135 Broccoli Auflauf',price:10.00},   {num:'136',name:'136 Gemüse di Pomodoro',price:11.00},
-    {num:'137',name:'137 Gemüse Spezialität',price:11.00}, {num:'138',name:'138 Blumenkohl Auflauf',price:10.00},
-    {num:'139',name:'139 Champignon Auflauf',price:10.00}, {num:'140',name:'140 Kartoffel Auflauf',price:11.00},
-    {num:'141',name:'141 Kartoffel \u2013 Gyros Auflauf',price:11.00},{num:'142',name:'142 Gyros Auflauf',price:11.00},
-    {num:'143',name:'143 Gyros Spezial',price:11.00},      {num:'144',name:'144 Gyros Amore',price:11.00},
+    {num:'131',name:'Broccoli-Auflauf',price:9.50},
+    {num:'132',name:'Broccoli-Spargel-Auflauf',price:9.50},
+    {num:'133',name:'Pinocchio-Auflauf',price:9.50},
+    {num:'134',name:'Champignon-Auflauf',price:9.50},
+    {num:'135',name:'Broccoli alla Napolitana',price:9.50},
+  ],
+  gnocchi: [
+    {num:'136',name:'Gnocchi quattro Formaggi',price:9.50},
+    {num:'137',name:'Gnocchi alla Panna',price:9.50},
+    {num:'138',name:'Gnocchi Vegetaria',price:9.50},
+    {num:'139',name:'Gnocchi Siziliana',price:9.50},
+    {num:'140',name:'Gnocchi Tonno',price:9.50},
+  ],
+  puten: [
+    {num:'141',name:'Putengeschnetzeltes',price:9.50},
+    {num:'142',name:'Putengeschnetzeltes mit Curry',price:9.50},
+    {num:'143',name:'Putengeschnetzeltes',price:9.50},
+  ],
+  schnitzel: [
+    {num:'144',name:'Schlemmerschnitzel',price:9.00},
+    {num:'145',name:'Jägerschnitzel',price:9.00},
+    {num:'146',name:'Zigeunerschnitzel',price:9.00},
+    {num:'147',name:'Schnitzel Hawai',price:9.00},
+    {num:'148',name:'Putenschnitzel',price:9.00},
+    {num:'148a',name:'Chicken Wings',price:9.00},
+    {num:'',name:'Pommes frites klein',price:2.50},
+    {num:'',name:'Pommes frites groß',price:3.50},
   ],
   salate: [
-    {num:'150',name:'150 Insalata Mista',price:6.00},              {num:'151',name:'151 Insalata Pomodoro Cippolla',price:6.00},
-    {num:'152',name:'152 Insalata Cippola',price:6.00},            {num:'153',name:'153 Insalata Primavera',price:9.00},
-    {num:'154',name:'154 Insalta Pinocchio',price:9.00},              {num:'155',name:'155 Insalata Roma',price:9.00},
-    {num:'156',name:'156 Insalata Italia',price:10.00},            {num:'157',name:'157 Insalata die Mare',price:9.00},
-    {num:'158',name:'158 Insalata Amore',price:10.00},             {num:'159',name:'159 Insalata Hawaii',price:9.00},
-    {num:'160',name:'160 Insalata Formaggi',price:9.00},           {num:'161',name:'161 Insalata Milano',price:9.00},
-    {num:'162',name:'162 Insalata de la Chef',price:9.50},         {num:'163',name:'163 Insalata de la Casa',price:10.00},
-    {num:'164',name:'164 Insalata Salamone',price:10.00},          {num:'165',name:'165 Insalata Gyros',price:10.00},
-    {num:'166',name:'166 Insalata Nizza',price:10.00},             {num:'167',name:'167 Insalata Rucola Pollo',price:10.00},
-    {num:'168',name:'168 Insalata Rucola Alaska',price:10.00},     {num:'169',name:'169 Insalata Rucola Atlanta',price:10.00},
-    {num:'170',name:'170 Insalata Rucola Palermo',price:10.00},
+    {num:'149',name:'Insalata Verde',price:3.50},
+    {num:'150',name:'Insalata di Cipolla',price:4.50},
+    {num:'151',name:'Insalata Mista',price:4.50},
+    {num:'152',name:'Insalata Pomodoro Cipolla',price:4.50},
+    {num:'153',name:'Insalata Thunfisch',price:4.50},
+    {num:'154',name:'Insalata Raviera',price:11.00},
+    {num:'154a',name:'Insalata Garnelenspieß',price:11.00},
+    {num:'155',name:'Insalata della Casa',price:9.50},
+    {num:'156',name:'Insalata Rustica',price:9.50},
+    {num:'157',name:'Insalata Melisa',price:9.50},
+    {num:'158',name:'Insalata Roma',price:9.50},
+    {num:'159',name:'Insalata Milano',price:9.50},
+    {num:'160',name:'Insalata Hawai',price:9.50},
+    {num:'161',name:'Insalata Pinocchio',price:9.50},
+    {num:'162',name:'Insalata Inferno',price:9.50},
+    {num:'163',name:'Insalata Fruti di Mare',price:9.50},
+    {num:'164',name:'Putensalat',price:9.50},
+    {num:'165',name:'Kentuckysalat',price:9.50},
+    {num:'166',name:'Sopresa',price:9.00},
+    {num:'167',name:'Insalata Bella-Italia',price:9.00},
+    {num:'168',name:'Insalata Lachs',price:9.50},
+    {num:'169',name:'Insalata Rucola',price:9.00},
+    {num:'170',name:'Döner Salat',price:9.00},
   ],
-  sonstiges: [
-    {num:'201',name:'201 Pizzabrötchen',price:3.50},          {num:'202',name:'202 Pizzabrötchen',price:6.50},
-    {num:'203',name:'203 Pizzabrötchen nach Wunsch',price:7.00},{num:'204',name:'204 Pizzabrot',price:3.50},
-    {num:'C1',name:'Coca Cola',price:2.50},   {num:'C2',name:'Coca Cola light',price:2.50},
-    {num:'C3',name:'Fanta',price:2.50},       {num:'C4',name:'Sprite',price:2.50},
-    {num:'C5',name:'Mineralwasser',price:2.50},
-    {num:'T1',name:'Test',price:0.10},
+  mittagsmenue: [
+    {num:'M1',name:'Menü Nr. 1',price:10.00},
+    {num:'M2',name:'Menü Nr. 2',price:10.00},
+    {num:'M3',name:'Menü Nr. 3',price:10.00},
+    {num:'M4',name:'Menü Nr. 4',price:10.50},
+    {num:'M5',name:'Menü Nr. 5',price:9.00},
+    {num:'M6',name:'Menü Nr. 6',price:10.00},
+  ],
+  getraenke: [
+    {num:'',name:'Coca Cola',price:3.00},
+    {num:'',name:'Fanta',price:3.00},
+    {num:'',name:'Sprite',price:3.00},
+    {num:'',name:'Coca Cola',price:2.00},
+    {num:'',name:'Fanta',price:2.00},
+    {num:'',name:'Sprite',price:2.00},
   ],
 };
-let posCategory = 'pizza';
+let posCategory = 'pizza_kaese';
 
 // ═══════════════════════════════════════════════════════════════
 // AUTH
 // ═══════════════════════════════════════════════════════════════
+function loginFehler(text) {
+  const e = document.getElementById('loginErr');
+  e.textContent = text;
+  e.style.display = 'block';
+}
+
 async function doLogin() {
   const pw = document.getElementById('loginPw').value.trim();
   if (!pw) return;
-  const remember = document.getElementById('rememberPw').checked;
+  const bleiben = document.getElementById('rememberPw').checked;
   document.getElementById('loginErr').style.display='none';
-  const onSuccess = () => {
-    if (remember) localStorage.setItem('pinocchioSavedPw', pw);
-    else localStorage.removeItem('pinocchioSavedPw');
-  };
-  // Lokales Passwort-Check
-  if (pw === DASHBOARD_PW) {
-    token = ADMIN_TOKEN_SEC;
-    localStorage.setItem('pinocchioToken', token);
-    onSuccess(); showApp();
-    return;
-  }
-  // Backend-Login (nur wenn kein lokaler Match)
+
+  // Das Passwort wird ausschliesslich serverseitig geprueft und nirgends
+  // gespeichert. Persistiert wird nur das befristete Token, das zurueckkommt.
   try {
     const r = await fetch(API_BASE+'/admin/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:pw})});
-    const d = await r.json();
-    if (d.token) { token=d.token; localStorage.setItem('pinocchioToken',token); onSuccess(); showApp(); }
-    else document.getElementById('loginErr').style.display='block';
+    const d = await r.json().catch(()=>({}));
+    if (!r.ok || !d.token) {
+      loginFehler(r.status === 401 ? '❌ Falsches Passwort' : '❌ ' + (d.message || 'Anmeldung fehlgeschlagen'));
+      return;
+    }
+    token = d.token;
+    // "Angemeldet bleiben" entscheidet nur, ob das Token den Tab ueberlebt.
+    const bleibt = bleiben ? localStorage : sessionStorage;
+    const geht   = bleiben ? sessionStorage : localStorage;
+    bleibt.setItem('pinocchioToken', token);
+    geht.removeItem('pinocchioToken');
+    document.getElementById('loginPw').value = '';
+    sitzungAbgelaufenGemeldet = false;
+    showApp();
   } catch {
-    document.getElementById('loginErr').style.display='block';
+    loginFehler('❌ Keine Verbindung zum Server');
   }
 }
 
-// Auto-Fill gespeichertes Passwort beim Laden
+// Laeuft das Token ab oder wird das Server-Geheimnis gewechselt, stuende das
+// Personal sonst vor einem leeren Dashboard ohne Weg zurueck. Jede 401 vom
+// Backend fuehrt deshalb zurueck auf den Login-Screen.
+let sitzungAbgelaufenGemeldet = false;
+function sitzungBeenden() {
+  // Ohne Token war nie eine Sitzung offen – dann waere der Hinweis falsch.
+  if (sitzungAbgelaufenGemeldet || !token) return;
+  sitzungAbgelaufenGemeldet = true;
+  localStorage.removeItem('pinocchioToken');
+  sessionStorage.removeItem('pinocchioToken');
+  token = '';
+  const app = document.getElementById('app');
+  if (app) app.style.display = 'none';
+  const s = document.getElementById('loginScreen');
+  if (s) s.style.display = 'flex';
+  loginFehler('❌ Sitzung abgelaufen – bitte neu anmelden');
+}
+
 (function(){
-  const saved = localStorage.getItem('pinocchioSavedPw');
-  if (saved) {
-    document.getElementById('loginPw').value = saved;
-    document.getElementById('rememberPw').checked = true;
-  }
+  const orig = window.fetch;
+  window.fetch = async function(...args) {
+    const res = await orig.apply(this, args);
+    try {
+      const url = typeof args[0] === 'string' ? args[0] : (args[0] && args[0].url) || '';
+      // Der Login selbst antwortet bei falschem Passwort ebenfalls mit 401 –
+      // der darf den Ablauf-Hinweis nicht ausloesen.
+      if (res.status === 401 && url.indexOf(API_BASE) === 0 && url.indexOf('/admin/login') === -1) {
+        sitzungBeenden();
+      }
+    } catch {}
+    return res;
+  };
 })();
+
 function showApp() {
   document.getElementById('loginScreen').style.display='none';
   document.getElementById('app').style.display='flex';
@@ -1089,6 +1388,7 @@ function showApp() {
 }
 function doLogout() {
   localStorage.removeItem('pinocchioToken');
+  sessionStorage.removeItem('pinocchioToken');
   location.reload();
 }
 function apiHeaders() { return {'Content-Type':'application/json','Authorization':'Bearer '+token}; }
@@ -1652,7 +1952,7 @@ async function toggleSoldOut(name, cb) {
 // POS – MANUELLE BESTELLUNG
 // ═══════════════════════════════════════════════════════════════
 function openPOS() {
-  posCart=[]; posMode='lieferung'; posCategory='pizza';
+  posCart=[]; posMode='lieferung'; posCategory='pizza_kaese';
   document.getElementById('posModal').classList.add('show');
   document.getElementById('posFirst').value='';
   document.getElementById('posLast').value='';
@@ -1660,10 +1960,27 @@ function openPOS() {
   // Cat tabs
   const cats = Object.keys(POS_MENU);
   const labels = {
-    familienpizza:'🍕 Familienpizzen', pizza:'🍕 Pizza',
-    spaghetti:'🍝 Spaghetti', rigatoni:'🍝 Rigatoni', tortellini:'🍝 Tortellini',
-    backofen:'🫕 Backofen', gnocchi:'🍽️ Gnocchi', haehnchen:'🍗 Hähnchen',
-    auflaeufe:'🧀 Aufläufe', salate:'🥗 Salate', sonstiges:'🥤 Sonstiges'
+    antipasta:'🥖 Antipasta / Vorspeisen',
+    pizza_kaese:'🍕 Pizza mit versch. Käsesorten',
+    pizza_vegetarisch:'🥬 Vegetarische Pizza',
+    pizza_mozzarella:'🍅 Pizza mit frischen Tomaten und Mozzarella',
+    pizza_fisch:'🐟 Pizza mit Fisch',
+    pizza_fleischsauce:'🍕 Pizza mit Fleischsauce',
+    pizza_belaege:'🍕 Pizza mit verschiedenen Belägen',
+    calzone:'🥟 Calzone – gefüllte Pizza',
+    familienpizza:'🍕 Familienpizza & Pizzabrötchen',
+    spaghetti:'🍝 Spaghetti',
+    tagliatelle:'🍝 Tagliatelle',
+    rigatoni:'🍝 Rigatoni',
+    tortellini:'🍝 Tortellini',
+    backofen:'🫕 Nudelgerichte aus dem Backofen',
+    auflaeufe:'🧀 Gemüseaufläufe (überbacken)',
+    gnocchi:'🥔 Gnocchi – Kartoffelgerichte',
+    puten:'🍗 Nudeln mit Putengeschnetzeltem',
+    schnitzel:'🍗 Puten- und Hähnchenschnitzel',
+    salate:'🥗 Salatspezialitäten',
+    mittagsmenue:'🍽️ Mittagsmenü',
+    getraenke:'🥤 Getränke'
   };
   document.getElementById('posCatTabs').innerHTML = cats.map(c=>
     `<div class="pos-cat${c===posCategory?' active':''}" onclick="setPOSCat('${c}',this)">${labels[c]||c}</div>`

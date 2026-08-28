@@ -7,6 +7,7 @@ const cron       = require('node-cron');
 const PDFDocument = require('pdfkit');
 const bcrypt     = require('bcryptjs');
 const jwt        = require('jsonwebtoken');
+const crypto     = require('crypto');
 require('dotenv').config();
 
 const app  = express();
@@ -63,21 +64,37 @@ function getResend() {
 const allowedOrigins = [
   'https://pinnochionordkirchen.de',
   'https://www.pinnochionordkirchen.de',
+  // Rückfallweg, falls GitHub Pages einmal ohne die eigene Domain ausliefert
+  'https://falahabed007.github.io',
 ];
-app.use(cors({
+// Lokale Entwicklung: localhost/127.0.0.1 auf beliebigem Port
+const localOrigin = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/;
+
+const corsOptions = {
   origin: function(origin, callback) {
     // Kein Origin = Postman / server-to-server / lokale Datei → erlauben
     if (!origin || origin === 'null') return callback(null, true);
-    if (allowedOrigins.includes(origin)) return callback(null, origin);
+    if (allowedOrigins.includes(origin) || localOrigin.test(origin)) {
+      return callback(null, origin);
+    }
+    // Bewusst kein Error: den würde Express zu einem 500 ohne CORS-Header
+    // machen, und im Browser käme nur das nichtssagende "Load failed" an.
+    // callback(null, false) lässt die Antwort sauber ohne Allow-Origin durch.
     console.warn('CORS blockiert:', origin);
-    return callback(new Error('CORS nicht erlaubt für: ' + origin));
+    return callback(null, false);
   },
   methods: ['GET','POST','PATCH','DELETE','OPTIONS'],
   allowedHeaders: ['Content-Type','Authorization'],
   credentials: true
-}));
-// Preflight für alle Routen
-app.options('*', cors());
+};
+// Render terminiert TLS vor der App; ohne das ist req.ip immer die Proxy-IP.
+app.set('trust proxy', 1);
+
+app.use(cors(corsOptions));
+// Preflight für alle Routen – mit denselben Optionen. Ein blankes cors()
+// würde hier jeder Herkunft "Allow-Origin: *" geben und die Prüfung oben
+// aushebeln.
+app.options('*', cors(corsOptions));
 
 // ─── Webhooks brauchen raw body (vor express.json) ───────────────
 app.use('/api/stripe-webhook', express.raw({ type: 'application/json' }));
@@ -185,11 +202,35 @@ async function getNextOrderNum() {
 }
 
 // ─── Admin Auth ───────────────────────────────────────────────────
+// Zeitkonstanter Vergleich: ein normales === verraet ueber die Laufzeit,
+// wie viele Zeichen am Anfang schon stimmen.
+function gleichSicher(a, b) {
+  if (typeof a !== 'string' || typeof b !== 'string') return false;
+  const ba = Buffer.from(a), bb = Buffer.from(b);
+  if (ba.length !== bb.length) return false;
+  return crypto.timingSafeEqual(ba, bb);
+}
+
 function auth(req, res, next) {
   const h = req.headers.authorization;
   if (!h || !h.startsWith('Bearer ')) return res.status(401).json({ message: 'Nicht autorisiert' });
-  if (h.split(' ')[1] !== process.env.ADMIN_TOKEN_SECRET) return res.status(401).json({ message: 'Token ungültig' });
-  next();
+  const token = h.slice(7);
+
+  // Regulaerer Weg: befristetes Admin-JWT aus /api/admin/login.
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    if (payload.role === 'admin') { req.admin = payload; return next(); }
+  } catch { /* kein gueltiges JWT – unten weiterpruefen */ }
+
+  // Notweg fuer Clients, die noch das feste Token eingetragen haben
+  // (z. B. die Sunmi-Kasse zwischen zwei Anmeldungen). Kann entfallen,
+  // sobald alle Geraete einmal ueber /api/admin/login gelaufen sind.
+  if (process.env.ADMIN_TOKEN_SECRET && gleichSicher(token, process.env.ADMIN_TOKEN_SECRET)) {
+    req.admin = { role: 'admin', legacy: true };
+    return next();
+  }
+
+  return res.status(401).json({ message: 'Token ungültig' });
 }
 
 // ─── Customer Auth (JWT) ──────────────────────────────────────────
@@ -818,10 +859,53 @@ app.get('/api/admin/customers', auth, async (req, res) => {
   }
 });
 
-app.post('/api/admin/login', (req, res) => {
-  req.body.password === process.env.ADMIN_PASSWORD
-    ? res.json({ token: process.env.ADMIN_TOKEN_SECRET })
-    : res.status(401).json({ message: 'Falsches Passwort' });
+// Bremse gegen Passwort-Raten. Bewusst KEINE harte Sperre: die wuerde ein
+// Angreifer nutzen, um den Wirt vor dem Feierabendgeschaeft auszusperren.
+// Stattdessen wird jeder Fehlversuch pro IP langsamer beantwortet.
+const loginVersuche = new Map();          // ip -> { n, zuletzt }
+const VERSUCH_FENSTER_MS = 15 * 60 * 1000;
+const MAX_WARTE_MS       = 5000;
+
+function loginBremse(ip) {
+  const jetzt = Date.now();
+  const e = loginVersuche.get(ip);
+  if (!e || jetzt - e.zuletzt > VERSUCH_FENSTER_MS) return 0;
+  return Math.min(e.n * 500, MAX_WARTE_MS);
+}
+function fehlversuchNotieren(ip) {
+  const jetzt = Date.now();
+  const e = loginVersuche.get(ip);
+  if (!e || jetzt - e.zuletzt > VERSUCH_FENSTER_MS) loginVersuche.set(ip, { n: 1, zuletzt: jetzt });
+  else loginVersuche.set(ip, { n: e.n + 1, zuletzt: jetzt });
+}
+// Aufraeumen, damit die Map nicht unbegrenzt waechst
+setInterval(() => {
+  const jetzt = Date.now();
+  for (const [ip, e] of loginVersuche) if (jetzt - e.zuletzt > VERSUCH_FENSTER_MS) loginVersuche.delete(ip);
+}, VERSUCH_FENSTER_MS).unref?.();
+
+app.post('/api/admin/login', async (req, res) => {
+  const ip = req.ip || 'unbekannt';
+
+  if (!process.env.ADMIN_PASSWORD || !process.env.JWT_SECRET) {
+    console.error('ADMIN_PASSWORD oder JWT_SECRET fehlt – Admin-Login nicht moeglich');
+    return res.status(500).json({ message: 'Server nicht konfiguriert' });
+  }
+
+  const warte = loginBremse(ip);
+  if (warte) await new Promise(r => setTimeout(r, warte));
+
+  if (!gleichSicher(String(req.body?.password ?? ''), process.env.ADMIN_PASSWORD)) {
+    fehlversuchNotieren(ip);
+    console.warn('Admin-Login fehlgeschlagen von', ip);
+    return res.status(401).json({ message: 'Falsches Passwort' });
+  }
+
+  loginVersuche.delete(ip);
+  // Befristetes Token statt des Server-Geheimnisses. 30 Tage, damit das
+  // Kuechen-Tablet nicht mitten im Betrieb rausfliegt.
+  const token = jwt.sign({ role: 'admin' }, process.env.JWT_SECRET, { expiresIn: '30d' });
+  res.json({ token });
 });
 
 // ── Pending Bestellungen (für 5s Polling) ───────────────────────

@@ -110,15 +110,22 @@ Kunde zahlt 22,49 €
 
 ## Schritt 6 – Dashboard konfigurieren
 
-In `dashboard.html` oben im Script diese 3 Zeilen anpassen:
+Nur noch **eine** Stelle, und die liegt in `config.js`:
 
 ```javascript
-const API_BASE        = 'https://DEIN-BACKEND.onrender.com/api';
-const DASHBOARD_PW    = 'Pinocchio2025Admin!';       // gleich wie ADMIN_PASSWORD in Render
-const ADMIN_TOKEN_SEC = 'PinocchioGeheimToken2025...'; // gleich wie ADMIN_TOKEN_SECRET in Render
+window.PINOCCHIO_BACKEND = 'https://DEIN-BACKEND.onrender.com';
 ```
 
-> ⚠️ `ADMIN_TOKEN_SEC` muss **exakt gleich** sein wie `ADMIN_TOKEN_SECRET` in Render!
+`index.html`, `account.html` und `dashboard.html` laden diese Datei im `<head>`.
+
+> ⚠️ **Niemals ein Passwort oder Token in `dashboard.html` eintragen.**
+> Die Datei wird öffentlich ausgeliefert – jeder kann sie im Quelltext lesen.
+> Genau so lagen `ADMIN_PASSWORD` und `ADMIN_TOKEN_SECRET` bis August 2026
+> offen im Netz.
+>
+> Der Admin-Login läuft ausschließlich über `POST /api/admin/login`. Der Server
+> prüft das Passwort gegen `ADMIN_PASSWORD` und gibt ein auf 30 Tage
+> befristetes JWT zurück. `ADMIN_TOKEN_SECRET` verlässt den Server nicht mehr.
 
 ---
 
@@ -161,7 +168,8 @@ const ADMIN_TOKEN_SEC = 'PinocchioGeheimToken2025...'; // gleich wie ADMIN_TOKEN
 |---|---|
 | Backend startet nicht | `MONGODB_URI` prüfen – Datenbankname `/pinocchio-nordkirchen` am Ende |
 | MongoDB Verbindung fehlgeschlagen | Network Access in Atlas: **feste Render-Ausgangs-IP** eintragen (NICHT `0.0.0.0/0`) · Passwort im `MONGODB_URI` korrekt? |
-| Login fehlschlägt | `ADMIN_TOKEN_SECRET` in Render = `ADMIN_TOKEN_SEC` im Dashboard (exakt gleich!) |
+| Login fehlschlägt | `ADMIN_PASSWORD` in Render prüfen · `JWT_SECRET` muss gesetzt sein (sonst antwortet `/api/admin/login` mit 500) |
+| „Sitzung abgelaufen" im Dashboard | Token älter als 30 Tage oder `JWT_SECRET` gewechselt – einfach neu anmelden |
 | Stripe Webhook Fehler | URL: `.../api/stripe-webhook` · Event `checkout.session.completed` aktiv? |
 | E-Mails kommen nicht | Domain bei Resend verifiziert? · `EMAIL_FROM` muss verifizierte Domain nutzen |
 | Bon wird nicht gedruckt | PrintNode Client auf Restaurant-PC läuft und eingeloggt? |

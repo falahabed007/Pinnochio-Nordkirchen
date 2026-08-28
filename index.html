@@ -785,6 +785,8 @@
 
 
 </style>
+  <!-- Zentrale Backend-Adresse, muss vor allen anderen Skripten stehen -->
+  <script src="config.js"></script>
 </head>
 <body>
 
@@ -2787,7 +2789,21 @@ const PinocchioDB = {
 // STRIPE CHECKOUT SESSION INTEGRATION
 // ⬇️ Hier deine Render.com Backend-URL eintragen sobald deployed:
 // ============================================================
-const BACKEND_URL = 'https://pinnochio-nordkirchen.onrender.com';
+const BACKEND_URL = window.PINOCCHIO_BACKEND;   // siehe config.js
+// Faellt config.js aus (nicht mitdeployt, lokal per file:// geblockt), waere
+// die Backend-Adresse undefined und jeder Aufruf ginge ins Leere – mit einer
+// Fehlermeldung, die niemand deuten kann. Lieber sofort deutlich sagen.
+if (!window.PINOCCHIO_BACKEND) {
+  console.error('config.js wurde nicht geladen – window.PINOCCHIO_BACKEND fehlt.');
+  document.addEventListener('DOMContentLoaded', function() {
+    var b = document.createElement('div');
+    b.textContent = 'Konfigurationsfehler: config.js konnte nicht geladen werden. '
+                  + 'Bestellungen und Anmeldung funktionieren gerade nicht.';
+    b.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:#b00020;'
+                    + 'color:#fff;padding:10px 14px;font:600 14px/1.4 sans-serif;text-align:center;';
+    document.body.appendChild(b);
+  });
+}
 
 // Gibt die korrekte Seiten-URL zurück – funktioniert lokal und online
 function getPageUrl() {

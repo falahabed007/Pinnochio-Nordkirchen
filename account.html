@@ -294,6 +294,8 @@
 
     .loading-state { text-align: center; padding: 32px; color: var(--muted); font-size: 14px; }
   </style>
+  <!-- Zentrale Backend-Adresse, muss vor allen anderen Skripten stehen -->
+  <script src="config.js"></script>
 </head>
 <body>
 
@@ -454,7 +456,21 @@
   // ── API-URL ───────────────────────────────────────────────────
   // Das Frontend läuft auf GitHub Pages (pinnochionordkirchen.de), das Backend
   // getrennt auf Render. Deshalb absolute Backend-URL (wie in dashboard.html).
-  const API = 'https://pinnochio-nordkirchen.onrender.com';
+  const API = window.PINOCCHIO_BACKEND;   // siehe config.js
+// Faellt config.js aus (nicht mitdeployt, lokal per file:// geblockt), waere
+// die Backend-Adresse undefined und jeder Aufruf ginge ins Leere – mit einer
+// Fehlermeldung, die niemand deuten kann. Lieber sofort deutlich sagen.
+if (!window.PINOCCHIO_BACKEND) {
+  console.error('config.js wurde nicht geladen – window.PINOCCHIO_BACKEND fehlt.');
+  document.addEventListener('DOMContentLoaded', function() {
+    var b = document.createElement('div');
+    b.textContent = 'Konfigurationsfehler: config.js konnte nicht geladen werden. '
+                  + 'Bestellungen und Anmeldung funktionieren gerade nicht.';
+    b.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:#b00020;'
+                    + 'color:#fff;padding:10px 14px;font:600 14px/1.4 sans-serif;text-align:center;';
+    document.body.appendChild(b);
+  });
+}
 
   // ── Token-Management ─────────────────────────────────────────
   const getToken  = () => localStorage.getItem('customerToken');
@@ -465,6 +481,36 @@
     'Authorization': `Bearer ${getToken()}`
   });
 
+  // ── Fehlertext ───────────────────────────────────────────────
+  // Erreicht fetch den Server nicht, wirft es einen TypeError – Safari nennt
+  // ihn "Load failed", Chrome "Failed to fetch". Für einen Gast ist das
+  // bedeutungslos. Fachliche Meldungen vom Server sind bereits auf Deutsch
+  // und werden unverändert durchgereicht.
+  function fehlerText(err) {
+    if (err instanceof TypeError || !err.message) {
+      return 'Verbindung zum Server fehlgeschlagen. Bitte Internetverbindung '
+           + 'prüfen und die Seite neu laden (Cache leeren).';
+    }
+    return err.message;
+  }
+
+  // Antwort einlesen und dabei den Fall abfangen, dass gar kein JSON kommt.
+  // Das passiert, wenn nicht der Server antwortet, sondern etwas dazwischen:
+  // eine HTML-Fehlerseite, die Sperrseite eines Werbe-/Netzfilters oder eine
+  // Wartungsseite. Safari meldet das sonst nur als
+  // "The string did not match the expected pattern." – ohne jeden Hinweis.
+  async function antwortLesen(res) {
+    const text = await res.text();
+    try {
+      return JSON.parse(text);
+    } catch {
+      const artUndWeise = (res.headers.get('content-type') || 'unbekannt').split(';')[0];
+      throw new Error('Unerwartete Antwort vom Server (HTTP ' + res.status
+        + ', ' + artUndWeise + '). Nicht der Server hat geantwortet, sondern '
+        + 'etwas dazwischen – z.B. ein Netzfilter oder eine Fehlerseite.');
+    }
+  }
+
   init();   // erst hier – getToken/authHeaders sind oben als const deklariert
 
   // ── Init ─────────────────────────────────────────────────────
@@ -474,7 +520,7 @@
     try {
       const res = await fetch(`${API}/api/auth/me`, { headers: authHeaders() });
       if (!res.ok) throw new Error();
-      const user = await res.json();
+      const user = await antwortLesen(res);
       showDashboard(user);
     } catch {
       clearToken();
@@ -526,12 +572,12 @@
           password: document.getElementById('login-password').value
         })
       });
-      const data = await res.json();
+      const data = await antwortLesen(res);
       if (!res.ok) throw new Error(data.message || 'Fehler');
       setToken(data.token);
       showDashboard(data.user);
     } catch (err) {
-      errEl.textContent = err.message;
+      errEl.textContent = fehlerText(err);
       errEl.classList.add('show');
     } finally {
       btn.disabled = false;
@@ -559,12 +605,12 @@
           phone:    document.getElementById('reg-phone').value.trim()
         })
       });
-      const data = await res.json();
+      const data = await antwortLesen(res);
       if (!res.ok) throw new Error(data.message || 'Fehler');
       setToken(data.token);
       showDashboard(data.user);
     } catch (err) {
-      errEl.textContent = err.message;
+      errEl.textContent = fehlerText(err);
       errEl.classList.add('show');
     } finally {
       btn.disabled = false;
@@ -586,7 +632,7 @@
     try {
       const res = await fetch(`${API}/api/account/orders`, { headers: authHeaders() });
       if (!res.ok) throw new Error();
-      const orders = await res.json();
+      const orders = await antwortLesen(res);
       container.innerHTML = renderOrders(orders);
     } catch {
       container.innerHTML = '<div class="loading-state">Bestellungen konnten nicht geladen werden.</div>';
@@ -642,13 +688,13 @@
         method: 'POST',
         headers: authHeaders()
       });
-      const data = await res.json();
+      const data = await antwortLesen(res);
       if (!res.ok) throw new Error(data.message);
       localStorage.setItem('reorderItems', JSON.stringify(data.items));
       localStorage.setItem('reorderMode', data.mode);
       window.location.href = 'index.html#warenkorb';
     } catch (err) {
-      alert('Re-Order fehlgeschlagen: ' + err.message);
+      alert('Re-Order fehlgeschlagen: ' + fehlerText(err));
     }
   }
 
@@ -672,13 +718,13 @@
           phone: document.getElementById('prof-phone').value.trim()
         })
       });
-      const data = await res.json();
+      const data = await antwortLesen(res);
       if (!res.ok) throw new Error(data.message);
       document.getElementById('dash-user-name').textContent = `${data.first} ${data.last} · ${data.email}`;
       succEl.textContent = 'Profil erfolgreich gespeichert.';
       succEl.classList.add('show');
     } catch (err) {
-      errEl.textContent = err.message;
+      errEl.textContent = fehlerText(err);
       errEl.classList.add('show');
     } finally {
       btn.disabled = false;
@@ -713,13 +759,13 @@
           newPassword: newPw
         })
       });
-      const data = await res.json();
+      const data = await antwortLesen(res);
       if (!res.ok) throw new Error(data.message);
       succEl.textContent = 'Passwort erfolgreich geändert.';
       succEl.classList.add('show');
       e.target.reset();
     } catch (err) {
-      errEl.textContent = err.message;
+      errEl.textContent = fehlerText(err);
       errEl.classList.add('show');
     } finally {
       btn.disabled = false;

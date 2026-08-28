@@ -116,3 +116,38 @@ Für den Livebetrieb Starter ($7/Monat) wählen.
 Aus Seite 5 des Flyers freigestellt (`img/logo.png`, 520 px, transparent;
 `img/logo-print.png` mit weißem Grund). Es ist ein Scan eines Drucks – für
 größere Darstellung wäre eine Vektor- oder Originaldatei vom Wirt besser.
+
+---
+
+## Artikelverfügbarkeit – wie sie zustande kommt
+
+Das Backend kennt **kein Produktmodell**. Die Sammlung `Availability` speichert
+nur Artikel, die einmal umgeschaltet wurden – nicht die Karte.
+
+- Das **Web-Dashboard** baut seine Liste aus der Konstanten `POS_MENU` in
+  `dashboard.html` und legt den Ausverkauft-Status darüber.
+- Die **Fluevate Kasse** hat keinen eigenen Katalog. Sie zeigt, was
+  `/api/admin/availability` liefert, ergänzt um Artikelnamen aus den
+  Bestellungen der letzten 30 Tage.
+
+Bei einem neuen Betrieb ist beides leer – der Bildschirm bleibt weiß. Deshalb
+wurden am 28. August 2026 alle 172 Artikel aus `Menue/menu.json` einmalig als
+`available: true` eingetragen.
+
+> **Pflege:** Kommen später Artikel auf die Karte, erscheinen sie in der Kasse
+> erst, wenn sie ebenfalls eingetragen werden (`PATCH /api/admin/availability`
+> mit `itemName` und `available: true`) – oder sobald sie einmal bestellt
+> wurden. Sauber wäre ein Katalog-Endpunkt im Backend; das ist bewusst
+> zurückgestellt, weil es eine App-Änderung für alle Restaurants bedeutet.
+
+## Stornieren löscht nicht
+
+`DELETE /api/admin/orders/:id` setzt `status: 'cancelled'` und verschickt eine
+Stornierungs-Mail – der Datensatz bleibt. Für Umsätze ist das richtig
+(stornierte Bestellungen werden dort herausgefiltert), aber solche Datensätze
+tauchen weiter in der Historie auf und damit auch in der Artikelliste der Kasse.
+
+Testbestellungen deshalb direkt in der Datenbank entfernen, nicht über die
+Route. Die sechs Testbestellungen vom 28. August wurden so gelöscht und der
+Zähler `counters.orderNum` auf 1000 zurückgesetzt – die erste echte Bestellung
+bekommt damit die Nummer 1001.
