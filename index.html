@@ -5001,6 +5001,10 @@ body.modal-open {
 
 <!-- Stempelkarte Promo -->
 <script>
+  // ── Stempelkarte abgeschaltet (Pinocchio Nordkirchen) ─────────────
+  // Auf true setzen, um sie wieder zu aktivieren. Die Backend-Endpunkte
+  // /api/account/stamps und /api/account/redeem-stamp bleiben bestehen.
+  window.STEMPELKARTE_AKTIV = false;
 (function() {
   function closeStampPromo() {
     var m = document.getElementById('stampPromoModal');
@@ -5011,6 +5015,7 @@ body.modal-open {
 
   // Nur zeigen wenn: nicht eingeloggt, noch nicht weggeklickt diese Session
   window.addEventListener('load', function() {
+    if (!window.STEMPELKARTE_AKTIV) return;
     if (sessionStorage.getItem('stampPromoDismissed')) return;
     if (localStorage.getItem('customerToken')) return; // eingeloggt → nicht zeigen
     setTimeout(function() {
@@ -5031,6 +5036,7 @@ body.modal-open {
   function getToken() { return localStorage.getItem('customerToken'); }
 
   async function loadStampData() {
+    if (!window.STEMPELKARTE_AKTIV) return;
     var token = getToken();
     if (!token) { renderPopupGuest(); return; }
     try {
@@ -5109,6 +5115,11 @@ body.modal-open {
   }
 
   window.toggleStampPopup = function(e) {
+    if (!window.STEMPELKARTE_AKTIV) {
+      if (e) e.preventDefault();
+      window.location.href = 'account.html';
+      return;
+    }
     e.stopPropagation();
     var p = document.getElementById('stamp-popup');
     if (!p) return;

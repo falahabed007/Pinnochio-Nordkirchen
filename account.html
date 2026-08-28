@@ -452,10 +452,9 @@
 
 <script>
   // ── API-URL ───────────────────────────────────────────────────
-  // Das Frontend läuft auf GitHub Pages (pizzeria-pinocchio.de), das Backend
+  // Das Frontend läuft auf GitHub Pages (pinnochionordkirchen.de), das Backend
   // getrennt auf Render. Deshalb absolute Backend-URL (wie in dashboard.html).
-  const API = 'https://website-pizzeria-pinocchio.onrender.com';
-  init();
+  const API = 'https://pinnochio-nordkirchen.onrender.com';
 
   // ── Token-Management ─────────────────────────────────────────
   const getToken  = () => localStorage.getItem('customerToken');
@@ -465,6 +464,8 @@
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${getToken()}`
   });
+
+  init();   // erst hier – getToken/authHeaders sind oben als const deklariert
 
   // ── Init ─────────────────────────────────────────────────────
   async function init() {
