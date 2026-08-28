@@ -67,18 +67,23 @@ Zertifikat wird erst nach korrektem DNS ausgestellt.
 Geprüft ist, dass GitHub den fertigen Stand ausliefert: ein Abruf direkt gegen
 die Pages-IP mit Host-Header liefert die Seite mit 324 KB und korrektem Titel.
 
-### Offen – Render
-`render.yaml` liegt im Repo. Render → **New → Blueprint** → dieses Repository
-wählen; der Service entsteht vorkonfiguriert, einzutragen sind nur die
-Geheimnisse (`MONGODB_URI`, Stripe, PayPal, Resend, `ADMIN_PASSWORD`).
+### Render – angelegt
+Service: `https://pinnochio-nordkirchen.onrender.com` (Frankfurt, Node, Branch `main`).
+`BACKEND_URL` in `index.html` zeigt darauf.
+
+**Offen:** `MONGODB_URI` ist noch nicht gesetzt – `/api/health` meldet
+`db: disconnected` und HTTP 503. Ohne Datenbank werden keine Bestellungen
+gespeichert. Ebenfalls noch offen: Stripe, PayPal und Resend (leere Werte
+schalten die Dienste ab, stören den Start aber nicht).
 
 > **Wichtig:** Solange kein Backend läuft, greift die Fail-Safe-Sperre – die
 > Seite zeigt sich, aber Bestellen ist deaktiviert („Backend nicht erreichbar →
 > auf geschlossen setzen"). Das ist gewolltes Verhalten aus dem Amoura-System.
 
-Nach dem Render-Deploy: `BACKEND_URL` in `index.html` auf die echte
-Service-URL setzen (steht aktuell auf dem Platzhalter
-`https://website-pinocchio-nordkirchen.onrender.com`).
+**Plan beachten:** Auf dem Free-Plan schläft der Dienst nach ~15 Minuten ein.
+Dann läuft die Minuten-Cron für die Auf/Zu-Automatik nicht mehr, die
+22-Uhr-Berichte fallen aus, und der erste Gast wartet ~50 s auf den Kaltstart.
+Für den Livebetrieb Starter ($7/Monat) wählen.
 
 ## 5. Technisch offen
 
