@@ -71,10 +71,40 @@ die Pages-IP mit Host-Header liefert die Seite mit 324 KB und korrektem Titel.
 Service: `https://pinnochio-nordkirchen.onrender.com` (Frankfurt, Node, Branch `main`).
 `BACKEND_URL` in `index.html` zeigt darauf.
 
-**Offen:** `MONGODB_URI` ist noch nicht gesetzt – `/api/health` meldet
-`db: disconnected` und HTTP 503. Ohne Datenbank werden keine Bestellungen
-gespeichert. Ebenfalls noch offen: Stripe, PayPal und Resend (leere Werte
-schalten die Dienste ab, stören den Start aber nicht).
+### MongoDB – Rechte fehlen (offen)
+
+`MONGODB_URI` ist gesetzt und zeigt auf den vorhandenen Atlas-Cluster
+(`cluster.honnxbz.mongodb.net`), Datenbank `pinocchio-nordkirchen`.
+Der Connection-String ist korrekt – daran muss nichts geändert werden.
+
+**Befund vom 28. August 2026:**
+
+| Prüfung | Ergebnis |
+|---|---|
+| `/api/health` | `db: connected` – Anmeldung am Cluster klappt |
+| `/api/availability` (lesen) | HTTP 500 |
+| `POST /api/orders` (schreiben) | HTTP 500 |
+
+Anmeldung erfolgreich, aber *jede* Operation scheitert – das ist die Signatur
+eines datenbankgebundenen Benutzerrechts. Der Benutzer `amoura_app` ist auf
+`pizzeria-amoura` beschränkt und hat auf `pinocchio-nordkirchen` keine Rechte.
+
+**Lösung:** Atlas → *Database Access* → `amoura_app` → *Edit* →
+*Add Additional Role*: `readWrite` auf `pinocchio-nordkirchen`. Danach in
+Render einmal *Manual Deploy → Restart*, weil Mongoose den bestehenden
+Verbindungspool offen hält und Rollenänderungen erst bei neuen Verbindungen
+greifen.
+
+Geplant ist ohnehin ein eigener Datenbankbenutzer je Pizzeria – dann entfällt
+die Zusatzrolle und der Zugang wird gleich sauber getrennt.
+
+> **Achtung beim Vorführen:** `/api/status` fällt bei Fehlern bewusst auf
+> „geöffnet" zurück. Die Bestellsperre greift also *nicht* – ein Besucher kann
+> den Warenkorb füllen und scheitert erst beim Absenden. Solange die Datenbank
+> nicht funktioniert, die Seite besser nicht dem Wirt zeigen.
+
+**Ebenfalls offen:** Stripe, PayPal und Resend (leere Werte schalten die
+Dienste ab, stören den Start aber nicht).
 
 > **Wichtig:** Solange kein Backend läuft, greift die Fail-Safe-Sperre – die
 > Seite zeigt sich, aber Bestellen ist deaktiviert („Backend nicht erreichbar →
