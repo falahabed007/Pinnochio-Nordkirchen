@@ -132,6 +132,7 @@ const orderSchema = new mongoose.Schema({
   subtotal:    Number,
   deliveryFee: { type: Number, default: 0 },
   serviceFee:  { type: Number, default: 0.99 },
+  discount:    { type: Number, default: 0 },
   total:       Number,
   note:        String,
   coupon:      String,
@@ -1028,6 +1029,7 @@ async function sendConfirmationEmail(order, mins) {
           </table>
           <div style="border-top:1px solid #eee;padding-top:10px;font-size:13px">
             <div style="display:flex;justify-content:space-between;color:#666;margin:3px 0"><span>Zwischensumme</span><span>${(order.subtotal||0).toFixed(2).replace('.',',')} €</span></div>
+            ${order.discount>0?`<div style="display:flex;justify-content:space-between;color:#2e7d32;margin:3px 0"><span>Rabatt Finanzsch\u00fcler (10 %)</span><span>\u2212${order.discount.toFixed(2)} \u20ac</span></div>`:''}
             ${order.deliveryFee>0?`<div style="display:flex;justify-content:space-between;color:#666;margin:3px 0"><span>Liefergebühr</span><span>${order.deliveryFee.toFixed(2).replace('.',',')} €</span></div>`:''}
             <div style="display:flex;justify-content:space-between;color:#666;margin:3px 0"><span>Servicegebühr</span><span>${(order.serviceFee||0.99).toFixed(2).replace('.',',')} €</span></div>
             <div style="display:flex;justify-content:space-between;font-weight:bold;font-size:15px;border-top:2px solid #1d5a9e;padding-top:8px;margin-top:6px"><span>Gesamt</span><span style="color:#1d5a9e">${(order.total||0).toFixed(2).replace('.',',')} €</span></div>
@@ -1068,7 +1070,7 @@ ARTIKEL:
 ${items}
 
 Zwischensumme: ${(order.subtotal||0).toFixed(2)} €
-${order.deliveryFee?`Liefergebühr:  ${order.deliveryFee.toFixed(2)} €`:''}
+${order.discount>0?`Rabatt (10 %): -${order.discount.toFixed(2)} €\n`:''}${order.deliveryFee?`Liefergebühr:  ${order.deliveryFee.toFixed(2)} €`:''}
 Servicegebühr: ${(order.serviceFee||0.99).toFixed(2)} €
 GESAMT:        ${(order.total||0).toFixed(2)} €
 
