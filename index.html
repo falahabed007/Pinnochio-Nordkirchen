@@ -2536,6 +2536,12 @@ function toggleMobileMenu() {
             <option value="bar">Barzahlung bei Übergabe</option>
         </select>
 
+        <!-- Tritt an die Stelle des Auswahlfelds, solange nur bar bezahlt wird -->
+        <div id="zahlung-hinweis" style="display:none;width:100%;padding:12px;margin-bottom:10px;
+             border:1px solid #ddd;border-radius:8px;background:#f9f9f9;font-size:14px;">
+          💵 Barzahlung bei Übergabe
+        </div>
+
         <!-- Payment Logos (Stripe) -->
         <div id="paymentLogos" style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:16px;padding:8px 10px;background:#f9f9f9;border-radius:8px;border:1px solid #eee;">
           <span style="display:inline-flex;align-items:center;justify-content:center;background:#1a1f71;color:#fff;font-size:.7rem;font-weight:900;font-family:Arial;border-radius:4px;padding:3px 7px;letter-spacing:.5px;">VISA</span>
@@ -2615,6 +2621,33 @@ function togglePaymentLogos() {
   if (logos)  logos.style.display  = zahlung.value === 'stripe' ? 'flex' : 'none';
   if (ppLogo) ppLogo.style.display = zahlung.value === 'paypal' ? 'flex' : 'none';
 }
+
+// ── Online-Zahlung abgeschaltet (Pinocchio Nordkirchen) ───────────
+// Auf true setzen, um Stripe und PayPal wieder anzubieten. Die Backend-
+// Endpunkte /api/create-stripe-checkout, /api/create-paypal-order und die
+// beiden Webhooks bleiben bestehen, ebenso die ENV-Variablen in render.yaml.
+window.ONLINE_ZAHLUNG_AKTIV = false;
+
+function applyZahlungsarten() {
+  var sel = document.getElementById('c-zahlung');
+  if (!sel) return;
+  if (window.ONLINE_ZAHLUNG_AKTIV) { togglePaymentLogos(); return; }
+
+  Array.prototype.slice.call(sel.options).forEach(function(o) {
+    if (o.value !== 'bar') o.remove();
+  });
+  sel.value = 'bar';
+
+  // Ein Auswahlfeld mit einem einzigen Eintrag wirkt kaputt – stattdessen
+  // die feste Zeile zeigen. Das <select> bleibt im DOM, damit processOrder
+  // weiterhin 'bar' ausliest.
+  sel.style.display = 'none';
+  var hint = document.getElementById('zahlung-hinweis');
+  if (hint) hint.style.display = 'block';
+
+  togglePaymentLogos();   // blendet beide Logo-Leisten aus
+}
+document.addEventListener('DOMContentLoaded', applyZahlungsarten);
 
 function updateBestellBtn() {
   var agb  = document.getElementById('cb-agb');
