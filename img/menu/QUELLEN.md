@@ -104,6 +104,7 @@ tatsächlich zeigt. Verkleinert mit
 | Datei | Artikel |
 |---|---|
 | 1-margherita.jpg | 1 Margherita (Nahaufnahme mit offener Blende) |
+| mozzarella.jpg | 2 Mozzarella, 3 Schafskäse und 5 Quadro Formaggi (ein Motiv für alle drei, so vorgegeben) |
 | 4-gorgonzola.jpg | 4 Gorgonzola |
 | 6-paprika.jpg | 6 Paprika |
 | 7-funghi.jpg | 7 Funghi |
@@ -119,5 +120,6 @@ tatsächlich zeigt. Verkleinert mit
 **Nicht übernommen:** `Pizza Mozeralla.jpg` und die identische Kopie
 `Pizza Schafskäse copy.jpg` tragen ein sichtbares iStock-Wasserzeichen
 (Credit Ryzhkov, ID 1333511573) und dürfen nicht veröffentlicht werden.
+An ihre Stelle trat `Pizza Mozzerlla.jpg` (andere Datei, ohne Wasserzeichen).
 Weitere Dateien aus dem Ordner zeigten nicht das Gericht, nach dem sie benannt
 sind, und blieben deshalb außen vor.
