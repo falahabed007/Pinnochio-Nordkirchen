@@ -104,6 +104,7 @@ tatsächlich zeigt. Verkleinert mit
 | Datei | Artikel |
 |---|---|
 | 1-margherita.jpg | 1 Margherita (Nahaufnahme mit offener Blende) |
+| calzone.jpg | 62 Calzone, 63 Mafioso, 64 Pinocchio, 65 Spezial (ein Motiv für alle vier – die Füllung ist bei einer Calzone nicht sichtbar) |
 | mozzarella.jpg | 2 Mozzarella, 3 Schafskäse und 5 Quadro Formaggi (ein Motiv für alle drei, so vorgegeben) |
 | 4-gorgonzola.jpg | 4 Gorgonzola |
 | 6-paprika.jpg | 6 Paprika |
