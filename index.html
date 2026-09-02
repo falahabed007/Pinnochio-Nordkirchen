@@ -1366,22 +1366,6 @@
         <div class="product-info"><h3>58 Quattro Stagioni</h3><p>Tomaten, Käse, Schinken, Paprika, Artischocken, Pilze</p></div>
         <div class="price">ab 5,50 €</div>
     </div>
-    <div class="product-item" onclick="openPizza(this)" data-mini="5.50" data-normal="9.00" data-maxi="11.00" style="cursor: pointer;">
-        <div class="product-info"><h3>59 Gyros</h3><p>Tomaten, Käse, Gyrosfleisch</p></div>
-        <div class="price">ab 5,50 €</div>
-    </div>
-    <div class="product-item" onclick="openPizza(this)" data-mini="5.50" data-normal="9.50" data-maxi="11.00" style="cursor: pointer;">
-        <div class="product-info"><h3>60 Gyros Spezial</h3><p>Tomaten, Käse, Broccoli, Zwiebeln, Gyrosfleisch</p></div>
-        <div class="price">ab 5,50 €</div>
-    </div>
-    <div class="product-item" onclick="openPizza(this)" data-mini="5.50" data-normal="9.50" data-maxi="11.00" style="cursor: pointer;">
-        <div class="product-info"><h3>61 Gyros Hollandaise</h3><p>Tomaten, Käse, Broccoli, Zwiebeln, Gyrosfleisch, Sauce Hollandaise</p></div>
-        <div class="price">ab 5,50 €</div>
-    </div>
-    <div class="product-item" onclick="openPizza(this)" data-mini="5.50" data-normal="9.50" data-maxi="11.00" style="cursor: pointer;">
-        <div class="product-info"><h3>61a Gyros</h3><p>frische Tomaten, frische Paprika, Zwiebeln, Feta-Käse</p></div>
-        <div class="price">ab 5,50 €</div>
-    </div>
     <h2 class="category-title" id="calzone">Calzone – gefüllte Pizza</h2>
     <div class="product-item" onclick="openPizza(this)" data-mini="5.50" data-normal="9.00" data-maxi="10.00" style="cursor: pointer;">
         <div class="product-info"><h3>62 Calzone</h3><p>Tomaten, Käse, Schinken, Salami, Pilze</p></div>
@@ -3181,7 +3165,7 @@ function showStripeCancelBanner() {
     <div class="size-selector">
         <div id="btn-20" class="size-btn active" onclick="selectSize(20)">20 cm</div>
         <div id="btn-28" class="size-btn" onclick="selectSize(28)">28 cm</div>
-        <div id="btn-32" class="size-btn" onclick="selectSize(32)">32 cm</div>
+        <div id="btn-31" class="size-btn" onclick="selectSize(31)">31 cm</div>
     </div>
 
     <p style="color:#666; font-size:0.85rem; margin-bottom:5px;">Extras hinzufügen:</p>
@@ -3198,8 +3182,29 @@ function showStripeCancelBanner() {
 let pizzaBasePrice = 0;
 let sizeSurcharge = 0;
 
-// Extrabelag laut Karte: Mini 0,50 € · Normal 0,50 € · Maxi 1,50 €
-const EXTRA_PREIS_JE_GROESSE = { 20: 0.50, 28: 0.50, 32: 1.50 };
+// Extrabelag je Größe. Der Standard gilt für jede Zutat, die nicht in
+// EXTRA_PREIS_SONDER steht.
+const EXTRA_PREIS_STANDARD = { 20: 0.50, 28: 0.50, 31: 2.00 };
+
+// Fleisch und Fisch kosten bei der normalen Pizza mehr als der Standardbelag.
+// Bei 20 cm und 31 cm gilt bewusst ein Einheitspreis – dort keine Ausnahmen.
+const EXTRA_PREIS_SONDER = {
+    28: {
+        'Lachs':              2.00,
+        'Scampi':             1.50,
+        'Krabben':            1.50,
+        'Meeresfrüchte':      1.50,
+        'Hähnchenbrustfilet': 1.00,
+        'Gyrosfleisch':       1.00
+    }
+};
+
+function extraPreis(zutat, groesse) {
+    const sonder = EXTRA_PREIS_SONDER[groesse];
+    if (sonder && sonder[zutat] !== undefined) return sonder[zutat];
+    return EXTRA_PREIS_STANDARD[groesse];
+}
+
 let aktuelleGroesse = 20;
 const pizzaExtrasList = [
     "Artischocken", "Broccoli", "Ei", "Feta-Käse", "Gorgonzola", "Hollandaise",
@@ -3217,7 +3222,7 @@ function openPizza(element) {
     const preise = {
         20: element.dataset.mini   ? parseFloat(element.dataset.mini)   : null,
         28: element.dataset.normal ? parseFloat(element.dataset.normal) : null,
-        32: element.dataset.maxi   ? parseFloat(element.dataset.maxi)   : null
+        31: element.dataset.maxi   ? parseFloat(element.dataset.maxi)   : null
     };
     document.getElementById('pizzaPopup').dataset.preise = JSON.stringify(preise);
 
@@ -3225,7 +3230,7 @@ function openPizza(element) {
 
     // Nur angebotene Größen zeigen; erste verfügbare vorauswählen
     let erste = null;
-    [20, 28, 32].forEach(g => {
+    [20, 28, 31].forEach(g => {
         const btn = document.getElementById('btn-' + g);
         if (preise[g] === null) { btn.style.display = 'none'; return; }
         btn.style.display = '';
@@ -3240,7 +3245,7 @@ function openPizza(element) {
         html += `
         <div class="extra-item" onclick="togglePizzaCheck(${index})">
             <label style="display: flex; align-items: center; cursor: pointer; flex: 1;">
-                <input type="checkbox" id="px-${index}" class="px-check" onchange="calculatePizzaTotal()" onclick="event.stopPropagation()" style="width:18px; height:18px; margin-right:12px;">
+                <input type="checkbox" id="px-${index}" data-idx="${index}" class="px-check" onchange="calculatePizzaTotal()" onclick="event.stopPropagation()" style="width:18px; height:18px; margin-right:12px;">
                 <span>${extra}</span>
             </label>
             <span class="px-tag" style="font-weight: bold; color: #1d5a9e;"></span>
@@ -3253,12 +3258,14 @@ function openPizza(element) {
     document.getElementById('pizzaPopup').style.display = 'flex';
 }
 
-// Extra-Preis hängt an der gewählten Größe → Anzeige und data-price nachziehen
+// Extra-Preis hängt an Größe und Zutat → je Zeile einzeln nachziehen
 function aktualisiereExtraPreise() {
-    const preis = EXTRA_PREIS_JE_GROESSE[aktuelleGroesse];
-    const txt = '+ ' + preis.toFixed(2).replace('.', ',') + ' €';
-    document.querySelectorAll('#pizzaExtrasBox .px-check').forEach(box => box.setAttribute('data-price', preis));
-    document.querySelectorAll('#pizzaExtrasBox .px-tag').forEach(tag => tag.innerText = txt);
+    document.querySelectorAll('#pizzaExtrasBox .px-check').forEach(box => {
+        const preis = extraPreis(pizzaExtrasList[Number(box.dataset.idx)], aktuelleGroesse);
+        box.setAttribute('data-price', preis);
+        const tag = box.closest('.extra-item').querySelector('.px-tag');
+        if (tag) tag.innerText = '+ ' + preis.toFixed(2).replace('.', ',') + ' €';
+    });
 }
 
 function selectSize(size) {
@@ -4416,8 +4423,7 @@ document.readyState === 'loading'
     '44':'pizza-funghi', '45':'pizza-salami', '46':'pizza-frutti-di-mare', '47':'pizza-funghi',
     '48':'pizza-tonno', '49':'pizza-prosciutto', '50':'pizza-prosciutto', '51':'pizza-tonno',
     '52':'pizza-frutti-di-mare', '53':'pizza-frutti-di-mare', '54':'pizza-funghi', '55':'pizza-tonno',
-    '56':'pizza-formaggi', '57':'pizza-prosciutto', '58':'pizza-funghi', '59':'gyros',
-    '60':'gyros', '61':'gyros', '61a':'gyros', '62':'calzone',
+    '56':'pizza-formaggi', '57':'pizza-prosciutto', '58':'pizza-funghi', '62':'calzone',
     '63':'pizza-tonno', '64':'pizza-tonno', '65':'calzone', '66':'familienpizza',
     '67':'familienpizza', '68':'pizzabroetchen', '68a':'pizzabroetchen', '69':'spaghetti-napolitana',
     '70':'spaghetti-bolognese', '71':'spaghetti-bolognese', '72':'spaghetti-carbonara', '73':'spaghetti-bolognese',

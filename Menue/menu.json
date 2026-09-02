@@ -3,12 +3,21 @@
   "_groessen": {
     "mini": "20 cm",
     "normal": "28 cm",
-    "maxi": "32 cm"
+    "maxi": "31 cm"
   },
   "_extras": {
+    "_hinweis": "Vom Wirt am 2. September 2026 korrigiert; weicht bewusst vom Scan der gedruckten Karte ab (dort: Maxi 32 cm, Extrabelag maxi 1,50 EUR).",
     "mini": 0.5,
     "normal": 0.5,
-    "maxi": 1.5
+    "maxi": 2.0,
+    "normal_sonderpreise": {
+      "Lachs": 2.0,
+      "Scampi": 1.5,
+      "Krabben": 1.5,
+      "Meeresfrüchte": 1.5,
+      "Hähnchenbrustfilet": 1.0,
+      "Gyrosfleisch": 1.0
+    }
   },
   "kategorien": [
     {
@@ -545,38 +554,6 @@
           "desc": "Tomaten, Käse, Schinken, Paprika, Artischocken, Pilze",
           "mini": 5.5,
           "normal": 9.0,
-          "maxi": 11.0
-        },
-        {
-          "num": "59",
-          "name": "Gyros",
-          "desc": "Tomaten, Käse, Gyrosfleisch",
-          "mini": 5.5,
-          "normal": 9.0,
-          "maxi": 11.0
-        },
-        {
-          "num": "60",
-          "name": "Gyros Spezial",
-          "desc": "Tomaten, Käse, Broccoli, Zwiebeln, Gyrosfleisch",
-          "mini": 5.5,
-          "normal": 9.5,
-          "maxi": 11.0
-        },
-        {
-          "num": "61",
-          "name": "Gyros Hollandaise",
-          "desc": "Tomaten, Käse, Broccoli, Zwiebeln, Gyrosfleisch, Sauce Hollandaise",
-          "mini": 5.5,
-          "normal": 9.5,
-          "maxi": 11.0
-        },
-        {
-          "num": "61a",
-          "name": "Gyros",
-          "desc": "frische Tomaten, frische Paprika, Zwiebeln, Feta-Käse",
-          "mini": 5.5,
-          "normal": 9.5,
           "maxi": 11.0
         }
       ]
