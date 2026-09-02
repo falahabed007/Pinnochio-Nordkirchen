@@ -114,6 +114,7 @@ tatsächlich zeigt. Verkleinert mit
 | 12a-spargelpizza.jpg | 12a Spargelpizza (Pexels 29897143, vchevaelena; zeigt Schinken und Champignons, keinen Spargel – so vorgegeben) |
 | 13-vegetarisch-spezial.jpg | 13 Vegetarisch Spezial |
 | 17-rucola.jpg | 17 Rucola |
+| 21-tonno-e-prosciutto.jpg | 21 Tonno e Prosciutto (zeigt Schinken und Käse, keinen Thunfisch – so vorgegeben) |
 | 26-frutti-di-mare.jpg | 26 Frutti di Mare (Hintergrund unten beschnitten) |
 | 36-hawaii.jpg | 36 Hawaii |
 | 44-diavollo.jpg | 44 Diavollo |
