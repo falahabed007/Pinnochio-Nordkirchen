@@ -111,6 +111,7 @@ tatsächlich zeigt. Verkleinert mit
 | 9-mais.jpg | 9 Mais |
 | 10-broccoli.jpg | 10 Broccoli |
 | 11-spinaci.jpg | 11 Spinaci |
+| 12a-spargelpizza.jpg | 12a Spargelpizza (Pexels 29897143, vchevaelena; zeigt Schinken und Champignons, keinen Spargel – so vorgegeben) |
 | 13-vegetarisch-spezial.jpg | 13 Vegetarisch Spezial |
 | 17-rucola.jpg | 17 Rucola |
 | 26-frutti-di-mare.jpg | 26 Frutti di Mare (Hintergrund unten beschnitten) |
