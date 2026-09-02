@@ -111,9 +111,12 @@ tatsächlich zeigt. Verkleinert mit
 | 9-mais.jpg | 9 Mais |
 | 10-broccoli.jpg | 10 Broccoli |
 | 11-spinaci.jpg | 11 Spinaci |
+| 12-artischocken.jpg | 12 Artischocken (Artischocken sichtbar, weiße Pizza ohne Tomatensauce) |
 | 12a-spargelpizza.jpg | 12a Spargelpizza (Pexels 29897143, vchevaelena; zeigt Schinken und Champignons, keinen Spargel – so vorgegeben) |
 | 13-vegetarisch-spezial.jpg | 13 Vegetarisch Spezial |
+| 15-toscana.jpg | 15 Toscana (Salami, Oliven, Tomatenscheiben; keine Sardellen zu sehen) |
 | 17-rucola.jpg | 17 Rucola |
+| 18-sardellen.jpg | 18 Sardellen |
 | 21-tonno-e-prosciutto.jpg | 21 Tonno e Prosciutto (zeigt Schinken und Käse, keinen Thunfisch – so vorgegeben) |
 | 26-frutti-di-mare.jpg | 26 Frutti di Mare (Hintergrund unten beschnitten) |
 | 36-hawaii.jpg | 36 Hawaii |
