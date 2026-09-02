@@ -4456,6 +4456,24 @@ document.readyState === 'loading'
     'M4':'haehnchen-curry', 'M5':'pizza-margherita', 'M6':'haehnchen-curry'
   };
 
+  // Vom Betreiber gelieferte Fotos (img/menu/haus/) überschreiben die
+  // Stockbilder oben. Aufgenommen sind nur Gerichte, deren Foto die Zutaten
+  // laut Karte auch tatsächlich zeigt — siehe img/menu/QUELLEN.md.
+  Object.assign(ITEM_IMG, {
+    '1':  'haus/1-margherita',
+    '4':  'haus/4-gorgonzola',
+    '6':  'haus/6-paprika',
+    '7':  'haus/7-funghi',
+    '9':  'haus/9-mais',
+    '10': 'haus/10-broccoli',
+    '11': 'haus/11-spinaci',
+    '13': 'haus/13-vegetarisch-spezial',
+    '17': 'haus/17-rucola',
+    '26': 'haus/26-frutti-di-mare',
+    '36': 'haus/36-hawaii',
+    '44': 'haus/44-diavollo'
+  });
+
   // Artikel ohne Nummer (Getränke, Familienpizzen) → Zuordnung über den Namen
   var NAME_IMG = [
     [/familienpizza|pizzablech/i, 'familienpizza'],

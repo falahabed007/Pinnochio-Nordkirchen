@@ -89,3 +89,35 @@ Unsplash-Bilder: `https://images.unsplash.com/photo-<ID>` · Pexels-Bilder: `htt
 | Datei | Quelle | ID |
 |---|---|---|
 | img/hero.jpg | Unsplash | 1513104890138-7c749659a591 (bisheriges Hero-Motiv, jetzt lokal) |
+
+## Vom Betreiber geliefert (img/menu/haus/)
+
+Am 2. September 2026 aus dem Ordner „Bilder für die Webseite" übernommen.
+Herkunft laut Betreiber: **Unsplash**. Die Dateien tragen keine EXIF-Daten, die
+einzelnen Bild-IDs ließen sich deshalb nicht nachtragen — bei einer Rückfrage
+zur Lizenz muss der Betreiber die Quelle belegen.
+
+Aufgenommen wurden nur Fotos, deren Motiv die Zutaten laut Speisekarte auch
+tatsächlich zeigt. Verkleinert mit
+`magick <quelle> -auto-orient -resize '800x800>' -strip -quality 82`.
+
+| Datei | Artikel |
+|---|---|
+| 1-margherita.jpg | 1 Margherita (Nahaufnahme mit offener Blende) |
+| 4-gorgonzola.jpg | 4 Gorgonzola |
+| 6-paprika.jpg | 6 Paprika |
+| 7-funghi.jpg | 7 Funghi |
+| 9-mais.jpg | 9 Mais |
+| 10-broccoli.jpg | 10 Broccoli |
+| 11-spinaci.jpg | 11 Spinaci |
+| 13-vegetarisch-spezial.jpg | 13 Vegetarisch Spezial |
+| 17-rucola.jpg | 17 Rucola |
+| 26-frutti-di-mare.jpg | 26 Frutti di Mare (Hintergrund unten beschnitten) |
+| 36-hawaii.jpg | 36 Hawaii |
+| 44-diavollo.jpg | 44 Diavollo |
+
+**Nicht übernommen:** `Pizza Mozeralla.jpg` und die identische Kopie
+`Pizza Schafskäse copy.jpg` tragen ein sichtbares iStock-Wasserzeichen
+(Credit Ryzhkov, ID 1333511573) und dürfen nicht veröffentlicht werden.
+Weitere Dateien aus dem Ordner zeigten nicht das Gericht, nach dem sie benannt
+sind, und blieben deshalb außen vor.
