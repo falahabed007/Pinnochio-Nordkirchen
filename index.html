@@ -173,17 +173,6 @@
         background: #f0e8dc;
     }
 
-    /* Foto-Banner unter jedem Kategorie-Titel */
-    .category-banner {
-        width: 100%;
-        height: 150px;
-        object-fit: cover;
-        display: block;
-        border-radius: 14px;
-        margin: 0 0 16px 0;
-        box-shadow: 0 4px 14px rgba(0,0,0,0.10);
-        background: #f0e8dc;
-    }
 
     /* Responsive */
     @media (max-width: 900px) {
@@ -197,7 +186,6 @@
         .price { font-size: 0.9rem; }
         .card-add-btn { width: 28px; height: 28px; font-size: 1.1rem; }
         .card-img { height: 96px; }
-        .category-banner { height: 110px; border-radius: 12px; }
     }
     @media (max-width: 360px) {
         .product-grid { grid-template-columns: 1fr; }
@@ -4526,7 +4514,8 @@ document.readyState === 'loading'
     var currentGrid = null;
     var currentCat = null;
 
-    // First: inject icons + photo banner into category titles
+    // Icons in die Kategorie-Titel setzen. Die Foto-Banner unter den Titeln
+    // sind entfallen – jedes Gericht hat inzwischen sein eigenes Bild.
     container.querySelectorAll('.category-title').forEach(function(h2) {
       var icon = ICONS[h2.id];
       if (icon && !h2.querySelector('.category-icon')) {
@@ -4534,17 +4523,6 @@ document.readyState === 'loading'
         span.className = 'category-icon';
         span.textContent = icon;
         h2.insertBefore(span, h2.firstChild);
-      }
-      // Foto-Banner direkt unter dem Kategorie-Titel
-      var next = h2.nextElementSibling;
-      if (!next || !next.classList || !next.classList.contains('category-banner')) {
-        var banner = document.createElement('img');
-        banner.className = 'category-banner';
-        banner.src = 'img/menu/banner/' + h2.id + '.jpg';
-        banner.alt = h2.textContent.trim();
-        banner.loading = 'lazy';
-        banner.onerror = function() { this.remove(); };
-        h2.parentNode.insertBefore(banner, h2.nextSibling);
       }
     });
 
@@ -4569,7 +4547,6 @@ document.readyState === 'loading'
         currentGrid.appendChild(el);
         return;
       }
-      if (el.classList.contains('category-banner')) return; // Banner nicht als Grid-Unterbrechung werten
       currentGrid = null;
     });
   }

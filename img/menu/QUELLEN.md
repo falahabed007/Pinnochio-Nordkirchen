@@ -66,7 +66,12 @@ Unsplash-Bilder: `https://images.unsplash.com/photo-<ID>` · Pexels-Bilder: `htt
 | limo-zitrone.jpg | Unsplash | 1556881286-fc6915169721 |
 | wasser.jpg | Pexels | 416528 |
 
-## Kategorie-Banner (img/menu/banner/)
+## Kategorie-Banner (entfernt am 3. September 2026)
+
+Die Banner unter den Kategorie-Titeln sind entfallen, seit jedes Gericht ein
+eigenes Bild hat. Der Ordner `img/menu/banner/` wurde gelöscht; die Dateien
+stehen in der Git-Historie, falls sie je zurücksollen. Die Quellen zur
+Nachvollziehbarkeit:
 
 | Datei | Quelle | ID |
 |---|---|---|
