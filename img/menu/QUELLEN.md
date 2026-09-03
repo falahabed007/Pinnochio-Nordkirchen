@@ -104,6 +104,17 @@ tatsächlich zeigt. Verkleinert mit
 | Datei | Artikel |
 |---|---|
 | 1-margherita.jpg | 1 Margherita (Nahaufnahme mit offener Blende) |
+| 68-pizzabroetchen.jpg | 68 Pizzabrötchen |
+| 68a-pizzabroetchen-kaese.jpg | 68a Gefüllte Pizzabrötchen |
+| 71-spaghetti-panna.jpg | 71 Spaghetti alla Panna (zusätzlich Mais im Bild) |
+| 72-spaghetti-carbonara.jpg | 72 Spaghetti Carbonara |
+| 74-spaghetti-frutti-di-mare.jpg | 74 Spaghetti Frutti di Mare |
+| 75-spaghetti-gambaretti.jpg | 75 Spaghetti Gambaretti |
+| 76-spaghetti-tonno.jpg | 76 Spaghetti al Tonno (Belag nicht eindeutig als Thunfisch erkennbar) |
+| 78-spaghetti-vegetaria.jpg | 78 Spaghetti Vegetaria |
+| 79-spaghetti-aglio-e-olio.jpg | 79 Spaghetti Aglio e Olio |
+| 81-tagliatelle-napolitana.jpg | 81 Tagliatelle alla Napolitana |
+| 83-tagliatelle-vegetarisch.jpg | 83 Tagliatelle vegetarisch (Sahnesauce, Broccoli und Champignons nicht im Bild) |
 | calzone.jpg | 62 Calzone, 63 Mafioso, 64 Pinocchio, 65 Spezial (ein Motiv für alle vier – die Füllung ist bei einer Calzone nicht sichtbar) |
 | mozzarella.jpg | 2 Mozzarella, 3 Schafskäse und 5 Quadro Formaggi (ein Motiv für alle drei, so vorgegeben) |
 | 4-gorgonzola.jpg | 4 Gorgonzola |
@@ -128,4 +139,7 @@ tatsächlich zeigt. Verkleinert mit
 (Credit Ryzhkov, ID 1333511573) und dürfen nicht veröffentlicht werden.
 An ihre Stelle trat `Pizza Mozzerlla.jpg` (andere Datei, ohne Wasserzeichen).
 Weitere Dateien aus dem Ordner zeigten nicht das Gericht, nach dem sie benannt
-sind, und blieben deshalb außen vor.
+sind, und blieben deshalb außen vor. Darunter `Spaghetti della Chef.jpg`
+(Tomatensauce statt Sahnesauce mit Spinat und Gorgonzola – das Foto passt
+stattdessen auf Nr. 69 Spaghetti alla Napolitana) und
+`Tagliatelle al Salmone.jpg` (Sahnesauce mit Champignons, kein Lachs).
