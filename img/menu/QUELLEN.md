@@ -120,6 +120,9 @@ tatsächlich zeigt. Verkleinert mit
 | 79-spaghetti-aglio-e-olio.jpg | 79 Spaghetti Aglio e Olio |
 | 81-tagliatelle-napolitana.jpg | 81 Tagliatelle alla Napolitana |
 | 83-tagliatelle-vegetarisch.jpg | 83 Tagliatelle vegetarisch (Sahnesauce, Broccoli und Champignons nicht im Bild) |
+| cola.jpg | Coca Cola (Flasche und Dose) |
+| fanta.jpg | Fanta (Flasche und Dose) |
+| sprite.jpg | Sprite (Flasche und Dose) |
 | calzone.jpg | 62 Calzone, 63 Mafioso, 64 Pinocchio, 65 Spezial (ein Motiv für alle vier – die Füllung ist bei einer Calzone nicht sichtbar) |
 | mozzarella.jpg | 2 Mozzarella, 3 Schafskäse und 5 Quadro Formaggi (ein Motiv für alle drei, so vorgegeben) |
 | 4-gorgonzola.jpg | 4 Gorgonzola |
