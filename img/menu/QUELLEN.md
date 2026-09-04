@@ -66,12 +66,14 @@ Unsplash-Bilder: `https://images.unsplash.com/photo-<ID>` · Pexels-Bilder: `htt
 | limo-zitrone.jpg | Unsplash | 1556881286-fc6915169721 |
 | wasser.jpg | Pexels | 416528 |
 
-## Kategorie-Banner (entfernt am 3. September 2026)
+## Kategorie-Banner (img/menu/banner/)
 
-Die Banner unter den Kategorie-Titeln sind entfallen, seit jedes Gericht ein
-eigenes Bild hat. Der Ordner `img/menu/banner/` wurde gelöscht; die Dateien
-stehen in der Git-Historie, falls sie je zurücksollen. Die Quellen zur
-Nachvollziehbarkeit:
+Seit dem 3. September 2026 die einzigen Bilder, die auf der Seite erscheinen:
+ein Banner je Oberkategorie, die Produktkarten bleiben ohne Foto. Umgeschaltet
+wird das über die beiden Schalter `GERICHT_FOTOS` und `KATEGORIE_BANNER` in
+`index.html`; die Gericht-Fotos in `img/menu/haus/` und ihre Zuordnungen
+bleiben unangetastet und greifen sofort wieder, sobald der Schalter umgelegt
+wird.
 
 | Datei | Quelle | ID |
 |---|---|---|
@@ -101,6 +103,10 @@ Am 2. September 2026 aus dem Ordner „Bilder für die Webseite" übernommen.
 Herkunft laut Betreiber: **Unsplash**. Die Dateien tragen keine EXIF-Daten, die
 einzelnen Bild-IDs ließen sich deshalb nicht nachtragen — bei einer Rückfrage
 zur Lizenz muss der Betreiber die Quelle belegen.
+
+**Stand 3. September 2026: diese Fotos werden nicht angezeigt.** Auf der Seite
+erscheinen nur noch die Kategorie-Banner (Schalter `GERICHT_FOTOS` in
+`index.html`). Dateien und Zuordnungen bleiben erhalten.
 
 Aufgenommen wurden nur Fotos, deren Motiv die Zutaten laut Speisekarte auch
 tatsächlich zeigt. Verkleinert mit
