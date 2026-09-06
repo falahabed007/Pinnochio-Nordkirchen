@@ -411,7 +411,10 @@ app.get('/api/health', (req, res) => {
   res.status(dbUp ? 200 : 503).json({
     status: dbUp ? 'ok' : 'degraded',
     db: dbUp ? 'connected' : 'disconnected',
-    restaurant: 'Pizzeria Pinocchio', time: new Date()
+    restaurant: 'Pizzeria Pinocchio', time: new Date(),
+    // Render setzt RENDER_GIT_COMMIT selbst. Ohne diese Angabe laesst sich
+    // von aussen nicht feststellen, welcher Stand gerade laeuft.
+    commit: (process.env.RENDER_GIT_COMMIT || 'unbekannt').slice(0, 7)
   });
 });
 
@@ -1590,7 +1593,12 @@ function buildWochenberichtPdf(doc, d) {
 // Einzige Quelle - der Sonntags-Cron und POST /api/admin/send-weekly rufen
 // beide hier rein. Fehler werden bewusst nicht gefangen: der Cron loggt sie,
 // der Endpunkt macht daraus einen 500er.
-async function wochenberichtVersenden(now) {
+//
+// nurOwner=true laesst die Mail an das Restaurant aus - fuer Probelaeufe.
+// Bewusst ein Parameter und nicht das Leeren von RESTAURANT_EMAIL: an der
+// Variablen haengt auch die Benachrichtigung bei jeder eingehenden
+// Bestellung, die dabei mit ausfallen wuerde.
+async function wochenberichtVersenden(now, { nurOwner = false } = {}) {
   const wStart   = new Date(now); wStart.setDate(now.getDate()-6); wStart.setHours(0,0,0,0);
   const wEnd     = new Date(now); wEnd.setHours(23,59,59,999);
   const kw       = getWeekNum(now);
@@ -1616,7 +1624,7 @@ async function wochenberichtVersenden(now) {
   }));
 
   // ── E-Mail 1: Restaurant bekommt Wochenbericht als PDF-Anhang ────────
-  if (process.env.RESTAURANT_EMAIL) {
+  if (process.env.RESTAURANT_EMAIL && !nurOwner) {
     await getResend()?.emails.send({
       from: process.env.EMAIL_FROM || 'system@pizzeria-pinocchio.de',
       to: process.env.RESTAURANT_EMAIL,
@@ -1656,7 +1664,7 @@ async function wochenberichtVersenden(now) {
   }
 
   return { kw, jahr: now.getFullYear(), vonBis, anzahl: orders.length,
-           brutto, svcFees, auszahlung, berichtPdf };
+           brutto, svcFees, auszahlung, berichtPdf, nurOwner };
 }
 
 cron.schedule('0 22 * * 0', async () => {
@@ -1813,15 +1821,19 @@ cron.schedule('0 22 * * *', async () => {
 // ── Wochenbericht manuell triggern ───────────────────────────────
 // POST /api/admin/send-weekly?date=2026-09-13  (oder leer = laufende Woche)
 // date ist der Endtag der Woche; der Bericht deckt die 7 Tage davor ab.
+// only=owner verschickt nur an OWNER_EMAIL, das Restaurant bleibt aussen vor.
 app.post('/api/admin/send-weekly', auth, async (req, res) => {
   try {
     const p = req.query.date;
     const now = p ? new Date(`${p}T22:00:00`) : new Date();
     if (isNaN(now.getTime())) return res.status(400).json({ message: 'date muss YYYY-MM-TT sein' });
-    const r = await wochenberichtVersenden(now);
-    console.log(`📊 Wochenbericht KW ${r.kw} manuell versendet (${r.anzahl} Bestellungen)`);
+    const nurOwner = req.query.only === 'owner';
+    const r = await wochenberichtVersenden(now, { nurOwner });
+    console.log(`📊 Wochenbericht KW ${r.kw} manuell versendet (${r.anzahl} Bestellungen)`
+              + (nurOwner ? ' – nur an Owner' : ''));
     res.json({
       success: true, kw: r.kw, jahr: r.jahr, zeitraum: r.vonBis, orders: r.anzahl,
+      empfaenger: nurOwner ? ['owner'] : ['restaurant', 'owner'],
       berichtPdfBase64: r.berichtPdf.toString('base64'),
     });
   } catch(e) {
