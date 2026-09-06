@@ -1552,100 +1552,117 @@ cron.schedule('0 22 * * *', async () => {
   } catch(e) { console.error('Tagesbericht Fehler:', e); }
 });
 
+// Baut das Wochenbericht-PDF. Einzige Quelle fuer das Layout.
+function buildWochenberichtPdf(doc, d) {
+  const { kw, jahr, vonBis, orders, brutto, svcFees, auszahlung,
+          barOrders, barSvc, barNetto, barBetrag } = d;
+
+  pdfColorBox(doc, `Wochenbericht KW ${kw} / ${jahr}`, `Pizzeria Pinocchio  ·  ${vonBis}`, '#1d5a9e');
+  pdfKacheln(doc, [
+    ['Bestellungen gesamt', `${orders.length}`,                                                   '#1a1a2e'],
+    ['Davon Bar',           `${barOrders.length}`,                                                '#2c5282'],
+    ['Davon Online',        `${orders.filter(o=>['stripe','paypal'].includes(o.payment)).length}`,'#276749'],
+    ['Brutto-Umsatz',       pdfFmt(brutto),                                                       '#744210'],
+  ]);
+  doc.moveDown(0.4);
+  pdfHr(doc);
+  doc.font('Helvetica-Bold').fontSize(10).fillColor('#1a1a2e').text('ABRECHNUNG', PDF_M, doc.y);
+  doc.y += 14;
+  pdfTableRow(doc, [[`Servicegebühren  (${pdfFmt(PDF_SV)} × ${orders.length})`, PDF_M+8, PDF_W-80, 'left'], [pdfFmt(svcFees), PDF_M+2, PDF_W-4, 'right']], false, true);
+  doc.y += 4;
+  const ay = doc.y;
+  doc.rect(PDF_M, ay, PDF_W, 28).fill('#e8f5e9');
+  doc.font('Helvetica-Bold').fontSize(12).fillColor('#2e7d32').text('Auszahlung an Pizzeria Pinocchio', PDF_M+10, ay+8, { width: PDF_W*0.65 });
+  doc.font('Helvetica-Bold').fontSize(13).fillColor('#2e7d32').text(pdfFmt(auszahlung), PDF_M+2, ay+8, { width: PDF_W-4, align: 'right' });
+  doc.y = ay + 28 + 12;
+  pdfHr(doc, '#bbb');
+  doc.font('Helvetica-Bold').fontSize(10).fillColor('#1a1a2e').text('KUNDENLISTE', PDF_M, doc.y);
+  doc.y += 12;
+  pdfKundenliste(doc, orders);
+  if (barOrders.length > 0) {
+    pdfBarRechnung(doc, barOrders, { barSvc, barNetto, barBetrag }, vonBis);
+  }
+  doc.font('Helvetica').fontSize(7).fillColor('#bbb')
+    .text(`FlueVate · Abed Rachman Falah · Zur Goldbrede 30 · 59269 Beckum  ·  Wochenbericht KW ${kw} / ${jahr}`, PDF_M, 820, { width: PDF_W, align: 'center' });
+}
+
+// Baut und versendet den Wochenbericht fuer die Woche, die auf `now` endet.
+// Einzige Quelle - der Sonntags-Cron und POST /api/admin/send-weekly rufen
+// beide hier rein. Fehler werden bewusst nicht gefangen: der Cron loggt sie,
+// der Endpunkt macht daraus einen 500er.
+async function wochenberichtVersenden(now) {
+  const wStart   = new Date(now); wStart.setDate(now.getDate()-6); wStart.setHours(0,0,0,0);
+  const wEnd     = new Date(now); wEnd.setHours(23,59,59,999);
+  const kw       = getWeekNum(now);
+  const datum    = now.toLocaleDateString('de-DE', { day:'2-digit', month:'2-digit', year:'numeric' });
+  const vonBis   = `${wStart.toLocaleDateString('de-DE')} – ${datum}`;
+
+  const orders = await Order.find({
+    status: { $in: ['confirmed','preparing','ready','delivered'] },
+    createdAt: { $gte: wStart, $lte: wEnd }
+  });
+
+  const brutto     = orders.reduce((s,o) => s+(o.total||0), 0);
+  const svcFees    = orders.reduce((s,o) => s+(o.serviceFee||PDF_SV), 0);
+  const auszahlung = brutto - svcFees;
+  const barOrders  = orders.filter(o => o.payment === 'bar');
+  const barSvc     = barOrders.reduce((s,o) => s+(o.serviceFee||PDF_SV), 0);
+  const barNetto   = barOrders.reduce((s,o) => s+(o.total||0), 0) - barSvc;
+  const barBetrag  = barSvc;
+
+  const berichtPdf = await generatePdf(doc => buildWochenberichtPdf(doc, {
+    kw, jahr: now.getFullYear(), vonBis, orders, brutto, svcFees, auszahlung,
+    barOrders, barSvc, barNetto, barBetrag,
+  }));
+
+  // ── E-Mail 1: Restaurant bekommt Wochenbericht als PDF-Anhang ────────
+  if (process.env.RESTAURANT_EMAIL) {
+    await getResend()?.emails.send({
+      from: process.env.EMAIL_FROM || 'system@pizzeria-pinocchio.de',
+      to: process.env.RESTAURANT_EMAIL,
+      subject: `📊 Wochenbericht KW ${kw} / ${now.getFullYear()} · Pizzeria Pinocchio`,
+      html: `<div style="font-family:Arial,sans-serif;max-width:580px;margin:0 auto;color:#222">
+<div style="background:#1d5a9e;padding:24px 28px;color:#fff">
+  <h2 style="margin:0;font-size:20px">Wochenbericht KW ${kw} / ${now.getFullYear()}</h2>
+  <p style="margin:4px 0 0;opacity:.8;font-size:13px">${vonBis}</p>
+</div>
+<div style="padding:24px 28px">
+  <table style="width:100%;border-collapse:collapse;font-size:13px">
+    <tr style="background:#f5f5f5"><td style="padding:8px">Bestellungen gesamt</td><td style="padding:8px;text-align:right"><b>${orders.length}</b></td></tr>
+    <tr><td style="padding:8px">Gesamtumsatz (Brutto)</td><td style="padding:8px;text-align:right">${brutto.toFixed(2).replace('.',',')} €</td></tr>
+    <tr style="background:#f5f5f5"><td style="padding:8px">Servicegebühren (A. R. Falah)</td><td style="padding:8px;text-align:right">− ${svcFees.toFixed(2).replace('.',',')} €</td></tr>
+    <tr style="background:#e8f5e9"><td style="padding:10px;font-weight:bold;color:#2e7d32;font-size:15px">Ihr Auszahlungsbetrag</td><td style="padding:10px;text-align:right;font-weight:bold;color:#2e7d32;font-size:15px">${auszahlung.toFixed(2).replace('.',',')} €</td></tr>
+  </table>
+  <p style="font-size:11px;color:#aaa;margin-top:8px">Anbei der Wochenbericht mit Kundenliste${barOrders.length > 0 ? ' und Bar-Übersicht' : ''}.</p>
+</div>
+</div>`,
+      attachments: [{ filename: `KW${kw}_${now.getFullYear()}_Pinocchio_Wochenbericht.pdf`, content: berichtPdf.toString('base64') }],
+    });
+  }
+
+  // ── E-Mail 2: Owner bekommt den Wochenbericht als Anhang ──────
+  if (process.env.OWNER_EMAIL) {
+    await getResend()?.emails.send({
+      from: process.env.EMAIL_FROM || 'system@pizzeria-pinocchio.de',
+      to: process.env.OWNER_EMAIL,
+      subject: `📊 Wochenbericht KW ${kw} · Pizzeria Pinocchio`,
+      html: `<p style="font-family:Arial,sans-serif;color:#555">Anbei der Wochenbericht KW ${kw} / ${now.getFullYear()} für Pizzeria Pinocchio.</p>
+             <p style="font-family:Arial,sans-serif;color:#555"><b>Zeitraum:</b> ${vonBis}<br><b>Dein Verdienst:</b> ${svcFees.toFixed(2).replace('.',',')} €</p>
+             <p style="font-family:Arial,sans-serif;color:#999;font-size:12px">Die Gebühren-Rechnung wird separat über Lexware gestellt.</p>`,
+      attachments: [
+        { filename: `KW${kw}_${now.getFullYear()}_Pinocchio_Wochenbericht.pdf`, content: berichtPdf.toString('base64') },
+      ],
+    });
+  }
+
+  return { kw, jahr: now.getFullYear(), vonBis, anzahl: orders.length,
+           brutto, svcFees, auszahlung, berichtPdf };
+}
+
 cron.schedule('0 22 * * 0', async () => {
   try {
-    const now      = new Date();
-    const wStart   = new Date(now); wStart.setDate(now.getDate()-6); wStart.setHours(0,0,0,0);
-    const wEnd     = new Date(now); wEnd.setHours(23,59,59,999);
-    const kw       = getWeekNum(now);
-    const datum    = now.toLocaleDateString('de-DE', { day:'2-digit', month:'2-digit', year:'numeric' });
-    const vonBis   = `${wStart.toLocaleDateString('de-DE')} – ${datum}`;
-
-    const orders = await Order.find({
-      status: { $in: ['confirmed','preparing','ready','delivered'] },
-      createdAt: { $gte: wStart, $lte: wEnd }
-    });
-
-    const brutto     = orders.reduce((s,o) => s+(o.total||0), 0);
-    const svcFees    = orders.reduce((s,o) => s+(o.serviceFee||PDF_SV), 0);
-    const auszahlung = brutto - svcFees;
-    const barOrders  = orders.filter(o => o.payment === 'bar');
-    const barSvc     = barOrders.reduce((s,o) => s+(o.serviceFee||PDF_SV), 0);
-    const barNetto   = barOrders.reduce((s,o) => s+(o.total||0), 0) - barSvc;
-    const barBetrag  = barSvc;
-
-    // ── PDF: Wochenbericht Pizzeria Pinocchio ──────────────────────
-    const berichtPdf = await generatePdf(doc => {
-      pdfColorBox(doc, `Wochenbericht KW ${kw} / ${now.getFullYear()}`, `Pizzeria Pinocchio  ·  ${vonBis}`, '#1d5a9e');
-      pdfKacheln(doc, [
-        ['Bestellungen gesamt', `${orders.length}`,                                                   '#1a1a2e'],
-        ['Davon Bar',           `${barOrders.length}`,                                                '#2c5282'],
-        ['Davon Online',        `${orders.filter(o=>['stripe','paypal'].includes(o.payment)).length}`,'#276749'],
-        ['Brutto-Umsatz',       pdfFmt(brutto),                                                       '#744210'],
-      ]);
-      doc.moveDown(0.4);
-      pdfHr(doc);
-      doc.font('Helvetica-Bold').fontSize(10).fillColor('#1a1a2e').text('ABRECHNUNG', PDF_M, doc.y);
-      doc.y += 14;
-      pdfTableRow(doc, [[`Servicegebühren  (${pdfFmt(PDF_SV)} × ${orders.length})`, PDF_M+8, PDF_W-80, 'left'], [pdfFmt(svcFees), PDF_M+2, PDF_W-4, 'right']], false, true);
-      doc.y += 4;
-      const ay = doc.y;
-      doc.rect(PDF_M, ay, PDF_W, 28).fill('#e8f5e9');
-      doc.font('Helvetica-Bold').fontSize(12).fillColor('#2e7d32').text('Auszahlung an Pizzeria Pinocchio', PDF_M+10, ay+8, { width: PDF_W*0.65 });
-      doc.font('Helvetica-Bold').fontSize(13).fillColor('#2e7d32').text(pdfFmt(auszahlung), PDF_M+2, ay+8, { width: PDF_W-4, align: 'right' });
-      doc.y = ay + 28 + 12;
-      pdfHr(doc, '#bbb');
-      doc.font('Helvetica-Bold').fontSize(10).fillColor('#1a1a2e').text('KUNDENLISTE', PDF_M, doc.y);
-      doc.y += 12;
-      pdfKundenliste(doc, orders);
-      if (barOrders.length > 0) {
-        pdfBarRechnung(doc, barOrders, { barSvc, barNetto, barBetrag }, vonBis);
-      }
-      doc.font('Helvetica').fontSize(7).fillColor('#bbb')
-        .text(`FlueVate · Abed Rachman Falah · Zur Goldbrede 30 · 59269 Beckum  ·  Wochenbericht KW ${kw} / ${now.getFullYear()}`, PDF_M, 820, { width: PDF_W, align: 'center' });
-    });
-
-    // ── E-Mail 1: Restaurant bekommt Wochenbericht als PDF-Anhang ────────
-    if (process.env.RESTAURANT_EMAIL) {
-      await getResend()?.emails.send({
-        from: process.env.EMAIL_FROM || 'system@pizzeria-pinocchio.de',
-        to: process.env.RESTAURANT_EMAIL,
-        subject: `📊 Wochenbericht KW ${kw} / ${now.getFullYear()} · Pizzeria Pinocchio`,
-        html: `<div style="font-family:Arial,sans-serif;max-width:580px;margin:0 auto;color:#222">
-  <div style="background:#1d5a9e;padding:24px 28px;color:#fff">
-    <h2 style="margin:0;font-size:20px">Wochenbericht KW ${kw} / ${now.getFullYear()}</h2>
-    <p style="margin:4px 0 0;opacity:.8;font-size:13px">${vonBis}</p>
-  </div>
-  <div style="padding:24px 28px">
-    <table style="width:100%;border-collapse:collapse;font-size:13px">
-      <tr style="background:#f5f5f5"><td style="padding:8px">Bestellungen gesamt</td><td style="padding:8px;text-align:right"><b>${orders.length}</b></td></tr>
-      <tr><td style="padding:8px">Gesamtumsatz (Brutto)</td><td style="padding:8px;text-align:right">${brutto.toFixed(2).replace('.',',')} €</td></tr>
-      <tr style="background:#f5f5f5"><td style="padding:8px">Servicegebühren (A. R. Falah)</td><td style="padding:8px;text-align:right">− ${svcFees.toFixed(2).replace('.',',')} €</td></tr>
-      <tr style="background:#e8f5e9"><td style="padding:10px;font-weight:bold;color:#2e7d32;font-size:15px">Ihr Auszahlungsbetrag</td><td style="padding:10px;text-align:right;font-weight:bold;color:#2e7d32;font-size:15px">${auszahlung.toFixed(2).replace('.',',')} €</td></tr>
-    </table>
-    <p style="font-size:11px;color:#aaa;margin-top:8px">Anbei der Wochenbericht mit Kundenliste${barOrders.length > 0 ? ' und Bar-Übersicht' : ''}.</p>
-  </div>
-</div>`,
-        attachments: [{ filename: `KW${kw}_${now.getFullYear()}_Pinocchio_Wochenbericht.pdf`, content: berichtPdf.toString('base64') }],
-      });
-    }
-
-    // ── E-Mail 2: Owner bekommt den Wochenbericht als Anhang ──────
-    if (process.env.OWNER_EMAIL) {
-      await getResend()?.emails.send({
-        from: process.env.EMAIL_FROM || 'system@pizzeria-pinocchio.de',
-        to: process.env.OWNER_EMAIL,
-        subject: `📊 Wochenbericht KW ${kw} · Pizzeria Pinocchio`,
-        html: `<p style="font-family:Arial,sans-serif;color:#555">Anbei der Wochenbericht KW ${kw} / ${now.getFullYear()} für Pizzeria Pinocchio.</p>
-               <p style="font-family:Arial,sans-serif;color:#555"><b>Zeitraum:</b> ${vonBis}<br><b>Dein Verdienst:</b> ${svcFees.toFixed(2).replace('.',',')} €</p>
-               <p style="font-family:Arial,sans-serif;color:#999;font-size:12px">Die Gebühren-Rechnung wird separat über Lexware gestellt.</p>`,
-        attachments: [
-          { filename: `KW${kw}_${now.getFullYear()}_Pinocchio_Wochenbericht.pdf`, content: berichtPdf.toString('base64') },
-        ],
-      });
-    }
-
-    console.log(`📊 Wochenbericht KW ${kw} versendet`);
+    const r = await wochenberichtVersenden(new Date());
+    console.log(`📊 Wochenbericht KW ${r.kw} versendet (${r.anzahl} Bestellungen)`);
   } catch(e) { console.error('Wochenbericht Fehler:', e); }
 });
 
@@ -1791,6 +1808,26 @@ cron.schedule('0 22 * * *', async () => {
     }
     console.log(`📅 Monatsbericht ${monat} versendet`);
   } catch(e) { console.error('Monatsbericht Fehler:', e); }
+});
+
+// ── Wochenbericht manuell triggern ───────────────────────────────
+// POST /api/admin/send-weekly?date=2026-09-13  (oder leer = laufende Woche)
+// date ist der Endtag der Woche; der Bericht deckt die 7 Tage davor ab.
+app.post('/api/admin/send-weekly', auth, async (req, res) => {
+  try {
+    const p = req.query.date;
+    const now = p ? new Date(`${p}T22:00:00`) : new Date();
+    if (isNaN(now.getTime())) return res.status(400).json({ message: 'date muss YYYY-MM-TT sein' });
+    const r = await wochenberichtVersenden(now);
+    console.log(`📊 Wochenbericht KW ${r.kw} manuell versendet (${r.anzahl} Bestellungen)`);
+    res.json({
+      success: true, kw: r.kw, jahr: r.jahr, zeitraum: r.vonBis, orders: r.anzahl,
+      berichtPdfBase64: r.berichtPdf.toString('base64'),
+    });
+  } catch(e) {
+    console.error('Wochenbericht manuell Fehler:', e);
+    res.status(500).json({ message: e.message });
+  }
 });
 
 // ── Monatsbericht manuell triggern ───────────────────────────────
