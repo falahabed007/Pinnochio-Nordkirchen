@@ -1631,7 +1631,7 @@ async function wochenberichtVersenden(now, { nurOwner = false } = {}) {
 
   // ── E-Mail 1: Restaurant bekommt Wochenbericht als PDF-Anhang ────────
   if (resend && process.env.RESTAURANT_EMAIL && !nurOwner) {
-    await resend.emails.send({
+    const antwort = await resend.emails.send({
       from: process.env.EMAIL_FROM || 'system@pizzeria-pinocchio.de',
       to: process.env.RESTAURANT_EMAIL,
       subject: `📊 Wochenbericht KW ${kw} / ${now.getFullYear()} · Pizzeria Pinocchio`,
@@ -1652,12 +1652,13 @@ async function wochenberichtVersenden(now, { nurOwner = false } = {}) {
 </div>`,
       attachments: [{ filename: `KW${kw}_${now.getFullYear()}_Pinocchio_Wochenbericht.pdf`, content: berichtPdf.toString('base64') }],
     });
-    versandt.push('restaurant');
+    if (antwort?.error) console.error('Resend lehnte die Restaurant-Mail ab:', antwort.error);
+    else versandt.push('restaurant');
   }
 
   // ── E-Mail 2: Owner bekommt den Wochenbericht als Anhang ──────
   if (resend && process.env.OWNER_EMAIL) {
-    await resend.emails.send({
+    const antwort = await resend.emails.send({
       from: process.env.EMAIL_FROM || 'system@pizzeria-pinocchio.de',
       to: process.env.OWNER_EMAIL,
       subject: `📊 Wochenbericht KW ${kw} · Pizzeria Pinocchio`,
@@ -1668,7 +1669,8 @@ async function wochenberichtVersenden(now, { nurOwner = false } = {}) {
         { filename: `KW${kw}_${now.getFullYear()}_Pinocchio_Wochenbericht.pdf`, content: berichtPdf.toString('base64') },
       ],
     });
-    versandt.push('owner');
+    if (antwort?.error) console.error('Resend lehnte die Owner-Mail ab:', antwort.error);
+    else versandt.push('owner');
   }
 
   return { kw, jahr: now.getFullYear(), vonBis, anzahl: orders.length,
@@ -1843,8 +1845,15 @@ app.post('/api/admin/send-weekly', auth, async (req, res) => {
     res.json({
       success: true, kw: r.kw, jahr: r.jahr, zeitraum: r.vonBis, orders: r.anzahl,
       empfaenger: r.versandt,
+      // Nur Ja/Nein, nie die Werte selbst - sagt genau, welche Variable fehlt.
+      konfig: {
+        RESEND_API_KEY:   !!process.env.RESEND_API_KEY,
+        EMAIL_FROM:       !!process.env.EMAIL_FROM,
+        OWNER_EMAIL:      !!process.env.OWNER_EMAIL,
+        RESTAURANT_EMAIL: !!process.env.RESTAURANT_EMAIL,
+      },
       warnung: r.versandt.length ? undefined
-             : 'Es wurde nichts verschickt - RESEND_API_KEY oder OWNER_EMAIL fehlt in Render.',
+             : 'Es wurde nichts verschickt. Siehe konfig: was auf false steht, fehlt in Render.',
       berichtPdfBase64: r.berichtPdf.toString('base64'),
     });
   } catch(e) {
