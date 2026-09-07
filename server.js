@@ -1623,9 +1623,15 @@ async function wochenberichtVersenden(now, { nurOwner = false } = {}) {
     barOrders, barSvc, barNetto, barBetrag,
   }));
 
+  // Wer wirklich eine Mail bekommen hat. Fehlt der Resend-Key oder eine
+  // Adresse, wird still uebersprungen - ohne dieses Protokoll meldet der
+  // Endpunkt einen Erfolg, dem gar kein Versand entspricht.
+  const resend   = getResend();
+  const versandt = [];
+
   // ── E-Mail 1: Restaurant bekommt Wochenbericht als PDF-Anhang ────────
-  if (process.env.RESTAURANT_EMAIL && !nurOwner) {
-    await getResend()?.emails.send({
+  if (resend && process.env.RESTAURANT_EMAIL && !nurOwner) {
+    await resend.emails.send({
       from: process.env.EMAIL_FROM || 'system@pizzeria-pinocchio.de',
       to: process.env.RESTAURANT_EMAIL,
       subject: `📊 Wochenbericht KW ${kw} / ${now.getFullYear()} · Pizzeria Pinocchio`,
@@ -1646,11 +1652,12 @@ async function wochenberichtVersenden(now, { nurOwner = false } = {}) {
 </div>`,
       attachments: [{ filename: `KW${kw}_${now.getFullYear()}_Pinocchio_Wochenbericht.pdf`, content: berichtPdf.toString('base64') }],
     });
+    versandt.push('restaurant');
   }
 
   // ── E-Mail 2: Owner bekommt den Wochenbericht als Anhang ──────
-  if (process.env.OWNER_EMAIL) {
-    await getResend()?.emails.send({
+  if (resend && process.env.OWNER_EMAIL) {
+    await resend.emails.send({
       from: process.env.EMAIL_FROM || 'system@pizzeria-pinocchio.de',
       to: process.env.OWNER_EMAIL,
       subject: `📊 Wochenbericht KW ${kw} · Pizzeria Pinocchio`,
@@ -1661,16 +1668,18 @@ async function wochenberichtVersenden(now, { nurOwner = false } = {}) {
         { filename: `KW${kw}_${now.getFullYear()}_Pinocchio_Wochenbericht.pdf`, content: berichtPdf.toString('base64') },
       ],
     });
+    versandt.push('owner');
   }
 
   return { kw, jahr: now.getFullYear(), vonBis, anzahl: orders.length,
-           brutto, svcFees, auszahlung, berichtPdf, nurOwner };
+           brutto, svcFees, auszahlung, berichtPdf, nurOwner, versandt };
 }
 
 cron.schedule('0 22 * * 0', async () => {
   try {
     const r = await wochenberichtVersenden(new Date());
-    console.log(`📊 Wochenbericht KW ${r.kw} versendet (${r.anzahl} Bestellungen)`);
+    console.log(`📊 Wochenbericht KW ${r.kw} (${r.anzahl} Bestellungen) an: `
+              + (r.versandt.join(', ') || 'NIEMANDEN – Resend-Key oder Adressen fehlen'));
   } catch(e) { console.error('Wochenbericht Fehler:', e); }
 });
 
@@ -1833,7 +1842,9 @@ app.post('/api/admin/send-weekly', auth, async (req, res) => {
               + (nurOwner ? ' – nur an Owner' : ''));
     res.json({
       success: true, kw: r.kw, jahr: r.jahr, zeitraum: r.vonBis, orders: r.anzahl,
-      empfaenger: nurOwner ? ['owner'] : ['restaurant', 'owner'],
+      empfaenger: r.versandt,
+      warnung: r.versandt.length ? undefined
+             : 'Es wurde nichts verschickt - RESEND_API_KEY oder OWNER_EMAIL fehlt in Render.',
       berichtPdfBase64: r.berichtPdf.toString('base64'),
     });
   } catch(e) {
