@@ -154,6 +154,10 @@ const orderSchema = new mongoose.Schema({
   note:        String,
   coupon:      String,
   userId:      { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
+  // Zugriffsschluessel fuer die Statusabfrage des Kunden. Bewusst nicht die _id:
+  // deren Zufallsteil ist pro Serverprozess konstant und damit ratbar.
+  statusToken: { type: String, index: true,
+                 default: () => crypto.randomBytes(9).toString('base64url') },
 }, { timestamps: true });
 
 const Order = mongoose.model('Order', orderSchema);
@@ -525,8 +529,32 @@ app.post('/api/orders', async (req, res) => {
       await sendRestaurantEmail(order);
       await triggerPrint(order);
     }
-    res.status(201).json({ orderNum: order.orderNum, order });
+    res.status(201).json({ orderNum: order.orderNum, statusToken: order.statusToken, order });
   } catch(e) { console.error(e); res.status(500).json({ message: 'Fehler beim Speichern' }); }
+});
+
+// ── Bestellstatus fuer den wartenden Kunden (oeffentlich, Token-geschuetzt) ──
+// Der Kunde wartet nach dem Absenden auf die Annahme durch das Restaurant.
+// Antwortet absichtlich minimal: kein Name, keine Adresse, keine Betraege.
+app.get('/api/orders/status/:token', async (req, res) => {
+  try {
+    const o = await Order.findOne({ statusToken: req.params.token })
+      .select('status paymentStatus prepTime orderNum mode cancelReason');
+    // Der Marker unterscheidet diese 404 von der eines Backends, das die Route
+    // noch gar nicht kennt -- etwa im Fenster zwischen Seiten- und Backend-Deploy.
+    if (!o) return res.status(404).json({ message: 'Nicht gefunden', unbekannterSchluessel: true });
+    res.json({
+      status:           o.status,
+      paymentStatus:    o.paymentStatus,
+      estimatedMinutes: o.prepTime || null,
+      orderNum:         o.orderNum,
+      mode:             o.mode,
+      cancelReason:     o.cancelReason || ''
+    });
+  } catch (e) {
+    console.error('Statusabfrage:', e.message);
+    res.status(500).json({ message: 'Fehler' });
+  }
 });
 
 // ── Stripe Checkout ───────────────────────────────────────────────
@@ -560,13 +588,17 @@ app.post('/api/create-stripe-checkout', async (req, res) => {
     const stripeFee = Math.round((total * 0.015 + 0.25) * 100);
     const appFee = Math.round(serviceFee * 100) + stripeFee;
 
+    // Zugriffsschluessel schon hier erzeugen: die success_url wird gebaut,
+    // bevor die Bestellung existiert, und muss ihn mitfuehren.
+    const statusToken = crypto.randomBytes(9).toString('base64url');
+
     const sessionOpts = {
       line_items: lineItems,
       mode: 'payment',
       ...(customer.email ? { customer_email: customer.email } : {}),
       locale: 'de',
       metadata: { orderNum: String(orderNum), discount: String(rabatt) },
-      success_url: `https://pinnochionordkirchen.de?order=${orderNum}&session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `https://pinnochionordkirchen.de?order=${orderNum}&t=${statusToken}&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url:  `https://pinnochionordkirchen.de?payment=cancelled`,
     };
 
@@ -600,7 +632,8 @@ app.post('/api/create-stripe-checkout', async (req, res) => {
       discount: rabatt,
       coupon: rabatt > 0 ? RABATT_CODE : null,
       payment: 'stripe', paymentStatus: 'pending',
-      stripeSessionId: session.id, status: 'awaiting_payment'
+      stripeSessionId: session.id, status: 'awaiting_payment',
+      statusToken
     });
     await order.save();
     res.json({ url: session.url, orderNum });
@@ -672,6 +705,10 @@ app.post('/api/create-paypal-order', async (req, res) => {
       (Number(subtotal) || 0) - rabatt + (Number(deliveryFee) || 0) + (Number(serviceFee) || 0)
     ) * 100) / 100;
 
+    // Zugriffsschluessel schon hier erzeugen: die return_url wird gebaut,
+    // bevor die Bestellung existiert, und muss ihn mitfuehren.
+    const statusToken = crypto.randomBytes(9).toString('base64url');
+
     const token = await getPaypalAccessToken();
     const ppOrder = await paypalApi('/v2/checkout/orders', 'POST', token, {
       intent: 'CAPTURE',
@@ -686,7 +723,7 @@ app.post('/api/create-paypal-order', async (req, res) => {
         locale:              'de-DE',
         user_action:         'PAY_NOW',
         shipping_preference: 'NO_SHIPPING',
-        return_url: `https://pinnochionordkirchen.de?order=${orderNum}&paypal=1`,
+        return_url: `https://pinnochionordkirchen.de?order=${orderNum}&t=${statusToken}&paypal=1`,
         cancel_url: `https://pinnochionordkirchen.de?payment=cancelled`,
       }
     });
@@ -699,7 +736,8 @@ app.post('/api/create-paypal-order', async (req, res) => {
       discount: rabatt,
       coupon: rabatt > 0 ? RABATT_CODE : null,
       payment: 'paypal', paymentStatus: 'pending',
-      paypalOrderId: ppOrder.id, status: 'awaiting_payment'
+      paypalOrderId: ppOrder.id, status: 'awaiting_payment',
+      statusToken
     });
     await order.save();
     res.json({ url: approve?.href, orderNum });
