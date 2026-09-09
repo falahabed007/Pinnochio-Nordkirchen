@@ -1225,7 +1225,7 @@ async function sendCancellationEmail(order, reason, refundStatus) {
           <p>Hallo <strong>${order.customer.first}</strong>, deine Bestellung wurde leider storniert.</p>
           ${reason?`<div style="background:#fff3ea;border-radius:8px;padding:12px;margin:14px 0"><strong>Grund:</strong> ${reason}</div>`:''}
           ${refundHtml}
-          <p>Bei Fragen: <strong>02521 / 829 06 00</strong></p>
+          <p>Bei Fragen: <strong>0 25 96 / 93 91 91</strong></p>
         </div>
       </div>`
     });

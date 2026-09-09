@@ -20,10 +20,10 @@ async function printOrder(order) {
     },
     body: JSON.stringify({
       printer: parseInt(process.env.PRINTNODE_PRINTER_ID),
-      title: `Ararat Grill Bestellung #${order.orderNum}`,
+      title: `Pizzeria Pinocchio Bestellung #${order.orderNum}`,
       contentType: 'raw_base64',
       content: base64Content,
-      source: 'Ararat Grill Backend'
+      source: 'Pizzeria Pinocchio Backend'
     })
   });
 
@@ -61,9 +61,9 @@ function buildReceipt(order) {
 
   // Header
   receipt += CENTER;
-  receipt += DOUBLE_ON + BOLD_ON + 'ARARAT GRILL' + LF + DOUBLE_OFF + BOLD_OFF;
-  receipt += 'Nordwall 45 · 59269 Beckum' + LF;
-  receipt += 'Tel: 02521-9009414' + LF;
+  receipt += DOUBLE_ON + BOLD_ON + 'PIZZERIA PINOCCHIO' + LF + DOUBLE_OFF + BOLD_OFF;
+  receipt += 'Bergstr. 19 · 59394 Nordkirchen' + LF;
+  receipt += 'Tel: 0 25 96 / 93 91 91' + LF;
   receipt += SEPARATOR;
 
   // Bestellnummer + Zeit
