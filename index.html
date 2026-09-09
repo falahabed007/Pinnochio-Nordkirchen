@@ -2786,12 +2786,12 @@ function updateSummary() {
 // STRIPE CHECKOUT SESSION INTEGRATION
 // ⬇️ Hier deine Render.com Backend-URL eintragen sobald deployed:
 // ============================================================
-const BACKEND_URL = window.PINOCCHIO_BACKEND;   // siehe config.js
+const BACKEND_URL = window.FLUEVATE_BACKEND;   // siehe config.js
 // Faellt config.js aus (nicht mitdeployt, lokal per file:// geblockt), waere
 // die Backend-Adresse undefined und jeder Aufruf ginge ins Leere – mit einer
 // Fehlermeldung, die niemand deuten kann. Lieber sofort deutlich sagen.
-if (!window.PINOCCHIO_BACKEND) {
-  console.error('config.js wurde nicht geladen – window.PINOCCHIO_BACKEND fehlt.');
+if (!window.FLUEVATE_BACKEND) {
+  console.error('config.js wurde nicht geladen – window.FLUEVATE_BACKEND fehlt.');
   document.addEventListener('DOMContentLoaded', function() {
     var b = document.createElement('div');
     b.textContent = 'Konfigurationsfehler: config.js konnte nicht geladen werden. '

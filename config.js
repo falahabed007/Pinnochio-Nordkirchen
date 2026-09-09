@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════
-// Zentrale Konfiguration – Pizzeria Pinocchio Nordkirchen
+// Zentrale Konfiguration – FlueVate-Bestellsystem
 // ═══════════════════════════════════════════════════════════════
 //
 // EINZIGE Stelle, an der die Backend-Adresse steht. Sie wird von
@@ -13,4 +13,4 @@
 //
 // Diese Datei muss in <head> vor allen anderen Skripten geladen werden.
 
-window.PINOCCHIO_BACKEND = 'https://pinnochio-nordkirchen.onrender.com';
+window.FLUEVATE_BACKEND = 'https://pinnochio-nordkirchen.onrender.com';

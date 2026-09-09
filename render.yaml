@@ -5,13 +5,13 @@
 # nur noch die als `sync: false` markierten Geheimnisse.
 #
 # Nach dem ersten Deploy:
-#   1. Service-URL kopieren (z. B. https://pinocchio-nordkirchen.onrender.com)
-#   2. In index.html BACKEND_URL auf genau diese URL setzen
+#   1. Service-URL kopieren (z. B. https://pinnochio-nordkirchen.onrender.com)
+#   2. In config.js window.FLUEVATE_BACKEND auf genau diese URL setzen
 #   3. Render → Connect/Outbound → Static Outbound IPs in MongoDB Atlas freigeben
 
 services:
   - type: web
-    name: pinocchio-nordkirchen
+    name: pinnochio-nordkirchen
     runtime: node
     plan: starter
     region: frankfurt
