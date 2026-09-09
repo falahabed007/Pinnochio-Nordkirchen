@@ -60,10 +60,16 @@ function getResend() {
   return new Resend(key);
 }
 
+// ─── Eigene Adresse ──────────────────────────────────────────────
+// Die einzige Stelle, an der die Domain steht. Sie wurde vorher sechsmal
+// getippt, waehrend FRONTEND_URL zwar in .env und render.yaml stand, aber
+// nie gelesen wurde - ein Umzug haette funf Stellen stumm veralten lassen.
+const FRONTEND = process.env.FRONTEND_URL || 'https://pinnochionordkirchen.de';
+
 // ─── CORS ────────────────────────────────────────────────────────
 const allowedOrigins = [
-  'https://pinnochionordkirchen.de',
-  'https://www.pinnochionordkirchen.de',
+  FRONTEND,
+  FRONTEND.replace('https://', 'https://www.'),
   // Rückfallweg, falls GitHub Pages einmal ohne die eigene Domain ausliefert
   'https://falahabed007.github.io',
 ];
@@ -598,8 +604,8 @@ app.post('/api/create-stripe-checkout', async (req, res) => {
       ...(customer.email ? { customer_email: customer.email } : {}),
       locale: 'de',
       metadata: { orderNum: String(orderNum), discount: String(rabatt) },
-      success_url: `https://pinnochionordkirchen.de?order=${orderNum}&t=${statusToken}&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url:  `https://pinnochionordkirchen.de?payment=cancelled`,
+      success_url: `${FRONTEND}?order=${orderNum}&t=${statusToken}&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url:  `${FRONTEND}?payment=cancelled`,
     };
 
     // Stripe Connect wenn konfiguriert
@@ -723,8 +729,8 @@ app.post('/api/create-paypal-order', async (req, res) => {
         locale:              'de-DE',
         user_action:         'PAY_NOW',
         shipping_preference: 'NO_SHIPPING',
-        return_url: `https://pinnochionordkirchen.de?order=${orderNum}&t=${statusToken}&paypal=1`,
-        cancel_url: `https://pinnochionordkirchen.de?payment=cancelled`,
+        return_url: `${FRONTEND}?order=${orderNum}&t=${statusToken}&paypal=1`,
+        cancel_url: `${FRONTEND}?payment=cancelled`,
       }
     });
 
