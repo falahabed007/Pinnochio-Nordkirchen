@@ -19,6 +19,7 @@
       "Gyrosfleisch": 1.0
     }
   },
+  "_pos_start": "pizza-kaese",
   "kategorien": [
     {
       "id": "antipasta",
@@ -601,6 +602,7 @@
       "id": "familienpizza",
       "titel": "Familienpizza & Pizzabrötchen",
       "typ": "familie",
+      "hinweis": "3 Zutaten nach Wunsch inklusive · jede weitere + 1,50 €",
       "items": [
         {
           "num": "66",
@@ -1361,6 +1363,7 @@
       "id": "mittagsmenue",
       "titel": "Mittagsmenü",
       "typ": "simple",
+      "nummer_zeigen": false,
       "note": "Montag bis Freitag von 11.30–15.00 Uhr – außer Gerichte Nr. 80, 80a, 154 und 154a.",
       "nur_mittags": true,
       "items": [
