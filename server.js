@@ -121,9 +121,19 @@ app.use(express.static(path.join(__dirname), {
 if (!process.env.MONGODB_URI) {
   console.error('❌ MONGODB_URI nicht gesetzt – Datenbankfunktionen sind deaktiviert.');
 }
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('✅ MongoDB verbunden'))
-  .catch(err => console.error('❌ MongoDB Erstverbindung fehlgeschlagen:', err.message));
+// try/catch um den Aufruf, nicht nur .catch() dahinter: Bei einer fehlerhaften
+// Zeichenkette wirft mongoose.connect SYNCHRON, und dann greift das .catch()
+// daneben nicht - der Prozess stirbt beim Start und der Hoster meldet nur 502,
+// ohne dass irgendwo steht, woran es lag. Haeufigste Ursache ist ein Passwort
+// mit @ oder / darin, das nicht URL-kodiert wurde.
+try {
+  mongoose.connect(process.env.MONGODB_URI)
+    .then(() => console.log('✅ MongoDB verbunden'))
+    .catch(err => console.error('❌ MongoDB Erstverbindung fehlgeschlagen:', err.message));
+} catch (err) {
+  console.error('❌ MONGODB_URI ist unbrauchbar:', err.message);
+  console.error('   Sonderzeichen im Passwort URL-kodieren: @ wird %40, / wird %2F, : wird %3A.');
+}
 // Dauerhafte Zustandswechsel sichtbar loggen (kein stiller Ausfall)
 mongoose.connection.on('disconnected', () => console.error('❌ MongoDB getrennt – Reconnect läuft …'));
 mongoose.connection.on('reconnected',  () => console.log('✅ MongoDB wieder verbunden'));
@@ -416,11 +426,44 @@ app.post('/api/account/redeem-stamp', customerAuth, async (req, res) => {
 // PUBLIC ROUTES
 // ═══════════════════════════════════════════════════════════════
 
+// Lebenszeichen fuer den Lastverteiler: antwortet immer mit 200, solange der
+// Prozess laeuft. Getrennt von /api/health, und zwar aus einem konkreten
+// Grund: /api/health meldet bei fehlender Datenbank korrekt 503. Zeigt Renders
+// healthCheckPath darauf, gilt der Dienst dauerhaft als krank, Render leitet
+// keinen Verkehr hin und antwortet mit 502 - man kommt also nicht einmal mehr
+// an die Meldung heran, die sagt, was fehlt. Henne und Ei.
+app.get('/api/live', (req, res) => res.json({ alive: true, time: new Date() }));
+
+// Was die Zustandsmeldung ueber die Datenbank verraten darf: ob eine URI
+// gesetzt ist, ob ein Datenbankname darin steht, und in welchem Zustand die
+// Verbindung ist. NICHT Benutzer, Passwort oder Clusteradresse - der Endpunkt
+// ist oeffentlich.
+function datenbankBefund() {
+  const zustand = ['getrennt', 'verbunden', 'verbindet', 'trennt'][mongoose.connection.readyState] || 'unbekannt';
+  const uri = process.env.MONGODB_URI;
+  if (!uri) return { db: 'disconnected', grund: 'MONGODB_URI ist nicht gesetzt', zustand };
+  const nachSchema = uri.replace(/^mongodb(\+srv)?:\/\//, '');
+  const vorPfad = nachSchema.split('/')[0];
+  if ((vorPfad.match(/@/g) || []).length > 1) {
+    return { db: 'disconnected', zustand,
+      grund: 'Mehrere @ vor der Clusteradresse - Sonderzeichen im Passwort URL-kodieren: @ wird %40' };
+  }
+  let name = null;
+  try { name = new URL(uri.replace(/^mongodb\+srv:/, 'https:')).pathname.replace(/^\//, '') || null; }
+  catch { return { db: 'disconnected', grund: 'MONGODB_URI laesst sich nicht lesen', zustand }; }
+  if (mongoose.connection.readyState === 1) return { db: 'connected', datenbank: name, zustand };
+  return { db: 'disconnected', datenbank: name, zustand,
+    grund: !name
+      ? 'Kein Datenbankname in der URI - er gehoert hinter den letzten Schraegstrich'
+      : 'URI steht, Verbindung kommt nicht zustande - meist sind die Outbound-Adressen des Hosters nicht in Atlas freigegeben' };
+}
+
 app.get('/api/health', (req, res) => {
-  const dbUp = mongoose.connection.readyState === 1; // 1 = connected
+  const befund = datenbankBefund();
+  const dbUp = befund.db === 'connected';
   res.status(dbUp ? 200 : 503).json({
     status: dbUp ? 'ok' : 'degraded',
-    db: dbUp ? 'connected' : 'disconnected',
+    ...befund,
     restaurant: 'Pizzeria Pinocchio', time: new Date(),
     // Render setzt RENDER_GIT_COMMIT selbst. Ohne diese Angabe laesst sich
     // von aussen nicht feststellen, welcher Stand gerade laeuft.
