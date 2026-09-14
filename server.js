@@ -8,6 +8,7 @@ const PDFDocument = require('pdfkit');
 const bcrypt     = require('bcryptjs');
 const jwt        = require('jsonwebtoken');
 const crypto     = require('crypto');
+const fs         = require('fs');
 require('dotenv').config();
 
 const app  = express();
@@ -1132,9 +1133,56 @@ app.post('/api/admin/orders/:id/print', auth, async (req, res) => {
 });
 
 // ── Verfügbarkeit (Sold-Out Toggle) ─────────────────────────────
+// Die Sammlung kennt nur Artikel, die schon einmal umgeschaltet wurden. Die Kasse
+// zeigt aber genau das, was dieser Endpunkt liefert - ohne die Karte bliebe ihre
+// Liste fast leer. Deshalb kommen die Namen aus Menue/menu.json, derselben Quelle,
+// aus der karte-einsetzen.js das POS_MENU des Dashboards erzeugt.
+const MENU_FILE = path.join(__dirname, 'Menue', 'menu.json');
+let menuNamesCache = { mtimeMs: 0, names: [] };
+
+function menuItemNames() {
+  try {
+    const stat = fs.statSync(MENU_FILE);
+    if (stat.mtimeMs === menuNamesCache.mtimeMs) return menuNamesCache.names;
+
+    const karte = JSON.parse(fs.readFileSync(MENU_FILE, 'utf8'));
+    const names = [];
+    const seen  = new Set();
+    (karte.kategorien || []).forEach(kat => (kat.items || []).forEach(it => {
+      // Doppelte Namen nur einmal: die Bestellseite vergleicht per Namensanfang,
+      // ein Schalter trifft ohnehin alle gleichnamigen Artikel.
+      if (it && it.name && !seen.has(it.name)) { seen.add(it.name); names.push(it.name); }
+    }));
+    if (!names.length) throw new Error('keine Artikelnamen in menu.json');
+
+    menuNamesCache = { mtimeMs: stat.mtimeMs, names };
+    return names;
+  } catch (e) {
+    // Lieber der letzte bekannte Stand als eine leere Liste.
+    console.error('Speisekarte fuer Verfuegbarkeit nicht lesbar:', e.message);
+    return menuNamesCache.names;
+  }
+}
+
 app.get('/api/admin/availability', auth, async (req, res) => {
-  try { res.json({ items: await Availability.find() }); }
-  catch(e) { res.status(500).json({ message:'Fehler' }); }
+  try {
+    const stored = await Availability.find();
+    const state  = new Map(stored.map(d => [d.itemName, d.available !== false]));
+
+    const items = menuItemNames().map(name => ({
+      itemName:  name,
+      available: state.has(name) ? state.get(name) : true
+    }));
+
+    // Eintraege, die nicht mehr auf der Karte stehen, gehen nicht verloren -
+    // sonst liesse sich ein umbenannter Artikel nie wieder freischalten.
+    const onMenu = new Set(items.map(i => i.itemName));
+    stored.forEach(d => {
+      if (!onMenu.has(d.itemName)) items.push({ itemName: d.itemName, available: d.available !== false });
+    });
+
+    res.json({ items });
+  } catch(e) { res.status(500).json({ message:'Fehler' }); }
 });
 
 app.patch('/api/admin/availability', auth, async (req, res) => {
