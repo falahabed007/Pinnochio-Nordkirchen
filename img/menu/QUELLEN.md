@@ -97,7 +97,7 @@ zweites Mal – bei stehenden Vorlagen bleibt vom Motiv nur das mittlere Band.
 | salate.jpg | Salat mit Garnelen, Wassermelone, Feta | Unsplash | 1505253716362-afaea1d3d1af |
 | schnitzel.jpg | Schnitzel mit Pommes und Zitrone | Unsplash | 1665056511905-1ca20935db27 |
 | spaghetti.jpg | Spaghetti an der Gabel, Oliven, blaue Tischdecke | Pexels | 36430297 |
-| pizza.jpg | Pizza mit Rucola, angeschnitten | Unsplash | 1528137871618-79d2761e3fd5 |
+| pizza.jpg | Pizza auf dem Schieber vor dem Holzofen | Pexels | 905847 (siehe unten) |
 | backofen.jpg | Lasagne mit Basilikum | Unsplash | 1709429790175-b02bb1b19207 |
 | calzone.jpg | Calzone auf weißem Teller | Pexels | 36642831 |
 | familienpizza.jpg | große Pizza von oben | Pexels | 2147491 |
@@ -114,6 +114,21 @@ mittlere Band heraus –, die Datei wiegt aber 200K statt 264K.
 
 `spaghetti.jpg` zeigte zunächst Bandnudeln (Pexels 8697526); am 24.09.2026 auf
 Wunsch des Betreibers gegen das Motiv oben getauscht.
+
+`pizza.jpg` ist am 24.09.2026 ebenfalls aus der Historie zurückgeholt,
+byteidentisch mit `pizza-kaese.jpg` aus `876bd5a`. Dort lagen die sechs
+Pizza-Abschnitte schon als sechs **identische** Dateien (alle Blob
+`d9e106c`) – die Zusammenlegung über `BANNER_DATEI` ändert am Bild also
+nichts, sie spart nur die fünf Kopien. Zwischenzeitlich stand hier eine Pizza
+mit Rucola (Unsplash 1528137871618-79d2761e3fd5).
+
+**Zur Quellenangabe von `pizza.jpg`:** Die alte Tabelle führte eine Zeile
+`pizza.jpg | Pexels | 905847`, obwohl im Ordner nie eine `pizza.jpg` lag,
+sondern die sechs `pizza-*.jpg`. Sie hatte 13 Zeilen für 21 Dateien, war also
+schon damals unvollständig. Die Zuordnung zu 905847 ist daher plausibel, aber
+nicht belegt – anders als bei den übrigen Einträgen, die aus Dateinamen oder
+Download-Metadaten stammen. Vor einer Verwendung außerhalb der Webseite
+nachprüfen.
 
 Ohne Banner, bewusst: antipasta, tagliatelle, rigatoni, tortellini, auflaeufe,
 gnocchi, puten, mittagsmenue, getraenke.
