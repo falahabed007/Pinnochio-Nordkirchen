@@ -4719,6 +4719,22 @@ document.readyState === 'loading'
   var GERICHT_FOTOS     = false;   // Foto oben in jeder Produktkarte
   var KATEGORIE_BANNER  = true;    // Foto unter jedem Kategorie-Titel
 
+  // Ein Banner erscheint nur, wo img/menu/banner/<kategorie-id>.jpg liegt;
+  // fehlt die Datei, nimmt onerror das Bild wieder aus dem DOM. Die Auswahl,
+  // welche Kategorie ein Banner bekommt, steht also im Ordner, nicht im Code.
+  //
+  // Mehrere Kategorien koennen sich eine Datei teilen. Die sechs
+  // Pizza-Abschnitte zeigen dasselbe Bild - als sechs gleiche Dateien haette
+  // der Browser es sechsmal geladen, gut ein Megabyte umsonst.
+  var BANNER_DATEI = {
+    'pizza-kaese':       'pizza',
+    'pizza-vegetarisch': 'pizza',
+    'pizza-mozzarella':  'pizza',
+    'pizza-fisch':       'pizza',
+    'pizza-fleischsauce':'pizza',
+    'pizza-belaege':     'pizza'
+  };
+
   // Einzelne Gerichte bekommen trotzdem ein Foto in der Karte, auch solange
   // GERICHT_FOTOS aus ist. Schluessel ist der Name, wie er nach dem Abtrennen
   // einer fuehrenden Artikelnummer in der Karte steht.
@@ -4755,7 +4771,7 @@ document.readyState === 'loading'
       if (!next || !next.classList || !next.classList.contains('category-banner')) {
         var banner = document.createElement('img');
         banner.className = 'category-banner';
-        banner.src = 'img/menu/banner/' + h2.id + '.jpg';
+        banner.src = 'img/menu/banner/' + (BANNER_DATEI[h2.id] || h2.id) + '.jpg';
         banner.alt = h2.textContent.trim();
         banner.loading = 'lazy';
         banner.onerror = function() { this.remove(); };

@@ -74,28 +74,45 @@ das Bild kam als Download-Datei, nicht über den Bild-Host. Ergänzt am
 
 ## Kategorie-Banner (img/menu/banner/)
 
-Seit dem 3. September 2026 die einzigen Bilder, die auf der Seite erscheinen:
-ein Banner je Oberkategorie, die Produktkarten bleiben ohne Foto. Umgeschaltet
-wird das über die beiden Schalter `GERICHT_FOTOS` und `KATEGORIE_BANNER` in
-`index.html`; die Gericht-Fotos in `img/menu/haus/` und ihre Zuordnungen
-bleiben unangetastet und greifen sofort wieder, sobald der Schalter umgelegt
-wird.
+**Am 24.09.2026 vollständig ausgetauscht.** Vorher hatte jede der 21
+Kategorien ein Banner; auf Wunsch des Betreibers sind es jetzt nur noch sechs
+Motive. Die übrigen Kategorien bleiben bewusst ohne Bild.
 
-| Datei | Quelle | ID |
-|---|---|---|
-| familienpizza.jpg | Pexels | 2147491 |
-| pizza.jpg | Pexels | 905847 |
-| spaghetti.jpg | Unsplash | 1551892374-ecf8754cf8b0 |
-| rigatoni.jpg | Unsplash | 1621996346565-e3dbc646d9a9 |
-| tortellini.jpg | Unsplash | 1587740908075-9e245070dfaa |
-| backofen.jpg | Unsplash | 1619895092538-128341789043 |
-| gnocchi.jpg | Pexels | 15580891 |
-| haehnchen.jpg | Pexels | 2673353 |
-| auflaeufe.jpg | Pexels | 19145680 |
-| salate.jpg | Unsplash | 1540420773420-3366772f4999 |
-| rucola.jpg | Pexels | 326278 |
-| pizzabroetchen.jpg | Pexels | 27126839 |
-| getraenke.jpg | Pexels | 4113660 |
+Ein Banner erscheint genau dort, wo eine passende Datei liegt – fehlt sie,
+nimmt `onerror` das leere Bild wieder aus dem DOM, und der Abschnitt beginnt
+direkt mit den Gerichten. **Die Auswahl steht also in diesem Ordner, nicht im
+Code.** Wer eine Kategorie bebildern will, legt `<kategorie-id>.jpg` hier ab;
+wer eines loswerden will, löscht die Datei.
+
+Die sechs Pizza-Abschnitte teilen sich `pizza.jpg` über die Tabelle
+`BANNER_DATEI` in `index.html`. Als sechs gleiche Dateien hätte der Browser
+dasselbe Bild sechsmal geladen, gut ein Megabyte umsonst.
+
+Alle Banner sind mittig auf 1200×800 beschnitten. Angezeigt werden sie als
+150 px hoher Streifen (`object-fit: cover`), der Browser schneidet also ein
+zweites Mal – bei stehenden Vorlagen bleibt vom Motiv nur das mittlere Band.
+
+| Datei | zeigt | Quelle | ID |
+|---|---|---|---|
+| salate.jpg | Salat mit Garnelen, Wassermelone, Feta | Unsplash | 1505253716362-afaea1d3d1af |
+| schnitzel.jpg | Schnitzel mit Pommes und Zitrone | Unsplash | 1665056511905-1ca20935db27 |
+| spaghetti.jpg | Bandnudeln in Tomatensauce mit Parmesan | Pexels | 8697526 |
+| pizza.jpg | Pizza mit Rucola, angeschnitten | Unsplash | 1528137871618-79d2761e3fd5 |
+| backofen.jpg | Lasagne mit Basilikum | Unsplash | 1709429790175-b02bb1b19207 |
+| calzone.jpg | Calzone auf weißem Teller | Pexels | 36642831 |
+
+`spaghetti.jpg` und `calzone.jpg` kamen als lose Dateien aus dem Ordner
+„Bilder für die Webseite" und trugen den Fotografen nicht im Namen. Die
+Pexels-Herkunft stammt aus den Download-Metadaten von macOS
+(`mdls -name kMDItemWhereFroms`), nicht aus einer Vermutung.
+
+Ohne Banner, bewusst: antipasta, familienpizza, tagliatelle, rigatoni,
+tortellini, auflaeufe, gnocchi, puten, mittagsmenue, getraenke.
+
+Die früheren Banner (familienpizza, rigatoni, tortellini, gnocchi, haehnchen,
+auflaeufe, rucola, pizzabroetchen, getraenke und die alten Fassungen von
+pizza, spaghetti, backofen, salate) stehen weiterhin in der Git-Historie,
+falls eines davon zurück soll.
 
 ## Sonstige
 
