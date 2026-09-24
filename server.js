@@ -479,8 +479,8 @@ app.get('/api/config', (req, res) => res.json({
   whatsapp: process.env.WHATSAPP_NUMBER || '',
   serviceFee: 0.99,
   deliveryCities: {
-    'Nordkirchen':          { min: 10.00, fee: 1.50 },
-    'Südkirchen / Capelle': { min: 15.00, fee: 2.00 },
+    'Nordkirchen':          { min: 10.00, fee: 2.00 },
+    'Südkirchen / Capelle': { min: 15.00, fee: 2.50 },
     'Andere Orte':          { min: 20.00, fee: 4.00 },
   }
 }));
@@ -530,11 +530,11 @@ app.get('/api/availability', async (req, res) => {
 });
 
 // ── Finanzschüler-Rabatt: serverseitig nachrechnen ───────────────
-// Flyer: "Bei Lieferung erhalten Finanzschüler ab 20 Euro 10 Prozent Rabatt."
+// Flyer: "Bei Lieferung erhalten Finanzschüler ab 70 Euro 10 Prozent Rabatt."
 // Der Client darf einen Betrag vorschlagen – maßgeblich ist allein diese Rechnung.
 const RABATT_CODE        = 'FINANZ';
 const RABATT_PROZENT     = 0.10;
-const RABATT_MINDESTWERT = 20.00;
+const RABATT_MINDESTWERT = 70.00;
 
 function berechneRabatt({ coupon, mode, items, subtotal }) {
   if (!coupon || String(coupon).toUpperCase() !== RABATT_CODE) return 0;
