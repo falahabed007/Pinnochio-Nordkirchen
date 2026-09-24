@@ -75,8 +75,8 @@ das Bild kam als Download-Datei, nicht über den Bild-Host. Ergänzt am
 ## Kategorie-Banner (img/menu/banner/)
 
 **Am 24.09.2026 vollständig ausgetauscht.** Vorher hatte jede der 21
-Kategorien ein Banner; auf Wunsch des Betreibers sind es jetzt nur noch sechs
-Motive. Die übrigen Kategorien bleiben bewusst ohne Bild.
+Kategorien ein Banner; auf Wunsch des Betreibers sind es jetzt noch sieben
+Motive für zwölf Kategorien. Die übrigen bleiben bewusst ohne Bild.
 
 Ein Banner erscheint genau dort, wo eine passende Datei liegt – fehlt sie,
 nimmt `onerror` das leere Bild wieder aus dem DOM, und der Abschnitt beginnt
@@ -96,23 +96,32 @@ zweites Mal – bei stehenden Vorlagen bleibt vom Motiv nur das mittlere Band.
 |---|---|---|---|
 | salate.jpg | Salat mit Garnelen, Wassermelone, Feta | Unsplash | 1505253716362-afaea1d3d1af |
 | schnitzel.jpg | Schnitzel mit Pommes und Zitrone | Unsplash | 1665056511905-1ca20935db27 |
-| spaghetti.jpg | Bandnudeln in Tomatensauce mit Parmesan | Pexels | 8697526 |
+| spaghetti.jpg | Spaghetti an der Gabel, Oliven, blaue Tischdecke | Pexels | 36430297 |
 | pizza.jpg | Pizza mit Rucola, angeschnitten | Unsplash | 1528137871618-79d2761e3fd5 |
 | backofen.jpg | Lasagne mit Basilikum | Unsplash | 1709429790175-b02bb1b19207 |
 | calzone.jpg | Calzone auf weißem Teller | Pexels | 36642831 |
+| familienpizza.jpg | große Pizza von oben | Pexels | 2147491 |
 
 `spaghetti.jpg` und `calzone.jpg` kamen als lose Dateien aus dem Ordner
 „Bilder für die Webseite" und trugen den Fotografen nicht im Namen. Die
 Pexels-Herkunft stammt aus den Download-Metadaten von macOS
 (`mdls -name kMDItemWhereFroms`), nicht aus einer Vermutung.
 
-Ohne Banner, bewusst: antipasta, familienpizza, tagliatelle, rigatoni,
-tortellini, auflaeufe, gnocchi, puten, mittagsmenue, getraenke.
+`familienpizza.jpg` ist am 24.09.2026 aus der Git-Historie zurückgeholt
+(Stand `876bd5a`) und dabei von 1200×1600 auf 1200×800 normiert. Sichtbar
+ändert das nichts – der Browser schnitt aus dem Hochformat ohnehin dasselbe
+mittlere Band heraus –, die Datei wiegt aber 200K statt 264K.
 
-Die früheren Banner (familienpizza, rigatoni, tortellini, gnocchi, haehnchen,
-auflaeufe, rucola, pizzabroetchen, getraenke und die alten Fassungen von
-pizza, spaghetti, backofen, salate) stehen weiterhin in der Git-Historie,
-falls eines davon zurück soll.
+`spaghetti.jpg` zeigte zunächst Bandnudeln (Pexels 8697526); am 24.09.2026 auf
+Wunsch des Betreibers gegen das Motiv oben getauscht.
+
+Ohne Banner, bewusst: antipasta, tagliatelle, rigatoni, tortellini, auflaeufe,
+gnocchi, puten, mittagsmenue, getraenke.
+
+Die früheren Banner (rigatoni, tortellini, gnocchi, haehnchen, auflaeufe,
+rucola, pizzabroetchen, getraenke und die alten Fassungen von pizza,
+spaghetti, backofen, salate) stehen weiterhin in der Git-Historie, falls eines
+davon zurück soll.
 
 ## Sonstige
 
