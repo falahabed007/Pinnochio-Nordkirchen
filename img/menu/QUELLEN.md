@@ -1,8 +1,14 @@
 # Bildquellen — Speisekarten-Bilder
 
-Alle Bilder stammen von **Unsplash** (Unsplash-Lizenz) oder **Pexels** (Pexels-Lizenz).
+Die Bilder stammen von **Unsplash** (Unsplash-Lizenz) oder **Pexels** (Pexels-Lizenz).
 Beide Lizenzen erlauben die **kostenlose kommerzielle Nutzung ohne Namensnennung**.
 Verifiziert und heruntergeladen am 13.06.2026.
+
+**Zwei Ausnahmen**, beide unten im Abschnitt Kategorie-Banner begründet:
+bei `banner/pizza.jpg` ist die Quellenangabe plausibel, aber nicht belegt, und
+bei `banner/getraenke.jpg` ist die Herkunft gar nicht mehr feststellbar. Beide
+sind auf dieser Webseite unbedenklich; vor einer Verwendung anderswo erst
+klären.
 
 - Unsplash-Lizenz: https://unsplash.com/license
 - Pexels-Lizenz: https://www.pexels.com/license/
@@ -75,8 +81,8 @@ das Bild kam als Download-Datei, nicht über den Bild-Host. Ergänzt am
 ## Kategorie-Banner (img/menu/banner/)
 
 **Am 24.09.2026 vollständig ausgetauscht.** Vorher hatte jede der 21
-Kategorien ein Banner; auf Wunsch des Betreibers sind es jetzt noch sieben
-Motive für zwölf Kategorien. Die übrigen bleiben bewusst ohne Bild.
+Kategorien ein Banner; auf Wunsch des Betreibers sind es jetzt noch acht
+Motive für dreizehn Kategorien. Die übrigen bleiben bewusst ohne Bild.
 
 Ein Banner erscheint genau dort, wo eine passende Datei liegt – fehlt sie,
 nimmt `onerror` das leere Bild wieder aus dem DOM, und der Abschnitt beginnt
@@ -88,9 +94,10 @@ Die sechs Pizza-Abschnitte teilen sich `pizza.jpg` über die Tabelle
 `BANNER_DATEI` in `index.html`. Als sechs gleiche Dateien hätte der Browser
 dasselbe Bild sechsmal geladen, gut ein Megabyte umsonst.
 
-Alle Banner sind mittig auf 1200×800 beschnitten. Angezeigt werden sie als
-150 px hoher Streifen (`object-fit: cover`), der Browser schneidet also ein
-zweites Mal – bei stehenden Vorlagen bleibt vom Motiv nur das mittlere Band.
+Alle Banner sind auf 1200×800 beschnitten, in der Regel mittig; `getraenke.jpg`
+weicht bewusst ab (siehe unten). Angezeigt werden sie als 150 px hoher Streifen
+(`object-fit: cover`), der Browser schneidet also ein zweites Mal – bei
+stehenden Vorlagen bleibt vom Motiv nur das mittlere Band.
 
 | Datei | zeigt | Quelle | ID |
 |---|---|---|---|
@@ -101,6 +108,7 @@ zweites Mal – bei stehenden Vorlagen bleibt vom Motiv nur das mittlere Band.
 | backofen.jpg | Lasagne mit Basilikum | Unsplash | 1709429790175-b02bb1b19207 |
 | calzone.jpg | Calzone auf weißem Teller | Pexels | 36642831 |
 | familienpizza.jpg | große Pizza von oben | Pexels | 2147491 |
+| getraenke.jpg | Coca-Cola-Dose mit Eiswürfeln | unbekannt | siehe unten |
 
 `spaghetti.jpg` und `calzone.jpg` kamen als lose Dateien aus dem Ordner
 „Bilder für die Webseite" und trugen den Fotografen nicht im Namen. Die
@@ -122,6 +130,22 @@ Pizza-Abschnitte schon als sechs **identische** Dateien (alle Blob
 nichts, sie spart nur die fünf Kopien. Zwischenzeitlich stand hier eine Pizza
 mit Rucola (Unsplash 1528137871618-79d2761e3fd5).
 
+**Zur Quellenangabe von `getraenke.jpg`:** Die Vorlage (`Cola.jpg` aus
+„Bilder für die Webseite") wurde laut Quarantäne-Attribut mit Safari geladen,
+aber `kMDItemWhereFroms` ist leer und die Datei hat keine EXIF-Angaben – die
+Quell-URL ist nicht mehr feststellbar. Vor einer Verwendung außerhalb dieser
+Webseite klären, woher sie stammt.
+
+Hinzu kommt: Das Bild zeigt eine **Marke**. Die Lizenzen von Unsplash und
+Pexels decken das abgebildete Motiv ab, nicht die Marken- und Designrechte
+Dritter. Für ein Restaurant, das Coca-Cola tatsächlich ausschenkt, ist die
+Abbildung des verkauften Produkts üblich; sie taugt aber nicht als Werbemotiv
+für etwas anderes.
+
+Der Zuschnitt sitzt bewusst nicht mittig, sondern 190 px tiefer. Die Dose steht
+hochkant, der Banner ist ein 5:1-Streifen – mittig blieb nur ein schmaler roter
+Strich auf Schwarz. So ist wenigstens der Schriftzug lesbar.
+
 **Zur Quellenangabe von `pizza.jpg`:** Die alte Tabelle führte eine Zeile
 `pizza.jpg | Pexels | 905847`, obwohl im Ordner nie eine `pizza.jpg` lag,
 sondern die sechs `pizza-*.jpg`. Sie hatte 13 Zeilen für 21 Dateien, war also
@@ -131,7 +155,7 @@ Download-Metadaten stammen. Vor einer Verwendung außerhalb der Webseite
 nachprüfen.
 
 Ohne Banner, bewusst: antipasta, tagliatelle, rigatoni, tortellini, auflaeufe,
-gnocchi, puten, mittagsmenue, getraenke.
+gnocchi, puten, mittagsmenue.
 
 Die früheren Banner (rigatoni, tortellini, gnocchi, haehnchen, auflaeufe,
 rucola, pizzabroetchen, getraenke und die alten Fassungen von pizza,
