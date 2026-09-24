@@ -4719,6 +4719,19 @@ document.readyState === 'loading'
   var GERICHT_FOTOS     = false;   // Foto oben in jeder Produktkarte
   var KATEGORIE_BANNER  = true;    // Foto unter jedem Kategorie-Titel
 
+  // Einzelne Gerichte bekommen trotzdem ein Foto in der Karte, auch solange
+  // GERICHT_FOTOS aus ist. Schluessel ist der Name, wie er nach dem Abtrennen
+  // der Artikelnummer in der Karte steht – aus "5 Bruschetta" wird oben
+  // Badge "05" plus "Bruschetta".
+  //
+  // Dieser Weg geht bewusst an pickImage vorbei. Die Nummer wird per Regex aus
+  // der Ueberschrift gelesen, und bei "5 Bruschetta" ist die 5 Teil des Namens,
+  // keine Artikelnummer. pickImage haette darum ITEM_IMG['5'] getroffen und der
+  // Bruschetta das Foto der Quadro-Formaggi-Pizza gegeben.
+  var GERICHT_FOTO_EINZELN = {
+    'Bruschetta': 'bruschetta'
+  };
+
   function processContainer(container) {
     var els = Array.from(container.children);
     var currentGrid = null;
@@ -4823,10 +4836,11 @@ document.readyState === 'loading'
 
     el.innerHTML = '';
 
-    // Gericht-Foto oben in die Karte einsetzen
-    var imgFile = GERICHT_FOTOS
-      ? pickImage(el.dataset.itemNum, h3 ? h3.textContent : '', cat)
-      : null;
+    // Gericht-Foto oben in die Karte einsetzen. Ein Eintrag in
+    // GERICHT_FOTO_EINZELN schlaegt den Schalter und pickImage.
+    var kartenName = h3 ? h3.textContent.trim() : '';
+    var imgFile = GERICHT_FOTO_EINZELN[kartenName]
+      || (GERICHT_FOTOS ? pickImage(el.dataset.itemNum, kartenName, cat) : null);
     if (imgFile) {
       var img = document.createElement('img');
       img.className = 'card-img';

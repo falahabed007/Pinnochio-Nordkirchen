@@ -65,6 +65,12 @@ Unsplash-Bilder: `https://images.unsplash.com/photo-<ID>` · Pexels-Bilder: `htt
 | limo-orange.jpg | Pexels | 96974 |
 | limo-zitrone.jpg | Unsplash | 1556881286-fc6915169721 |
 | wasser.jpg | Pexels | 416528 |
+| bruschetta.jpg | Unsplash | 86vIY4SPr6A (Konstantinas Ladauskas) |
+
+Bei `bruschetta.jpg` steht die kurze Foto-Kennung aus der URL
+(`unsplash.com/photos/86vIY4SPr6A`), nicht die lange `photo-…`-Form wie oben –
+das Bild kam als Download-Datei, nicht über den Bild-Host. Ergänzt am
+24.09.2026, Unsplash-Lizenz wie alle übrigen.
 
 ## Kategorie-Banner (img/menu/banner/)
 
