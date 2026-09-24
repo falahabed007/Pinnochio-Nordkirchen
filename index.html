@@ -1126,7 +1126,7 @@
         <div class="price">6,00 €</div>
     </div>
     <div class="product-item" onclick="openQuickAdd(this)" style="cursor: pointer;">
-        <div class="product-info"><h3>5 Bruschetta</h3></div>
+        <div class="product-info"><h3>Bruschetta</h3><p>5 Stück</p></div>
         <div class="price">7,50 €</div>
     </div>
     <div class="product-item" onclick="openQuickAdd(this)" style="cursor: pointer;">
@@ -4721,13 +4721,17 @@ document.readyState === 'loading'
 
   // Einzelne Gerichte bekommen trotzdem ein Foto in der Karte, auch solange
   // GERICHT_FOTOS aus ist. Schluessel ist der Name, wie er nach dem Abtrennen
-  // der Artikelnummer in der Karte steht – aus "5 Bruschetta" wird oben
-  // Badge "05" plus "Bruschetta".
+  // einer fuehrenden Artikelnummer in der Karte steht.
   //
-  // Dieser Weg geht bewusst an pickImage vorbei. Die Nummer wird per Regex aus
-  // der Ueberschrift gelesen, und bei "5 Bruschetta" ist die 5 Teil des Namens,
-  // keine Artikelnummer. pickImage haette darum ITEM_IMG['5'] getroffen und der
-  // Bruschetta das Foto der Quadro-Formaggi-Pizza gegeben.
+  // Der Eintrag geht bewusst an pickImage vorbei, sonst faende dieses Gericht
+  // ueber CAT_IMG nur das Sammelbild der Kategorie.
+  //
+  // Warum das Gericht "Bruschetta" heisst und nicht "5 Bruschetta": buildCard
+  // liest die Artikelnummer per Regex aus der Ueberschrift. Bei "5 Bruschetta"
+  // war die 5 die Stueckzahl, wurde aber als Artikelnummer gelesen - die Karte
+  // zeigte Badge "05", obwohl Nr. 5 die Quadro-Formaggi-Pizza ist, und die
+  // Stueckzahl verschwand aus dem Namen. Sie steht jetzt in der Beschreibung,
+  // so wie bei den Chicken Wings ("7 Stueck mit Barbecuesauce").
   var GERICHT_FOTO_EINZELN = {
     'Bruschetta': 'bruschetta'
   };
