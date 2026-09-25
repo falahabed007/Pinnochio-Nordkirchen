@@ -1,8 +1,14 @@
 # Bildquellen — Speisekarten-Bilder
 
-Die Bilder stammen von **Unsplash** (Unsplash-Lizenz) oder **Pexels** (Pexels-Lizenz).
-Beide Lizenzen erlauben die **kostenlose kommerzielle Nutzung ohne Namensnennung**.
-Verifiziert und heruntergeladen am 13.06.2026.
+Die Bilder stammen von **Unsplash** (Unsplash-Lizenz), **Pexels** (Pexels-Lizenz)
+oder **Pixabay** (Pixabay Content License). Alle drei erlauben die
+**kostenlose kommerzielle Nutzung ohne Namensnennung**.
+Verifiziert und heruntergeladen am 13.06.2026 (Unsplash/Pexels) bzw.
+25.09.2026 (die beiden Pixabay-Bilder, siehe unten).
+
+- Unsplash-Lizenz: https://unsplash.com/license
+- Pexels-Lizenz: https://www.pexels.com/license/
+- Pixabay Content License: https://pixabay.com/service/license-summary/
 
 **Zwei Ausnahmen**, beide unten im Abschnitt Kategorie-Banner begründet:
 bei `banner/pizza.jpg` ist die Quellenangabe plausibel, aber nicht belegt, und
@@ -10,10 +16,9 @@ bei `banner/getraenke.jpg` ist die Herkunft gar nicht mehr feststellbar. Beide
 sind auf dieser Webseite unbedenklich; vor einer Verwendung anderswo erst
 klären.
 
-- Unsplash-Lizenz: https://unsplash.com/license
-- Pexels-Lizenz: https://www.pexels.com/license/
-
-Unsplash-Bilder: `https://images.unsplash.com/photo-<ID>` · Pexels-Bilder: `https://www.pexels.com/photo/<ID>/`
+Unsplash-Bilder: `https://images.unsplash.com/photo-<ID>` · Pexels-Bilder:
+`https://www.pexels.com/photo/<ID>/` · Pixabay-Bilder:
+`https://pixabay.com/de/photos/<slug>-<ID>/`
 
 ## Thumbnails (img/menu/)
 
@@ -93,8 +98,8 @@ Herkunft nicht mehr feststellbar. Ergänzt am 25.09.2026.
 ## Kategorie-Banner (img/menu/banner/)
 
 **Am 24./25.09.2026 vollständig ausgetauscht.** Vorher hatte jede der 21
-Kategorien ein Banner; auf Wunsch des Betreibers sind es jetzt noch dreizehn
-Motive für fünfzehn Kategorien. Die übrigen bleiben bewusst ohne Bild.
+Kategorien ein Banner; auf Wunsch des Betreibers sind es jetzt noch fünfzehn
+Motive für siebzehn Kategorien. Die übrigen bleiben bewusst ohne Bild.
 
 Ein Banner erscheint genau dort, wo eine passende Datei liegt – fehlt sie,
 nimmt `onerror` das leere Bild wieder aus dem DOM, und der Abschnitt beginnt
@@ -130,6 +135,8 @@ stehenden Vorlagen bleibt vom Motiv nur das mittlere Band.
 | calzone.jpg | Calzone auf weißem Teller | Pexels | 36642831 |
 | familienpizza.jpg | Pizza mit Hähnchen und Brokkoli | Unsplash | 1651307435894-ead7a594b534 |
 | getraenke.jpg | Coca-Cola-Dose mit Eiswürfeln | unbekannt | siehe unten |
+| rigatoni.jpg | Rigatoni mit Garnelen in Tomatensauce | Pixabay | 10238319 |
+| tagliatelle.jpg | Tagliatelle in scharfer Tomatensauce, Rucola | Pixabay | 5105223 |
 | auflaeufe.jpg | Zucchini-Tomaten-Auflauf in Tarteform, überbacken | Unsplash | 1586032340364-03f75289e661 |
 | tortellini.jpg | Tortellini mit Kirschtomaten, Parmesan wird gerieben | Unsplash | 1628885405379-5d58de03edb0 |
 
@@ -150,6 +157,13 @@ gleich große Kandidaten (beide 3456×4608) standen für `tortellini.jpg` zur
 Wahl – die erste Vermutung war falsch und zeigte stattdessen ein zweites Mal
 die Rucola-Pizza aus `pizza-vegetarisch.jpg`; erst der Bildvergleich beider
 Kandidaten hat das aufgeklärt.
+
+`rigatoni.jpg` und `tagliatelle.jpg` sind die ersten **Pixabay**-Bilder in
+diesem Ordner, alle übrigen stammen von Unsplash oder Pexels. Die
+Dateinamen (`u_26j1zdvoaa-pasta-10238319.jpg`,
+`reissaamme-pasta-5105223.jpg`) enthalten die Pixabay-ID bereits selbst; die
+Download-Metadaten in `~/Downloads` bestätigen zusätzlich die volle URL
+(`pixabay.com/de/photos/…-<ID>/`). Ergänzt am 25.09.2026.
 
 `spaghetti.jpg`, `calzone.jpg`, `pizza-kaese.jpg`, `pizza-vegetarisch.jpg`,
 `pizza-fisch.jpg` und `familienpizza.jpg` kamen als lose Dateien aus dem
@@ -198,8 +212,7 @@ nicht belegt – anders als bei den übrigen Einträgen, die aus Dateinamen oder
 Download-Metadaten stammen. Vor einer Verwendung außerhalb der Webseite
 nachprüfen.
 
-Ohne Banner, bewusst: antipasta, tagliatelle, rigatoni, gnocchi, puten,
-mittagsmenue.
+Ohne Banner, bewusst: antipasta, gnocchi, puten, mittagsmenue.
 
 Die früheren Banner (rigatoni, tortellini, gnocchi, haehnchen, auflaeufe,
 rucola, pizzabroetchen, getraenke und die alten Fassungen von pizza,
