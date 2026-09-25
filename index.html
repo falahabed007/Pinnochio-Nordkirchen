@@ -1122,7 +1122,7 @@
     <!-- KARTE:START – erzeugt aus Menue/menu.json von karte-einsetzen.js, nicht von Hand aendern -->
     <h2 class="category-title" id="antipasta">Antipasta / Vorspeisen</h2>
     <div class="product-item" onclick="openQuickAdd(this)" style="cursor: pointer;">
-        <div class="product-info"><h3>Gefüllte Pizzabrötchen überbacken</h3><p>Pesto, frische Tomaten, Knoblauch, Parmesankäse</p></div>
+        <div class="product-info"><h3>Gefüllte Pizza überbacken</h3><p>Pesto, frische Tomaten, Knoblauch, Parmesankäse</p></div>
         <div class="price">6,00 €</div>
     </div>
     <div class="product-item" onclick="openQuickAdd(this)" style="cursor: pointer;">
@@ -4727,12 +4727,10 @@ document.readyState === 'loading'
   // Pizza-Abschnitte zeigen dasselbe Bild - als sechs gleiche Dateien haette
   // der Browser es sechsmal geladen, gut ein Megabyte umsonst.
   var BANNER_DATEI = {
-    // pizza-kaese, pizza-vegetarisch und pizza-fisch haben eigene Motive
-    // (pizza-kaese.jpg, pizza-vegetarisch.jpg, pizza-fisch.jpg) und stehen
-    // deshalb nicht in dieser Tabelle - ohne Eintrag greift der Fallback
-    // auf <kategorie-id>.jpg.
+    // pizza-kaese, pizza-vegetarisch, pizza-fisch und pizza-fleischsauce haben
+    // eigene Motive und stehen deshalb nicht in dieser Tabelle - ohne Eintrag
+    // greift der Fallback auf <kategorie-id>.jpg.
     'pizza-mozzarella':  'pizza-kaese',  // gleiches Motiv (Burrata/Mozzarella)
-    'pizza-fleischsauce':'pizza',
     'pizza-belaege':     'pizza'
   };
 
@@ -4750,7 +4748,8 @@ document.readyState === 'loading'
   // Stueckzahl verschwand aus dem Namen. Sie steht jetzt in der Beschreibung,
   // so wie bei den Chicken Wings ("7 Stueck mit Barbecuesauce").
   var GERICHT_FOTO_EINZELN = {
-    'Bruschetta': 'bruschetta'
+    'Bruschetta': 'bruschetta',
+    'Gefüllte Pizzabrötchen': 'pizzabroetchen-gefuellt'
   };
 
   function processContainer(container) {

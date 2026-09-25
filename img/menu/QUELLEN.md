@@ -72,16 +72,28 @@ Unsplash-Bilder: `https://images.unsplash.com/photo-<ID>` · Pexels-Bilder: `htt
 | limo-zitrone.jpg | Unsplash | 1556881286-fc6915169721 |
 | wasser.jpg | Pexels | 416528 |
 | bruschetta.jpg | Unsplash | 86vIY4SPr6A (Konstantinas Ladauskas) |
+| pizzabroetchen-gefuellt.jpg | Datei „Pizzabrötchen mit Käse.jpg" | unbekannt | siehe unten |
 
 Bei `bruschetta.jpg` steht die kurze Foto-Kennung aus der URL
 (`unsplash.com/photos/86vIY4SPr6A`), nicht die lange `photo-…`-Form wie oben –
 das Bild kam als Download-Datei, nicht über den Bild-Host. Ergänzt am
 24.09.2026, Unsplash-Lizenz wie alle übrigen.
 
+**`bruschetta.jpg` und `pizzabroetchen-gefuellt.jpg` sind Gericht-Fotos, keine
+Kategorie-Banner.** Gericht-Fotos sind in diesem System sonst abgeschaltet
+(`GERICHT_FOTOS = false` in `index.html`); diese beiden erscheinen trotzdem,
+über die Tabelle `GERICHT_FOTO_EINZELN`. Schlüssel ist dort der Artikelname,
+wie er nach dem Abtrennen einer führenden Artikelnummer in der Karte steht –
+bei „68a Gefüllte Pizzabrötchen" also `Gefüllte Pizzabrötchen`, ohne die 68a.
+
+Zur Herkunft von `pizzabroetchen-gefuellt.jpg`: Die Quelldatei trägt weder
+Download-Metadaten noch EXIF-Angaben – wie bei `banner/getraenke.jpg` ist die
+Herkunft nicht mehr feststellbar. Ergänzt am 25.09.2026.
+
 ## Kategorie-Banner (img/menu/banner/)
 
 **Am 24./25.09.2026 vollständig ausgetauscht.** Vorher hatte jede der 21
-Kategorien ein Banner; auf Wunsch des Betreibers sind es jetzt noch zehn
+Kategorien ein Banner; auf Wunsch des Betreibers sind es jetzt noch elf
 Motive für dreizehn Kategorien. Die übrigen bleiben bewusst ohne Bild.
 
 Ein Banner erscheint genau dort, wo eine passende Datei liegt – fehlt sie,
@@ -90,14 +102,14 @@ direkt mit den Gerichten. **Die Auswahl steht also in diesem Ordner, nicht im
 Code.** Wer eine Kategorie bebildern will, legt `<kategorie-id>.jpg` hier ab;
 wer eines loswerden will, löscht die Datei.
 
-**Seit 25.09.2026 haben vier der sechs Pizza-Abschnitte eigene Motive**
-(`pizza-kaese.jpg`, `pizza-vegetarisch.jpg`, `pizza-fisch.jpg`, dazu
-`familienpizza.jpg`); nur noch `pizza-fleischsauce` und `pizza-belaege` teilen
-sich das alte `pizza.jpg` über die Tabelle `BANNER_DATEI` in `index.html`.
-`pizza-mozzarella` zeigt dasselbe Motiv wie `pizza-kaese` (beide sind
-Käse-/Mozzarella-lastig) und ist deshalb ebenfalls über `BANNER_DATEI`
-zugeordnet, statt das Bild ein zweites Mal abzulegen – sonst hätte der Browser
-dieselben Bytes zweimal geladen.
+**Seit 25.09.2026 haben fünf der sechs Pizza-Abschnitte eigene Motive**
+(`pizza-kaese.jpg`, `pizza-vegetarisch.jpg`, `pizza-fisch.jpg`,
+`pizza-fleischsauce.jpg`, dazu `familienpizza.jpg`); nur noch `pizza-belaege`
+zeigt das alte `pizza.jpg` über die Tabelle `BANNER_DATEI` in `index.html`.
+`pizza-mozzarella` bekam nie eine eigene Datei: die Kategorie zeigt dasselbe
+Motiv wie `pizza-kaese` (beide sind Käse-/Mozzarella-lastig), ebenfalls über
+`BANNER_DATEI`, statt das Bild ein zweites Mal abzulegen – sonst hätte der
+Browser dieselben Bytes zweimal geladen.
 
 Alle Banner sind auf 1200×800 beschnitten, in der Regel mittig; `getraenke.jpg`
 weicht bewusst ab (siehe unten). Angezeigt werden sie als 150 px hoher Streifen
@@ -109,6 +121,7 @@ stehenden Vorlagen bleibt vom Motiv nur das mittlere Band.
 | pizza-kaese.jpg | Burrata-Pizza, Basilikum, von oben | Pexels | 10880324 |
 | pizza-vegetarisch.jpg | Pizza mit Prosciutto, Rucola, Peperoni | Unsplash | 1598023696416-0193a0bcd302 |
 | pizza-fisch.jpg | Pizza mit Sardellen, Paprika, Artischocken, Oliven | Pexels | 16677742 |
+| pizza-fleischsauce.jpg | Margherita, Nahaufnahme, zweite Pizza im Hintergrund | Unsplash | shayan-ramesht-exSEmuA7R7k |
 | salate.jpg | Salat mit Garnelen, Wassermelone, Feta | Unsplash | 1505253716362-afaea1d3d1af |
 | schnitzel.jpg | Schnitzel mit Pommes und Zitrone | Unsplash | 1665056511905-1ca20935db27 |
 | spaghetti.jpg | Spaghetti an der Gabel, Oliven, blaue Tischdecke | Pexels | 36430297 |
@@ -120,6 +133,12 @@ stehenden Vorlagen bleibt vom Motiv nur das mittlere Band.
 
 `pizza-mozzarella` hat keine eigene Datei: die Kategorie zeigt `pizza-kaese.jpg`
 über `BANNER_DATEI`, siehe oben.
+
+Bei `pizza-fleischsauce.jpg` steht wie bei `bruschetta.jpg` die kurze
+Foto-Kennung aus der Unsplash-URL (`unsplash.com/photos/exSEmuA7R7k`), nicht
+die lange `photo-…`-Form – die Datei lag als Download
+`shayan-ramesht-exSEmuA7R7k-unsplash.jpg` in `~/Downloads`, nicht im Ordner
+„Bilder für die Webseite".
 
 `spaghetti.jpg`, `calzone.jpg`, `pizza-kaese.jpg`, `pizza-vegetarisch.jpg`,
 `pizza-fisch.jpg` und `familienpizza.jpg` kamen als lose Dateien aus dem
