@@ -93,8 +93,8 @@ Herkunft nicht mehr feststellbar. Ergänzt am 25.09.2026.
 ## Kategorie-Banner (img/menu/banner/)
 
 **Am 24./25.09.2026 vollständig ausgetauscht.** Vorher hatte jede der 21
-Kategorien ein Banner; auf Wunsch des Betreibers sind es jetzt noch elf
-Motive für dreizehn Kategorien. Die übrigen bleiben bewusst ohne Bild.
+Kategorien ein Banner; auf Wunsch des Betreibers sind es jetzt noch dreizehn
+Motive für fünfzehn Kategorien. Die übrigen bleiben bewusst ohne Bild.
 
 Ein Banner erscheint genau dort, wo eine passende Datei liegt – fehlt sie,
 nimmt `onerror` das leere Bild wieder aus dem DOM, und der Abschnitt beginnt
@@ -130,6 +130,8 @@ stehenden Vorlagen bleibt vom Motiv nur das mittlere Band.
 | calzone.jpg | Calzone auf weißem Teller | Pexels | 36642831 |
 | familienpizza.jpg | Pizza mit Hähnchen und Brokkoli | Unsplash | 1651307435894-ead7a594b534 |
 | getraenke.jpg | Coca-Cola-Dose mit Eiswürfeln | unbekannt | siehe unten |
+| auflaeufe.jpg | Zucchini-Tomaten-Auflauf in Tarteform, überbacken | Unsplash | 1586032340364-03f75289e661 |
+| tortellini.jpg | Tortellini mit Kirschtomaten, Parmesan wird gerieben | Unsplash | 1628885405379-5d58de03edb0 |
 
 `pizza-mozzarella` hat keine eigene Datei: die Kategorie zeigt `pizza-kaese.jpg`
 über `BANNER_DATEI`, siehe oben.
@@ -139,6 +141,15 @@ Foto-Kennung aus der Unsplash-URL (`unsplash.com/photos/exSEmuA7R7k`), nicht
 die lange `photo-…`-Form – die Datei lag als Download
 `shayan-ramesht-exSEmuA7R7k-unsplash.jpg` in `~/Downloads`, nicht im Ordner
 „Bilder für die Webseite".
+
+`auflaeufe.jpg` und `tortellini.jpg` lagen ebenfalls in `~/Downloads`
+(`micheile-henderson-TwsFZA-iBfM-unsplash.jpg` und
+`yoav-aziz-kZYHddxKv9E-unsplash.jpg`); hier lieferten die Download-Metadaten
+aber die lange `photo-…`-Form, wie bei den übrigen Einträgen oben. Zwei
+gleich große Kandidaten (beide 3456×4608) standen für `tortellini.jpg` zur
+Wahl – die erste Vermutung war falsch und zeigte stattdessen ein zweites Mal
+die Rucola-Pizza aus `pizza-vegetarisch.jpg`; erst der Bildvergleich beider
+Kandidaten hat das aufgeklärt.
 
 `spaghetti.jpg`, `calzone.jpg`, `pizza-kaese.jpg`, `pizza-vegetarisch.jpg`,
 `pizza-fisch.jpg` und `familienpizza.jpg` kamen als lose Dateien aus dem
@@ -187,8 +198,8 @@ nicht belegt – anders als bei den übrigen Einträgen, die aus Dateinamen oder
 Download-Metadaten stammen. Vor einer Verwendung außerhalb der Webseite
 nachprüfen.
 
-Ohne Banner, bewusst: antipasta, tagliatelle, rigatoni, tortellini, auflaeufe,
-gnocchi, puten, mittagsmenue.
+Ohne Banner, bewusst: antipasta, tagliatelle, rigatoni, gnocchi, puten,
+mittagsmenue.
 
 Die früheren Banner (rigatoni, tortellini, gnocchi, haehnchen, auflaeufe,
 rucola, pizzabroetchen, getraenke und die alten Fassungen von pizza,
