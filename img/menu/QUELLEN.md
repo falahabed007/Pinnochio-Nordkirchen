@@ -80,8 +80,8 @@ das Bild kam als Download-Datei, nicht über den Bild-Host. Ergänzt am
 
 ## Kategorie-Banner (img/menu/banner/)
 
-**Am 24.09.2026 vollständig ausgetauscht.** Vorher hatte jede der 21
-Kategorien ein Banner; auf Wunsch des Betreibers sind es jetzt noch acht
+**Am 24./25.09.2026 vollständig ausgetauscht.** Vorher hatte jede der 21
+Kategorien ein Banner; auf Wunsch des Betreibers sind es jetzt noch zehn
 Motive für dreizehn Kategorien. Die übrigen bleiben bewusst ohne Bild.
 
 Ein Banner erscheint genau dort, wo eine passende Datei liegt – fehlt sie,
@@ -90,9 +90,14 @@ direkt mit den Gerichten. **Die Auswahl steht also in diesem Ordner, nicht im
 Code.** Wer eine Kategorie bebildern will, legt `<kategorie-id>.jpg` hier ab;
 wer eines loswerden will, löscht die Datei.
 
-Die sechs Pizza-Abschnitte teilen sich `pizza.jpg` über die Tabelle
-`BANNER_DATEI` in `index.html`. Als sechs gleiche Dateien hätte der Browser
-dasselbe Bild sechsmal geladen, gut ein Megabyte umsonst.
+**Seit 25.09.2026 haben vier der sechs Pizza-Abschnitte eigene Motive**
+(`pizza-kaese.jpg`, `pizza-vegetarisch.jpg`, `pizza-fisch.jpg`, dazu
+`familienpizza.jpg`); nur noch `pizza-fleischsauce` und `pizza-belaege` teilen
+sich das alte `pizza.jpg` über die Tabelle `BANNER_DATEI` in `index.html`.
+`pizza-mozzarella` zeigt dasselbe Motiv wie `pizza-kaese` (beide sind
+Käse-/Mozzarella-lastig) und ist deshalb ebenfalls über `BANNER_DATEI`
+zugeordnet, statt das Bild ein zweites Mal abzulegen – sonst hätte der Browser
+dieselben Bytes zweimal geladen.
 
 Alle Banner sind auf 1200×800 beschnitten, in der Regel mittig; `getraenke.jpg`
 weicht bewusst ab (siehe unten). Angezeigt werden sie als 150 px hoher Streifen
@@ -101,27 +106,36 @@ stehenden Vorlagen bleibt vom Motiv nur das mittlere Band.
 
 | Datei | zeigt | Quelle | ID |
 |---|---|---|---|
+| pizza-kaese.jpg | Burrata-Pizza, Basilikum, von oben | Pexels | 10880324 |
+| pizza-vegetarisch.jpg | Pizza mit Prosciutto, Rucola, Peperoni | Unsplash | 1598023696416-0193a0bcd302 |
+| pizza-fisch.jpg | Pizza mit Sardellen, Paprika, Artischocken, Oliven | Pexels | 16677742 |
 | salate.jpg | Salat mit Garnelen, Wassermelone, Feta | Unsplash | 1505253716362-afaea1d3d1af |
 | schnitzel.jpg | Schnitzel mit Pommes und Zitrone | Unsplash | 1665056511905-1ca20935db27 |
 | spaghetti.jpg | Spaghetti an der Gabel, Oliven, blaue Tischdecke | Pexels | 36430297 |
 | pizza.jpg | Pizza auf dem Schieber vor dem Holzofen | Pexels | 905847 (siehe unten) |
 | backofen.jpg | Lasagne mit Basilikum | Unsplash | 1709429790175-b02bb1b19207 |
 | calzone.jpg | Calzone auf weißem Teller | Pexels | 36642831 |
-| familienpizza.jpg | große Pizza von oben | Pexels | 2147491 |
+| familienpizza.jpg | Pizza mit Hähnchen und Brokkoli | Unsplash | 1651307435894-ead7a594b534 |
 | getraenke.jpg | Coca-Cola-Dose mit Eiswürfeln | unbekannt | siehe unten |
 
-`spaghetti.jpg` und `calzone.jpg` kamen als lose Dateien aus dem Ordner
-„Bilder für die Webseite" und trugen den Fotografen nicht im Namen. Die
-Pexels-Herkunft stammt aus den Download-Metadaten von macOS
-(`mdls -name kMDItemWhereFroms`), nicht aus einer Vermutung.
+`pizza-mozzarella` hat keine eigene Datei: die Kategorie zeigt `pizza-kaese.jpg`
+über `BANNER_DATEI`, siehe oben.
 
-`familienpizza.jpg` ist am 24.09.2026 aus der Git-Historie zurückgeholt
-(Stand `876bd5a`) und dabei von 1200×1600 auf 1200×800 normiert. Sichtbar
-ändert das nichts – der Browser schnitt aus dem Hochformat ohnehin dasselbe
-mittlere Band heraus –, die Datei wiegt aber 200K statt 264K.
+`spaghetti.jpg`, `calzone.jpg`, `pizza-kaese.jpg`, `pizza-vegetarisch.jpg`,
+`pizza-fisch.jpg` und `familienpizza.jpg` kamen als lose Dateien aus dem
+Ordner „Bilder für die Webseite" und trugen den Fotografen nicht im Namen.
+Die Pexels-Herkunft stammt aus den Download-Metadaten von macOS
+(`mdls -name kMDItemWhereFroms`), nicht aus einer Vermutung.
 
 `spaghetti.jpg` zeigte zunächst Bandnudeln (Pexels 8697526); am 24.09.2026 auf
 Wunsch des Betreibers gegen das Motiv oben getauscht.
+
+`familienpizza.jpg` zeigte zunächst eine große Pizza von oben (Pexels
+2147491, davor kurz eine aus der Historie zurückgeholte Fassung); am
+25.09.2026 auf Wunsch des Betreibers gegen die Hähnchen-Brokkoli-Pizza
+getauscht, die zugleich als vierte der an diesem Tag gelieferten vier Fotos
+diente (die anderen drei gingen an pizza-kaese, pizza-vegetarisch und
+pizza-fisch).
 
 `pizza.jpg` ist am 24.09.2026 ebenfalls aus der Historie zurückgeholt,
 byteidentisch mit `pizza-kaese.jpg` aus `876bd5a`. Dort lagen die sechs

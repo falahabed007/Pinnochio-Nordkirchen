@@ -4727,10 +4727,11 @@ document.readyState === 'loading'
   // Pizza-Abschnitte zeigen dasselbe Bild - als sechs gleiche Dateien haette
   // der Browser es sechsmal geladen, gut ein Megabyte umsonst.
   var BANNER_DATEI = {
-    'pizza-kaese':       'pizza',
-    'pizza-vegetarisch': 'pizza',
-    'pizza-mozzarella':  'pizza',
-    'pizza-fisch':       'pizza',
+    // pizza-kaese, pizza-vegetarisch und pizza-fisch haben eigene Motive
+    // (pizza-kaese.jpg, pizza-vegetarisch.jpg, pizza-fisch.jpg) und stehen
+    // deshalb nicht in dieser Tabelle - ohne Eintrag greift der Fallback
+    // auf <kategorie-id>.jpg.
+    'pizza-mozzarella':  'pizza-kaese',  // gleiches Motiv (Burrata/Mozzarella)
     'pizza-fleischsauce':'pizza',
     'pizza-belaege':     'pizza'
   };
