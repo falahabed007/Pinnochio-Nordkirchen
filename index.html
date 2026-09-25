@@ -65,6 +65,7 @@
     .menu-section { background: transparent; border-radius: 0; padding: 0; box-shadow: none; }
     .category-title { color: #12314f; border-bottom: 2px solid #d6e2ee; padding-bottom: 12px; margin-top: 40px; margin-bottom: 16px; font-size: 1.4rem; font-weight: 700; display: flex; align-items: center; gap: 10px; }
     .category-icon { font-size: 1.2rem; }
+    .category-icon-right { font-size: 1.5rem; order: 2; margin-left: auto; }
 
     /* ===== CARD GRID ===== */
     .product-grid {
@@ -4596,6 +4597,11 @@ document.readyState === 'loading'
     schnitzel:'🍗', salate:'🥗', mittagsmenue:'☀️', getraenke:'🥤'
   };
 
+  // Bei diesen beiden steht das Icon rechts statt links und etwas groesser
+  // (category-icon-right) - eigener Wunsch des Betreibers, sonst keine
+  // Regel dahinter. Ueberall sonst bleibt es beim Standard links.
+  var ICON_RECHTS = { rigatoni: true, tagliatelle: true };
+
   // Gericht-Foto pro Artikelnummer (Dateien in img/menu/, lizenzfrei — siehe img/menu/QUELLEN.md)
   var ITEM_IMG = {
     '1':'pizza-formaggi', '2':'pizza-formaggi', '3':'pizza-formaggi', '4':'pizza-formaggi',
@@ -4761,9 +4767,11 @@ document.readyState === 'loading'
       var icon = ICONS[h2.id];
       if (icon && !h2.querySelector('.category-icon')) {
         var span = document.createElement('span');
-        span.className = 'category-icon';
+        var rechts = ICON_RECHTS[h2.id];
+        span.className = rechts ? 'category-icon category-icon-right' : 'category-icon';
         span.textContent = icon;
-        h2.insertBefore(span, h2.firstChild);
+        if (rechts) h2.appendChild(span);
+        else h2.insertBefore(span, h2.firstChild);
       }
       // Foto-Banner direkt unter dem Kategorie-Titel
       if (!KATEGORIE_BANNER) return;
