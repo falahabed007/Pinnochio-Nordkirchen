@@ -169,7 +169,7 @@
           "desc": "Tomaten, Käse, Spinat, Broccoli, Pilze, Spargel, Mais",
           "mini": 6.0,
           "normal": 10.0,
-          "maxi": 12.0
+          "maxi": 12.5
         }
       ]
     },
@@ -428,7 +428,7 @@
           "desc": "Tomaten, Käse, gek. Eier, Thunfisch, Peperoni, Zwiebeln",
           "mini": 6.0,
           "normal": 10.0,
-          "maxi": 12.0
+          "maxi": 12.5
         },
         {
           "num": "43",
@@ -444,7 +444,7 @@
           "desc": "extra scharf – Tomaten, Käse, Schinken, Pilze, Artischocken, Peperoni, Tabasco",
           "mini": 6.0,
           "normal": 10.0,
-          "maxi": 12.0
+          "maxi": 12.5
         },
         {
           "num": "45",
@@ -468,7 +468,7 @@
           "desc": "Tomaten, Käse, Schinken, Salami, Paprika, Pilze",
           "mini": 6.0,
           "normal": 10.0,
-          "maxi": 12.0
+          "maxi": 12.5
         },
         {
           "num": "48",
@@ -476,7 +476,7 @@
           "desc": "Tomaten, Käse, Thunfisch, Paprika, Eier",
           "mini": 6.0,
           "normal": 10.0,
-          "maxi": 12.0
+          "maxi": 12.5
         },
         {
           "num": "49",
@@ -516,7 +516,7 @@
           "desc": "Tomaten, Käse, Spinat, Krabben, Sardellen, Oliven, Knoblauch",
           "mini": 6.0,
           "normal": 10.0,
-          "maxi": 12.0
+          "maxi": 12.5
         },
         {
           "num": "54",
@@ -524,7 +524,7 @@
           "desc": "Tomaten, Käse, Schinken, Salami, Pilze, Paprika, Broccoli, Zwiebeln, Eier",
           "mini": 6.0,
           "normal": 10.0,
-          "maxi": 12.0
+          "maxi": 12.5
         },
         {
           "num": "55",
@@ -532,7 +532,7 @@
           "desc": "Tomaten, Käse, Thunfisch, Salami, Paprika, Oliven, Knoblauch",
           "mini": 6.0,
           "normal": 10.0,
-          "maxi": 12.0
+          "maxi": 12.5
         },
         {
           "num": "56",
@@ -580,7 +580,7 @@
           "desc": "Tomaten, Käse, Broccoli, Zwiebeln, Gyrosfleisch, Sauce Hollandaise",
           "mini": 6.0,
           "normal": 10.0,
-          "maxi": 12.0
+          "maxi": 12.5
         },
         {
           "num": "61a",
@@ -589,7 +589,7 @@
           "desc": "frische Tomaten, frische Paprika, Zwiebeln, Feta-Käse",
           "mini": 6.0,
           "normal": 10.0,
-          "maxi": 12.0
+          "maxi": 12.5
         }
       ]
     },
@@ -1180,13 +1180,13 @@
           "num": "142",
           "name": "Putengeschnetzeltes mit Curry",
           "desc": "mit Rigatoni und Currysauce",
-          "preis": 11.0
+          "preis": 12.0
         },
         {
           "num": "143",
           "name": "Putengeschnetzeltes",
           "desc": "mit Rigatoni, frischen Pilzen, frischen Tomaten und Sahnesauce",
-          "preis": 11.0
+          "preis": 12.0
         }
       ]
     },
