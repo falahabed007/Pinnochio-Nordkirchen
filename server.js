@@ -1361,21 +1361,25 @@ function calcAutoMode() {
   // Wochentag berechnen (0=So, 1=Mo, ..., 6=Sa)
   const wd = new Date(year, mon - 1, day).getDay();
 
-  // Samstag: 17:00–22:00
-  if (wd === 6) {
-    return (mins >= 17*60 && mins < 22*60) ? 'online' : 'geschlossen';
+  // Zeiten wie auf der gedruckten Speisekarte
+  // Montag: 16:30–21:00
+  if (wd === 1) {
+    return (mins >= 16*60+30 && mins < 21*60) ? 'online' : 'geschlossen';
   }
 
-  // Sonntag: 12:00–14:00 & 16:00–22:00
+  // Freitag, Samstag: 15:30–21:30
+  if (wd === 5 || wd === 6) {
+    return (mins >= 15*60+30 && mins < 21*60+30) ? 'online' : 'geschlossen';
+  }
+
+  // Sonntag: 13:00–21:30
   if (wd === 0) {
-    const session1 = mins >= 12*60 && mins < 14*60;
-    const session2 = mins >= 16*60 && mins < 22*60;
-    return (session1 || session2) ? 'online' : 'geschlossen';
+    return (mins >= 13*60 && mins < 21*60+30) ? 'online' : 'geschlossen';
   }
 
-  // Mo, Mi, Do, Fr: 11:30–14:00 & 17:00–22:00
+  // Di, Mi, Do: 11:30–14:00 & 16:30–21:30
   const session1 = mins >= 11*60+30 && mins < 14*60;
-  const session2 = mins >= 17*60    && mins < 22*60;
+  const session2 = mins >= 16*60+30 && mins < 21*60+30;
   return (session1 || session2) ? 'online' : 'geschlossen';
 }
 
