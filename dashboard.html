@@ -1305,7 +1305,10 @@ const POS_MENU = {
   ],
 };
 let posCategory = 'pizza_kaese';
+window.POS_TITEL = {"antipasta":"Antipasta / Vorspeisen","pizza_kaese":"Pizza mit versch. Käsesorten","pizza_vegetarisch":"Vegetarische Pizza","pizza_mozzarella":"Pizza mit frischen Tomaten und Mozzarella","pizza_fisch":"Pizza mit Fisch","pizza_fleischsauce":"Pizza mit Fleischsauce","pizza_belaege":"Pizza mit verschiedenen Belägen","calzone":"Calzone – gefüllte Pizza","familienpizza":"Familienpizza & Pizzabrötchen","spaghetti":"Spaghetti","tagliatelle":"Tagliatelle","rigatoni":"Rigatoni","tortellini":"Tortellini","backofen":"Nudelgerichte aus dem Backofen","auflaeufe":"Gemüseaufläufe (überbacken)","gnocchi":"Gnocchi – Kartoffelgerichte","puten":"Nudeln mit Putengeschnetzeltem","schnitzel":"Puten- und Hähnchenschnitzel","salate":"Salatspezialitäten","mittagsmenue":"Mittagsmenü","getraenke":"Getränke"};
 // KARTE:ENDE
+// Vorauswahl der Kasse aus _pos_start in menu.json; openPOS() setzt darauf zurueck.
+const POS_START = posCategory;
 
 // ═══════════════════════════════════════════════════════════════
 // AUTH
@@ -1950,7 +1953,7 @@ async function toggleSoldOut(name, cb) {
 // POS – MANUELLE BESTELLUNG
 // ═══════════════════════════════════════════════════════════════
 function openPOS() {
-  posCart=[]; posMode='lieferung'; posCategory='pizza_kaese';
+  posCart=[]; posMode='lieferung'; posCategory=POS_START;
   document.getElementById('posModal').classList.add('show');
   document.getElementById('posFirst').value='';
   document.getElementById('posLast').value='';
@@ -1981,7 +1984,7 @@ function openPOS() {
     getraenke:'🥤 Getränke'
   };
   document.getElementById('posCatTabs').innerHTML = cats.map(c=>
-    `<div class="pos-cat${c===posCategory?' active':''}" onclick="setPOSCat('${c}',this)">${labels[c]||c}</div>`
+    `<div class="pos-cat${c===posCategory?' active':''}" onclick="setPOSCat('${c}',this)">${labels[c]||(window.POS_TITEL||{})[c]||c}</div>`
   ).join('');
   renderPOSItems(); renderPOSCart(); renderPOSTotals();
   document.getElementById('posAddrFields').style.display='block';

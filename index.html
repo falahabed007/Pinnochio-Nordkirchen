@@ -5035,9 +5035,12 @@ body.modal-open {
 
   /* ── 2. Alle Popup-Öffner blockieren ─────────────────────── */
   const POPUP_OPENERS = [
+    // Die echten Funktionsnamen - bis 14.10.2026 standen hier openPastaPopup,
+    // openSaladPopup, openPBPopup und openFamPizzaPopup, die es nie gab. Pasta,
+    // Salat und Pizzabroetchen liessen sich so bei geschlossenem Laden einlegen.
     'openPizza','openPizzaPopup','openQuickAdd',
-    'openPastaPopup','openSaladPopup','openPBPopup',
-    'openDipPopup','openFamPizzaPopup'
+    'openPasta','openSalad','openPbCustom',
+    'openDipPopup','openFleischwahl'
   ];
 
   function blockPopups(mode) {
