@@ -485,6 +485,39 @@ app.get('/api/config', (req, res) => res.json({
   }
 }));
 
+// ── Stripe-Einrichtung fuer den Inhaber (Abed, 25.10.2026) ────────
+// Fester Link fuer die Mail "Kasse einrichten": /api/stripe/einrichten?t=<STRIPE_ONBOARDING_TOKEN>.
+// Stripe-Onboarding-Links (Account Links) gelten nur Minuten, darum erzeugt jeder Aufruf einen frischen
+// und leitet dorthin weiter. Ohne gueltigen Token gibt es nichts: Wer den Link oeffnet, kann die
+// Bankverbindung des Ladens eintragen. Sind alle Angaben bei Stripe, zeigt er nur noch den Stand.
+app.get('/api/stripe/einrichten', async (req, res) => {
+  const token = process.env.STRIPE_ONBOARDING_TOKEN, konto = process.env.STRIPE_CONNECT_ACCOUNT;
+  if (!token || !konto || !gleichSicher(String(req.query.t || ''), token)) return res.status(404).send('Nicht gefunden');
+  const seite = (titel, text) => res.send(`<!doctype html><html lang="de"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>${titel}</title></head>
+<body style="font-family:Arial,sans-serif;max-width:520px;margin:60px auto;padding:0 16px;color:#222">
+<h2>${titel}</h2><p style="line-height:1.5">${text}</p></body></html>`);
+  try {
+    const stripe = getStripe();
+    const acc = await stripe.accounts.retrieve(konto);
+    if (acc.details_submitted && !(acc.requirements?.currently_due || []).length) {
+      return seite('Stripe ist eingerichtet', acc.capabilities?.transfers === 'active'
+        ? 'Alle Angaben sind bei Stripe, das Konto ist freigeschaltet. Die Online-Zahlung wird automatisch eingeschaltet.'
+        : 'Alle Angaben sind bei Stripe und werden geprüft. Sobald Stripe das Konto freischaltet, wird die Online-Zahlung automatisch eingeschaltet.');
+    }
+    const hier = `https://${req.get('host')}${req.path}?t=${encodeURIComponent(token)}`;
+    const link = await stripe.accountLinks.create({
+      account: konto, type: 'account_onboarding', refresh_url: hier, return_url: hier,
+      collection_options: { fields: 'eventually_due' },
+    });
+    res.redirect(303, link.url);
+  } catch (e) {
+    console.error('Stripe-Einrichtung:', e.message);
+    res.status(502);
+    seite('Gerade nicht erreichbar', 'Stripe antwortet gerade nicht. Bitte in ein paar Minuten noch einmal öffnen.');
+  }
+});
+
 // ── Restaurant Status (öffentlich) ───────────────────────────────
 app.get('/api/status', async (req, res) => {
   try {
