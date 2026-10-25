@@ -1597,8 +1597,10 @@ function pdfKundenliste(doc, orders) {
 
 // Stornierte Bestellungen des Zeitraums - fuer den Nachweis gegenueber Inhaber und Steuerberater (Abed, 25.10.2026).
 // Zaehlen nicht zum Umsatz und nicht zu den Gebuehren, stehen aber vollstaendig im Bericht. Steht keine im Zeitraum,
-// sagt der Bericht das ausdruecklich, statt den Abschnitt wegzulassen.
-function pdfStornoliste(doc, stornos) {
+// sagt der Bericht das ausdruecklich, statt den Abschnitt wegzulassen. Abgebrochene Online-Zahlungen (nie bezahlt,
+// Stripe setzt sie auf cancelled) sind keine Stornos und bleiben draussen (Abed, 25.10.).
+function pdfStornoliste(doc, alle) {
+  const stornos = alle.filter(o => !(['stripe','paypal'].includes(o.payment) && !['paid','refunded'].includes(o.paymentStatus)));
   if (doc.y > PDF_FT - 90) { doc.addPage(); doc.y = PDF_M; }
   doc.font('Helvetica-Bold').fontSize(10).fillColor('#1a1a2e').text('STORNIERUNGEN', PDF_M, doc.y);
   doc.y += 12;
@@ -1611,8 +1613,7 @@ function pdfStornoliste(doc, stornos) {
   const zahlart = o => ({ bar:'Bar', karte:'EC-Karte', stripe:'Online', paypal:'PayPal' }[o.payment] || o.payment || '–')
     + (o.paymentStatus === 'refunded' ? ', erstattet' : '');
   const kurz = (s, n) => s.length > n ? s.substring(0, n - 1) + '…' : s; // eine Zeile je Storno, sonst ueberlappt die Summe
-  const grund = o => kurz(o.cancelReason
-    || (['stripe','paypal'].includes(o.payment) && !['paid','refunded'].includes(o.paymentStatus) ? 'Zahlung abgebrochen' : '–'), 24);
+  const grund = o => kurz(o.cancelReason || '–', 24);
   const spalten = [['#', PDF_M+2, 30, 'left'], ['Bestellt', PDF_M+34, 62, 'left'], ['Storniert', PDF_M+98, 62, 'left'],
     ['Kunde', PDF_M+162, 100, 'left'], ['Zahlart', PDF_M+264, 72, 'left'], ['Grund', PDF_M+338, 105, 'left'], ['Betrag', PDF_M+2, PDF_W-4, 'right']];
   const kopf = () => {
