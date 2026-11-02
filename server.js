@@ -1556,6 +1556,14 @@ const PDF_FT = 790; // Unterkante fuer Tabellenzeilen. Der Textbereich endet bei
                     // reicht eine Zeile darueber, bricht pdfkit selbst um und jede Zelle landet auf eigener Seite.
 const PDF_SV = 0.99;
 const PDF_BASE = 150; // monatliche Grundgebühr (Fixmodell: 150 € + Servicegebühr/Bestellung)
+// Abweichende Grundgebuehr fuer einzelne Monate (JJJJ-MM -> Betrag), sonst gilt PDF_BASE. Pinocchio Nordkirchen zahlt
+// fuer September 2026 keine Grundgebuehr (so vereinbart, Abed 02.11.2026). In neuen Klonen leeren: {}.
+const GRUNDGEBUEHR_MONATE = { '2026-09': 0 };
+const grundgebuehrFuer = monat => {
+  if (!(monat instanceof Date)) return PDF_BASE;
+  const k = `${monat.getFullYear()}-${String(monat.getMonth() + 1).padStart(2, '0')}`;
+  return k in GRUNDGEBUEHR_MONATE ? GRUNDGEBUEHR_MONATE[k] : PDF_BASE;
+};
 const PDF_DOMAIN = 0; // monatliche Domain-Kosten, separat ueber Lexware (Abed, 01.11.2026)
 const pdfFmt = n => n.toFixed(2).replace('.', ',') + ' €';
 
@@ -1707,7 +1715,7 @@ function berichtAbrechnung(orders, mitFixkosten) {
     n: orders.length, nOnline: online.length, nLaden: laden.length,
     umsatzOnline: summe(online, o => o.total || 0), umsatzLaden: summe(laden, o => o.total || 0),
     svc: summe(orders, o => o.serviceFee || PDF_SV), stripeGeb: summe(online, stripePauschale),
-    grund: mitFixkosten ? PDF_BASE : 0, domain: mitFixkosten ? PDF_DOMAIN : 0,
+    grund: mitFixkosten ? grundgebuehrFuer(mitFixkosten) : 0, domain: mitFixkosten ? PDF_DOMAIN : 0,
   };
   a.brutto    = a.umsatzOnline + a.umsatzLaden;
   a.fluevate  = a.grund + a.domain + a.svc;
@@ -2127,7 +2135,7 @@ function buildMonatsberichtPdf(doc, d) {
   ]);
   doc.moveDown(0.4);
   pdfHr(doc);
-  pdfAbrechnung(doc, berichtAbrechnung(orders, true));
+  pdfAbrechnung(doc, d.abrechnung || berichtAbrechnung(orders, true));
   doc.y += 6;
   if (doc.y > PDF_FT - (weekRows.length * 20 + 40)) { doc.addPage(); doc.y = PDF_M; }
   pdfHr(doc, '#bbb');
@@ -2185,7 +2193,7 @@ cron.schedule('0 22 * * *', async () => {
     const brutto     = orders.reduce((s,o) => s+(o.total||0), 0);
     const svcFees    = orders.reduce((s,o) => s+(o.serviceFee||PDF_SV), 0);
     const auszahlung = brutto - svcFees;
-    const a = berichtAbrechnung(orders, true);
+    const a = berichtAbrechnung(orders, mStart); // Monat bestimmt die Grundgebuehr
     const barOrdersM = orders.filter(o => o.payment === 'bar');
     const barSvcM    = barOrdersM.reduce((s,o) => s+(o.serviceFee||PDF_SV), 0);
     const barNettoM  = barOrdersM.reduce((s,o) => s+(o.total||0), 0) - barSvcM;
@@ -2203,7 +2211,7 @@ cron.schedule('0 22 * * *', async () => {
 
     // ── PDF: Monatsbericht (Kennzahlen + Bestellliste + Bar-Übersicht) ─────
     const monatsPdf = await generatePdf(doc => buildMonatsberichtPdf(doc, {
-      monat, vonBis, orders, brutto, svcFees, auszahlung,
+      monat, vonBis, orders, brutto, svcFees, auszahlung, abrechnung: a,
       barOrdersM, barSvcM, barNettoM, barBetragM, weekRows, stornos,
     }));
 
@@ -2319,7 +2327,7 @@ app.post('/api/admin/send-monthly', auth, async (req, res) => {
     const brutto     = orders.reduce((s,o) => s+(o.total||0), 0);
     const svcFees    = orders.reduce((s,o) => s+(o.serviceFee||PDF_SV), 0);
     const auszahlung = brutto - svcFees;
-    const a = berichtAbrechnung(orders, true);
+    const a = berichtAbrechnung(orders, mStart); // Monat bestimmt die Grundgebuehr
     const barOrdersM = orders.filter(o => o.payment === 'bar');
     const barSvcM    = barOrdersM.reduce((s,o) => s+(o.serviceFee||PDF_SV), 0);
     const barNettoM  = barOrdersM.reduce((s,o) => s+(o.total||0), 0) - barSvcM;
@@ -2329,7 +2337,7 @@ app.post('/api/admin/send-monthly', auth, async (req, res) => {
     const weekRows = Object.entries(weeksMap).sort((a,b)=>+a[0]-+b[0]);
 
     const monatsPdf = await generatePdf(doc => buildMonatsberichtPdf(doc, {
-      monat, vonBis, orders, brutto, svcFees, auszahlung,
+      monat, vonBis, orders, brutto, svcFees, auszahlung, abrechnung: a,
       barOrdersM, barSvcM, barNettoM, barBetragM, weekRows, stornos,
     }));
 
