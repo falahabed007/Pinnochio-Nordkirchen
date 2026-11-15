@@ -1,6 +1,6 @@
 # Fluevate Kasse auf dem Sunmi einrichten – Pizzeria Pinocchio Nordkirchen
 
-Die Kasse (Merchant-App) ersetzt Web-Dashboard **und** Fully Kiosk. Wer sie
+Die Kasse (Merchant-App) ersetzt Fully Kiosk; das frühere Web-Dashboard gibt es nicht mehr. Wer sie
 einsetzt, braucht die Print-Bridge **nicht** – sie spricht den Drucker direkt an,
 ohne HTTP-Umweg.
 
@@ -26,7 +26,7 @@ Ohne PC: APK auf einen USB-Stick, am Sunmi im Dateimanager öffnen,
 | **Bon-Kopfzeile 1** | `Bergstr. 19 · 59394 Nordkirchen` |
 | **Bon-Kopfzeile 2** | `Tel. 0 25 96 / 93 91 91` |
 
-Das Admin-Passwort ist dasselbe wie fürs Web-Dashboard und muss mit dem Wert in
+Das Admin-Passwort (`POST /api/admin/login`) muss mit dem Wert in
 Render übereinstimmen. Ändert es sich dort, muss es auch auf dem Gerät neu
 eingetragen werden.
 

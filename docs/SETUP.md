@@ -4,7 +4,6 @@
 | Datei | Beschreibung |
 |---|---|
 | `server.js` | Backend (Node.js/Express/MongoDB) |
-| `dashboard.html` | Admin Dashboard für den Wirt |
 | `printnode-helper.js` | Bondrucker-Logik |
 | `package.json` | Node.js Abhängigkeiten |
 | `env-example.txt` | Vorlage für Umgebungsvariablen |
@@ -108,7 +107,7 @@ Kunde zahlt 22,49 €
 
 ---
 
-## Schritt 6 – Dashboard konfigurieren
+## Schritt 6 – Backend-Adresse eintragen
 
 Nur noch **eine** Stelle, und die liegt in `config.js`:
 
@@ -116,10 +115,13 @@ Nur noch **eine** Stelle, und die liegt in `config.js`:
 window.PINOCCHIO_BACKEND = 'https://DEIN-BACKEND.onrender.com';
 ```
 
-`index.html`, `account.html` und `dashboard.html` laden diese Datei im `<head>`.
+`index.html` und `account.html` laden diese Datei im `<head>`.
 
-> ⚠️ **Niemals ein Passwort oder Token in `dashboard.html` eintragen.**
-> Die Datei wird öffentlich ausgeliefert – jeder kann sie im Quelltext lesen.
+> Das Web-Dashboard (`dashboard.html`) gibt es nicht mehr. Die Läden arbeiten
+> mit der App (Fluevate Kasse) über die Admin-Schnittstellen `/api/admin/...`.
+
+> ⚠️ **Niemals ein Passwort oder Token in eine HTML- oder JS-Datei eintragen.**
+> Die Dateien werden öffentlich ausgeliefert – jeder kann sie im Quelltext lesen.
 > Genau so lagen `ADMIN_PASSWORD` und `ADMIN_TOKEN_SECRET` bis August 2026
 > offen im Netz.
 >
@@ -129,7 +131,7 @@ window.PINOCCHIO_BACKEND = 'https://DEIN-BACKEND.onrender.com';
 
 ---
 
-## Schritt 7 – Render Static Site (Speisekarte + Dashboard)
+## Schritt 7 – Render Static Site (Speisekarte)
 
 1. render.com → New → **Static Site**
 2. Gleiches GitHub Repo
@@ -154,9 +156,8 @@ window.PINOCCHIO_BACKEND = 'https://DEIN-BACKEND.onrender.com';
 ## Schritt 9 – Testen
 
 - [ ] Speisekarte öffnen → Artikel in Warenkorb → Barzahlung bestellen
-- [ ] Dashboard öffnen → Alarm erscheint → Annehmen mit Zeit → E-Mail prüfen
+- [ ] App öffnen → Alarm erscheint → Annehmen mit Zeit → E-Mail prüfen
 - [ ] Test-Storno → Ablehnen mit Grund → Storno-E-Mail prüfen
-- [ ] POS-Bestellung → „Neue Bestellung" Button → Speisen auswählen → Speichern
 - [ ] Sold-Out Toggle → Artikel ausschalten → Speisekarte neu laden → „Ausverkauft" prüfen
 - [ ] Stripe Test: `pk_test_...` und `sk_test_...` für Tests verwenden
 
@@ -169,7 +170,7 @@ window.PINOCCHIO_BACKEND = 'https://DEIN-BACKEND.onrender.com';
 | Backend startet nicht | `MONGODB_URI` prüfen – Datenbankname `/pinocchio-nordkirchen` am Ende |
 | MongoDB Verbindung fehlgeschlagen | Network Access in Atlas: **feste Render-Ausgangs-IP** eintragen (NICHT `0.0.0.0/0`) · Passwort im `MONGODB_URI` korrekt? |
 | Login fehlschlägt | `ADMIN_PASSWORD` in Render prüfen · `JWT_SECRET` muss gesetzt sein (sonst antwortet `/api/admin/login` mit 500) |
-| „Sitzung abgelaufen" im Dashboard | Token älter als 30 Tage oder `JWT_SECRET` gewechselt – einfach neu anmelden |
+| „Sitzung abgelaufen" in der App | Token älter als 30 Tage oder `JWT_SECRET` gewechselt – einfach neu anmelden |
 | Stripe Webhook Fehler | URL: `.../api/stripe-webhook` · Event `checkout.session.completed` aktiv? |
 | E-Mails kommen nicht | Domain bei Resend verifiziert? · `EMAIL_FROM` muss verifizierte Domain nutzen |
 | Bon wird nicht gedruckt | PrintNode Client auf Restaurant-PC läuft und eingeloggt? |

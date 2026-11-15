@@ -106,8 +106,9 @@ Für den Livebetrieb Starter ($7/Monat) wählen.
 
 - **Repo ist öffentlich.** Nötig, weil GitHub Pages auf dem Free-Plan private
   Repos nicht veröffentlicht – dieselbe Konstellation wie bei Amoura. Der
-  Quelltext von `dashboard.html` ist damit einsehbar; geschützt wird der Zugang
-  serverseitig über `ADMIN_PASSWORD`. Entsprechend gut wählen.
+  Quelltext ist damit einsehbar; geschützt wird der Admin-Zugang
+  serverseitig über `ADMIN_PASSWORD`. (Das Web-Dashboard gibt es nicht mehr,
+  die Läden arbeiten mit der App.) Entsprechend gut wählen.
 - **Gerichtsfotos** stammen aus dem Amoura-Bestand (`img/menu/`, lizenzfrei,
   siehe `QUELLEN.md`) und sind thematisch, nicht gerichtsgenau zugeordnet.
 
@@ -124,8 +125,6 @@ größere Darstellung wäre eine Vektor- oder Originaldatei vom Wirt besser.
 Das Backend kennt **kein Produktmodell**. Die Sammlung `Availability` speichert
 nur Artikel, die einmal umgeschaltet wurden – nicht die Karte.
 
-- Das **Web-Dashboard** baut seine Liste aus der Konstanten `POS_MENU` in
-  `dashboard.html` und legt den Ausverkauft-Status darüber.
 - Die **Fluevate Kasse** hat keinen eigenen Katalog. Sie zeigt, was
   `/api/admin/availability` liefert, ergänzt um Artikelnamen aus den
   Bestellungen der letzten 30 Tage.
