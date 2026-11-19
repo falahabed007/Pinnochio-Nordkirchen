@@ -1,52 +1,46 @@
 # PayPal-Setup (Pinocchio Nordkirchen)
 
-PayPal läuft **zusätzlich** zu Stripe und stört es nicht (eigene ENV-Keys, eigene
-Endpunkte, eigene Webhook-Route). Modell: Standard-PayPal-Checkout (Orders v2),
-ein PayPal-Empfängerkonto.
+Stand 19.11.2026 (übernommen aus Odi's Bowl Ahaus). PayPal läuft **direkt über das eigene
+PayPal-Geschäftskonto des Ladens** (REST-App, Orders v2, ohne SDK): Das Geld geht direkt an den
+Laden, FlueVate behält davon nichts ein. Unabhängig von Stripe (eigene Variablen, eigene Routen).
+Die Sandbox wird nie angesprochen.
 
-## 1. Neue ENV-Variablen
-In `PinocchioNordkirchen/.env` (lokal) **und** in Render (Service-ENV) ergänzen:
+## Wann ist PayPal an?
 
-```
-PAYPAL_CLIENT_ID=...        # developer.paypal.com → App → Client ID
-PAYPAL_CLIENT_SECRET=...    # developer.paypal.com → App → Secret
-PAYPAL_WEBHOOK_ID=...       # Webhook-ID aus dem PayPal-Dashboard
-PAYPAL_ENV=sandbox          # zum Testen "sandbox", live dann "live"
-```
+Erst wenn **alles** davon stimmt – vorher sehen Gäste PayPal nicht, und alle PayPal-Routen lehnen ab:
 
-`.env` ist bereits in `.gitignore` → Keys nie committen.
+1. `PAYPAL_CLIENT_ID` und `PAYPAL_CLIENT_SECRET` der **Live**-REST-App des Ladens sind gesetzt,
+2. `PAYPAL_ENV` ist genau `live` (der bewusste Schalter; ohne ihn geht keine Anfrage an PayPal),
+3. die Probe-Anmeldung bei PayPal gelingt,
+4. der Server hat seinen Webhook (`https://api.pinnochionordkirchen.de/api/paypal-webhook`, Ereignisse
+   `CHECKOUT.ORDER.APPROVED` und `PAYMENT.CAPTURE.COMPLETED`) in der PayPal-App angelegt oder gefunden.
 
-## 2. PayPal-Dashboard
-1. developer.paypal.com → **Apps & Credentials** → App anlegen → Client ID + Secret.
-2. **Webhooks** → URL `https://pinnochionordkirchen.de/api/paypal-webhook` hinzufügen,
-   Events abonnieren: `PAYMENT.CAPTURE.COMPLETED`, `CHECKOUT.ORDER.APPROVED`
-   → die generierte **Webhook-ID** als `PAYPAL_WEBHOOK_ID` setzen.
-3. Sandbox: unter **Testing Tools → Sandbox Accounts** einen Käufer-Testaccount nutzen.
+Dann meldet `GET /api/config` `"paypal": true`, und erst dann setzt die Bestellseite den Eintrag
+„💙 Online bezahlen (PayPal)“ in die Zahlauswahl.
 
-## 3. Was im Code passiert (Übersicht)
-- `server.js`
-  - Helper `getPaypalAccessToken()` / `paypalApi()` (REST v2, lazy)
-  - `POST /api/create-paypal-order` → erstellt PayPal-Order, gibt Approval-URL zurück
-  - `POST /api/paypal-capture` → zieht nach Rückkehr die Zahlung ein (Fallback/Primär)
-  - `POST /api/paypal-webhook` → Signatur-Verifizierung + Capture-Bestätigung
-  - Order-Schema: `paypalOrderId`, `paypalCaptureId`
-  - Storno-Endpunkt `DELETE /api/admin/orders/:id`: Auto-Refund auch für PayPal
-- `index.html`
-  - Zahlart "💙 Online bezahlen (PayPal)" + Logo
-  - Redirect über die bestehende `redirectToOnlinePayment()`-Funktion
-  - Rückkehr-Capture via `?paypal=1&token=<orderId>`
+## Einschalten (Betreiber)
 
-## 4. Testen (Sandbox)
-1. `PAYPAL_ENV=sandbox` + Sandbox-Keys setzen, Server starten.
-2. Im Frontend "PayPal" wählen → durchbezahlen (Sandbox-Käufer).
-3. Order erscheint in der App unter Online/PayPal, Status `paid`/`pending`.
-4. Storno im Admin → Refund in Sandbox sichtbar, Status `refunded`.
-5. Stripe-Bestellung gegentesten (Regression) → unverändert.
-6. Dann `PAYPAL_ENV=live` + Live-Keys in Render, eine echte Klein-Bestellung testen.
+1. In der Hosting-Umgebung `PAYPAL_CLIENT_ID` und `PAYPAL_CLIENT_SECRET` eintragen.
+2. Zum Scharfschalten `PAYPAL_ENV=live`, Dienst neu starten.
+3. `GET /api/admin/paypal` (Admin-Anmeldung) ansehen: Klartext ohne Geheimnisse, mit dem nächsten
+   Schritt. `?erneut=1` versucht das Sicherstellen des Webhooks sofort.
+4. Verweigert PayPal der App die Webhook-Verwaltung (Status zeigt „403“): Webhook in der PayPal-App
+   von Hand auf die Adresse oben mit beiden Ereignissen anlegen und `PAYPAL_WEBHOOK_ID` setzen.
 
-## Phase 2 (später) — "PayPal Connect"-Pendant
-Geld direkt ans Restaurant + Plattformgebühr für FlueVate (Gegenstück zu
-`STRIPE_CONNECT_ACCOUNT`) braucht die **PayPal-Partner-Freischaltung** (PayPal Complete
-Payments für Plattformen/Marktplätze, kein Self-Service). Dann: Restaurant-Onboarding per
-Partner Referrals API, `PAYPAL_MERCHANT_ID` pro Restaurant, und in `create-paypal-order`
-`purchase_units[].payee.merchant_id` + `payment_instruction.platform_fees` setzen.
+Optional: `PUBLIC_API_URL` überschreibt die öffentliche API-Adresse (Vorgabe im Code wie `config.js`).
+
+## Was im Code passiert
+
+- `paypal-direkt.js` (Tests: `test/paypal-direkt.test.js`): Schalter, Probe, Client, Webhook-Verwalter,
+  Abgleich (Einzug nur aus `awaiting_payment`, Einbuchen nur bei passendem Betrag), Wachhund.
+- `server.js`: `/api/config` (`paypal`), `POST /api/create-paypal-order`, `POST /api/paypal-capture`,
+  `POST /api/paypal-webhook`, `GET /api/admin/paypal`, PayPal-Wachhund (alle 5 Minuten; nie bezahlte
+  nach 1 Stunde abgeschlossen), Erstattung beim Stornieren.
+- Kasse: unbezahlte PayPal-Bestellungen erscheinen in keiner `/api/admin/…`-Liste (`FUER_KASSE_PAYPAL`,
+  `test/paypal-kasse.test.js`); Stripe und bar unverändert.
+- Berichte: PayPal ist eine eigene Gruppe „PayPal (Ihr PayPal-Konto)“, nie unter Barzahlung. Gerechnet
+  wie bar (Servicegebühr schuldet der Laden, Überweisung/offener Betrag nur aus Stripe), PayPal-Gebühren
+  stehen nicht im Bericht (`test/paypal-bericht.test.js`).
+
+Nicht ohne echtes PayPal prüfbar: ob die Live-App ihre Webhooks per API verwalten darf, echte
+Signaturprüfung, Einzug und Erstattung. Das zeigt sich erst beim Scharfschalten in `GET /api/admin/paypal`.

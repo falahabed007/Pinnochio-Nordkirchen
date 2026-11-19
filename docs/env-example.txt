@@ -3,11 +3,22 @@ MONGODB_URI=mongodb+srv://USER:PASS@cluster0.xxxxx.mongodb.net/pinocchio-nordkir
 STRIPE_SECRET_KEY=sk_live_...
 STRIPE_WEBHOOK_SECRET=whsec_...
 STRIPE_CONNECT_ACCOUNT=acct_...   # Stripe Connect ID des Restaurants (optional)
-# PayPal (REST API v2)
-PAYPAL_CLIENT_ID=AxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxL
-PAYPAL_CLIENT_SECRET=ExxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxA
-PAYPAL_WEBHOOK_ID=xxxxxxxxxxxxxxxxxxxx   # Webhook-ID aus PayPal Developer Dashboard
-PAYPAL_ENV=live                          # 'sandbox' zum Testen, 'live' für Produktion
+# PayPal: direkt auf das eigene PayPal-Geschaeftskonto des Ladens (REST-App, Live).
+# Pflicht sind nur ZWEI Werte aus der Live-App des Ladens: Client-ID und Secret.
+# Scharf geschaltet wird bewusst mit PAYPAL_ENV=live - ohne diesen Schalter bleibt
+# PayPal aus und es geht keine einzige Anfrage an PayPal, auch wenn die Schluessel
+# schon eingetragen sind. Sandbox-Daten schalten PayPal nie ein.
+# Den Webhook (<API-Basis>/api/paypal-webhook, Ereignisse CHECKOUT.ORDER.APPROVED und
+# PAYMENT.CAPTURE.COMPLETED) legt der Server selbst in der PayPal-App an bzw. findet
+# ihn dort und merkt sich die ID in der Datenbank. PayPal erscheint auf der Seite erst,
+# wenn die Anmeldung gelingt UND der Webhook steht.
+# Zustand pruefen: GET /api/admin/paypal (Admin-Anmeldung), mit ?erneut=1 sofort neu versuchen.
+PAYPAL_CLIENT_ID=
+PAYPAL_CLIENT_SECRET=
+PAYPAL_ENV=                                # erst zum Scharfschalten: live
+# Optional, nur in Ausnahmefaellen:
+# PAYPAL_WEBHOOK_ID=                       # Webhook von Hand angelegt: dessen ID, hat Vorrang (dann verwaltet der Server nichts)
+# PUBLIC_API_URL=https://api.pinnochionordkirchen.de   # oeffentliche Adresse dieses Backends, Vorgabe im Code (wie config.js); nur https
 RESEND_API_KEY=re_...
 EMAIL_FROM=bestellungen@pinnochionordkirchen.de
 RESTAURANT_EMAIL=info@pinnochionordkirchen.de
