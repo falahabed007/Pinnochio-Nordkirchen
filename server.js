@@ -11,6 +11,7 @@ const crypto     = require('crypto');
 const fs         = require('fs');
 const { webBestellungAusRequest } = require('./bestellung');
 const { kasseAnmerkung } = require('./kasse');
+const autoAnnahme = require('./auto-annahme');
 require('dotenv').config();
 
 const app  = express();
@@ -174,6 +175,10 @@ const orderSchema = new mongoose.Schema({
   paypalOrderId:        String,
   paypalCaptureId:      String,
   prepTime:             Number,
+  // Automatische Annahme (auto-annahme.js): wann der Zeitjob die Bestellung auf
+  // confirmed gesetzt hat, und wann der Laden sie wirklich bestaetigt hat.
+  autoAngenommenAm:     Date,
+  ladenBestaetigtAm:    Date,
   cancelReason:         { type: String, default: '' },
   customer: {
     first: String, last: String, email: String,
@@ -385,8 +390,9 @@ app.get('/api/account/orders', customerAuth, async (req, res) => {
     const orders = await Order.find({ userId: req.user.id })
       .sort({ createdAt: -1 })
       .limit(50)
-      .select('orderNum status payment total items createdAt mode');
-    res.json(orders);
+      .select('orderNum status payment total items createdAt mode autoAngenommenAm ladenBestaetigtAm');
+    // Automatisch angenommen, vom Laden noch nicht bestaetigt: Gast sieht weiter "wartet"
+    res.json(orders.map(autoAnnahme.fuerGast));
   } catch {
     res.status(500).json({ message: 'Bestellhistorie konnte nicht geladen werden' });
   }
@@ -568,6 +574,9 @@ app.post('/api/orders', async (req, res) => {
   try {
     const auswahl = webBestellungAusRequest(req.body);
     if (auswahl.fehler) return res.status(400).json({ message: auswahl.fehler });
+    // Felder der automatischen Annahme setzt nur der Server (auto-annahme.js)
+    delete auswahl.felder.autoAngenommenAm;
+    delete auswahl.felder.ladenBestaetigtAm;
 
     // userId aus Kunden-JWT extrahieren falls vorhanden (Gastbestellung bleibt möglich)
     let userId = null;
@@ -605,14 +614,16 @@ app.post('/api/orders', async (req, res) => {
 app.get('/api/orders/status/:token', async (req, res) => {
   try {
     const o = await Order.findOne({ statusToken: req.params.token })
-      .select('status paymentStatus prepTime orderNum mode cancelReason');
+      .select('status paymentStatus prepTime orderNum mode cancelReason autoAngenommenAm ladenBestaetigtAm');
     // Der Marker unterscheidet diese 404 von der eines Backends, das die Route
     // noch gar nicht kennt -- etwa im Fenster zwischen Seiten- und Backend-Deploy.
     if (!o) return res.status(404).json({ message: 'Nicht gefunden', unbekannterSchluessel: true });
+    // Automatisch angenommen, vom Laden noch nicht bestaetigt: weiter "wartet", ohne Zeit
+    const g = autoAnnahme.fuerGast(o);
     res.json({
-      status:           o.status,
+      status:           g.status,
       paymentStatus:    o.paymentStatus,
-      estimatedMinutes: o.prepTime || null,
+      estimatedMinutes: g.prepTime || null,
       orderNum:         o.orderNum,
       mode:             o.mode,
       cancelReason:     o.cancelReason || ''
@@ -1020,8 +1031,13 @@ app.post('/api/admin/login', async (req, res) => {
 app.use('/api/admin/orders', kasseAnmerkung());
 
 // ── Pending Bestellungen (für 5s Polling) ───────────────────────
+// Dazu die automatisch angenommenen, vom Laden noch nicht bestaetigten: die
+// Kasse sieht sie als pending mit autoAngenommen:true (auto-annahme.js).
 app.get('/api/admin/orders/pending', auth, async (req, res) => {
-  try { res.json({ pending: await Order.find({ status:'pending' }).sort({ createdAt:1 }) }); }
+  try {
+    const pending = await Order.find(autoAnnahme.NEU).sort({ createdAt:1 });
+    res.json({ pending: pending.map(autoAnnahme.fuerKasse) });
+  }
   catch(e) { res.status(500).json({ message:'Fehler' }); }
 });
 
@@ -1055,17 +1071,22 @@ app.get('/api/admin/orders', auth, async (req, res) => {
     }
 
     // ── Normalfall: heutige + laufende Bestellungen ──
+    // Automatisch angenommen, vom Laden noch nicht bestaetigt (auto-annahme.js):
+    // in der Liste `pending` statt `orders`. Die Zahlen rechnen weiter ueber alle
+    // nicht-pending, zaehlen sie also wie jede bestaetigte Bestellung im Umsatz
+    // mit - nur nicht als "active", solange der Laden sie nicht angenommen hat.
     const orders  = await Order.find({ status:{ $nin:['pending'] } }).sort({ createdAt:-1 }).limit(300);
-    const pending = await Order.find({ status:'pending' }).sort({ createdAt:1 });
+    const pending = await Order.find(autoAnnahme.NEU).sort({ createdAt:1 });
     const today   = new Date(); today.setHours(0,0,0,0);
     const tod     = orders.filter(o => new Date(o.createdAt) >= today && o.status !== 'awaiting_payment');
     res.json({
-      orders, pending,
+      orders:  orders.filter(o => !autoAnnahme.istOffenAuto(o)),
+      pending: pending.map(autoAnnahme.fuerKasse),
       stats: {
         todayCount:   tod.length,
         todayRevenue: tod.filter(o=>o.status!=='cancelled').reduce((s,o)=>s+(o.total||0),0),
         totalRevenue: orders.reduce((s,o)=>s+(o.total||0),0),
-        active:       orders.filter(o=>['confirmed','preparing'].includes(o.status)).length,
+        active:       orders.filter(o=>['confirmed','preparing'].includes(o.status) && !autoAnnahme.istOffenAuto(o)).length,
         done:         tod.filter(o=>['ready','delivered'].includes(o.status)).length,
         cancelled:    tod.filter(o=>o.status==='cancelled').length,
         unpaid:       orders.filter(o=>o.paymentStatus!=='paid'&&o.status!=='cancelled'&&o.status!=='awaiting_payment').length,
@@ -1075,12 +1096,21 @@ app.get('/api/admin/orders', auth, async (req, res) => {
 });
 
 // ── Bestellung BESTÄTIGEN (Annehmen + Zeit) ──────────────────────
+// Atomar und nur aus `pending` oder "automatisch angenommen, unbestaetigt" heraus
+// (auto-annahme.js). Schon vom Laden bestaetigt oder weiter im Ablauf: 200 mit der
+// Bestellung, aber ohne zweite Mail und ohne Bon. Storniert: 409, nie wiederbeleben.
 app.patch('/api/admin/orders/:id/confirm', auth, async (req, res) => {
   try {
     const { estimatedMinutes } = req.body;
-    const order = await Order.findByIdAndUpdate(req.params.id,
-      { status:'confirmed', prepTime: estimatedMinutes||45 }, { new:true });
-    if (!order) return res.status(404).json({ message:'Nicht gefunden' });
+    const order = await Order.findOneAndUpdate({ _id: req.params.id, ...autoAnnahme.NEU },
+      { status:'confirmed', prepTime: estimatedMinutes||45, ladenBestaetigtAm: new Date() }, { new:true });
+    if (!order) {
+      const vorhanden = await Order.findById(req.params.id);
+      if (!vorhanden) return res.status(404).json({ message:'Nicht gefunden' });
+      if (vorhanden.status === 'cancelled') return res.status(409).json({ message:'Bestellung ist storniert' });
+      console.log(`ℹ️ #${vorhanden.orderNum} nicht angenommen, Status ${vorhanden.status} – keine Mail, kein Bon`);
+      return res.json(vorhanden);
+    }
     // E-Mail + Druck auslösen
     await sendConfirmationEmail(order, estimatedMinutes);
     await sendRestaurantEmail(order);
@@ -1502,6 +1532,40 @@ async function wachhundMelden(bestellungen) {
   if (error) console.error('🚨 Wachhund: Alarm-Mail fehlgeschlagen:', error.message || error);
   else console.error(`🚨 Wachhund: Alarm an ${empfaenger.join(', ')} gesendet`);
 }
+
+// ── Automatische Annahme nach 15 Minuten (auto-annahme.js) ──────
+// Nimmt der Laden eine Bestellung nicht an, setzt dieser Job sie nach der Frist
+// auf confirmed (mit autoAngenommenAm), damit sie in Wochen- und Monatsbericht
+// zaehlt. Keine Mail, kein Bon: Kasse und Gast sehen sie weiter als wartend, bis
+// der Laden bestaetigt oder storniert. Frist: AUTO_ANNAHME_MINUTEN (Standard 15,
+// 0 = aus).
+//
+// Stichtag: Der Job fasst nur Bestellungen an, die ab diesem Zeitpunkt eingegangen
+// sind. Ohne Stichtag (null) laeuft er NICHT - sicherer Standard fuer die Vorlage.
+// Beim Livegang je Standort den Tag eintragen, z. B. '2026-12-01T00:00:00+01:00'.
+// Sonst rutschen alle alten liegengebliebenen `pending` beim ersten Lauf auf
+// einmal in die Berichte.
+const AUTO_ANNAHME_AB = null;
+
+const autoAnnahmeSpeicher = {
+  finde: (filter, { limit }) =>
+    Order.find(filter).sort({ createdAt: 1 }).limit(limit).select('_id orderNum').lean(),
+  aendereWenn: (filter, aenderung) =>
+    Order.findOneAndUpdate(filter, aenderung, { new: true }).select('_id orderNum').lean(),
+};
+
+if (!AUTO_ANNAHME_AB) console.log('ℹ️ Auto-Annahme aus: kein Stichtag (AUTO_ANNAHME_AB) gesetzt');
+
+cron.schedule('* * * * *', async () => {
+  if (mongoose.connection.readyState !== 1) return;
+  try {
+    const minuten = autoAnnahme.fristMinuten();
+    const nummern = await autoAnnahme.lauf({ speicher: autoAnnahmeSpeicher, stichtag: AUTO_ANNAHME_AB, minuten });
+    for (const n of nummern) {
+      console.log(`⏱️ Auto-Annahme: #${n} nach ${minuten} Min. automatisch angenommen – Laden hat noch nicht bestätigt`);
+    }
+  } catch (e) { console.error('Auto-Annahme Fehler:', e.message); }
+});
 
 // ═══════════════════════════════════════════════════════════════
 // WOCHENBERICHT + RECHNUNG (Cron – jeden Sonntag 23:59)
